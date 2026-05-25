@@ -1,0 +1,61 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+
+{% block title %} {{ "Commande"|trans }} - GNT Pharma {% endblock %}
+{% block finance %}active{% endblock %}
+{% block compte %}active{% endblock %}
+{% block body %}
+<div class="container mt-4 fond-7">
+    <h3 class="mt-4 mb-5 fw-bold">
+        <i class="fa fa-money-bill me-2"></i>
+        {{ "Listes des banques avec leur solde"|trans }}
+    </h3>
+
+    <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+        <thead>
+            <tr>
+                <th>{{ 'Banque'|trans }}</th>
+                <th>{{ 'Solde'|trans }}</th>
+                <th>{{ 'Transaction'|trans }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td data-label="Banque">Banque ABC</td>
+                <td data-label="Solde">15 000,00 €</td>
+                <td data-label="Transaction">Crédit - Compte Intérêt 54321</td>
+            </tr>
+            <tr>
+                <td data-label="Banque">Banque XYZ</td>
+                <td data-label="Solde">5 000,00 €</td>
+                <td data-label="Transaction">Débit - Compte Intérêt 98765</td>
+            </tr>
+            <tr>
+                <td data-label="Banque">Banque DEF</td>
+                <td data-label="Solde">-3 000,00 €</td>
+                <td data-label="Transaction">Crédit - Compte Intérêt 11223</td>
+            </tr>
+            <tr>
+                <td data-label="Banque">Banque GHI</td>
+                <td data-label="Solde">8 500,00 €</td>
+                <td data-label="Transaction">Débit - Compte Intérêt 44556</td>
+            </tr>
+            <tr>
+                <td data-label="Banque">Banque JKL</td>
+                <td data-label="Solde">12 500,00 €</td>
+                <td data-label="Transaction">Crédit - Compte Intérêt 77889</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Commande"|trans }} - GNT Pharma {% endblock %}
+{% block finance %}active{% endblock %}
+{% block transfert %}active{% endblock %}
+{% block all_transfert %}active{% endblock %}
+{% block body %}
+<div class="container mt-4 fond-7">
+    <h3 class="mt-4 mb-5 fw-bold">
+        <i class="fa fa-money-bill me-2"></i>
+        {{ "Listes des transfert"|trans }}
+    </h3>
+
+
+    <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+        <thead>
+            <tr>
+                <th>Date transfert</th>
+                <th>Montant</th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Source</th>
+                <th>Destination</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for transfert in transferts %}
+            <tr>
+                <td>{{ transfert.date ? transfert.date|date('d/m/Y') : '' }}</td>
+                <td>{{ transfert.montant|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }} FCFA</td>
+                <td>{{ transfert.user.nom }}</td>
+                <td>{{ transfert.user.prenom }}</td>
+                <td>{{ transfert.source }}</td>
+                <td>{{ transfert.destination }}</td>
+                <td>
+                    <!-- <a id="{{ transfert.id}}" onclick="load({{ transfert.id }})" href="{{ path('transfert_show', {'id': transfert.id}) }}" class="btn btn-success"><i class="fas fa-eye"></i></a> -->
+                    <a href="{{ path('transfert_edit', {'id': transfert.id}) }}" class="btn btn-success-light"><i class="fas fa-edit"></i></a>
+                    {{ include('transfert/_delete_form.html.twig' )}}
+                </td>
+            </tr>
+
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Commande"|trans }} - GNT Pharma {% endblock %}
+{% block finance %}active{% endblock %}
+{% block remboursement %}active{% endblock %}
+{% block all_remboursement %}active{% endblock %}
+{% block body %}
+<div class="container mt-4 fond-7">
+    <h3 class="mt-4 mb-5 fw-bold">
+        <i class="fa fa-money-bill me-2"></i>
+        {{ "Listes des Remboursements"|trans }}
+    </h3>
+
+
+    <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+        <thead>
+            <tr>
+                <th>Financement</th>
+                <th>Montant</th>
+                <th>Compte</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for remboursement in remboursements %}
+            <tr>
+                <td>{{ remboursement.financement.motif}}</td>
+                <td>{{ remboursement.montant|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}</td>
+                <td>{{ remboursement.compte }}</td>
+                <td>{{ remboursement.date ? remboursement.date|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ remboursement.banque ?  remboursement.banque.nom : remboursement.type }}</td>
+                <td>
+                    <!-- <a title="{{ 'Voir'|trans }}" id="{{ remboursement.id }}" onclick="load({{ remboursement.id }})" href="{{ path('remboursement_show', {'id': remboursement.id}) }}" class="btn btn-success"><i class="fas fa-eye"></i></a> -->
+                    <a title="{{ 'Modifier'|trans }}" href="{{ path('remboursement_edit', {'id': remboursement.id}) }}" class="btn btn-success-light"><i class="fas fa-edit"></i></a>
+                    {{ include('remboursement/_delete_form.html.twig') }}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

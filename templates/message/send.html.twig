@@ -1,0 +1,116 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    'layout.html.twig' %}
+{% block communication %} active {% endblock %}
+{% block messagerie %} active {% endblock %}
+{% block title %}{{ "Nouveaux message"|trans }} - GNT Pharma {% endblock %}
+
+{% block body %}
+
+    <div class="container mt-5 mb-5 fond-7">
+        <h3 class="mt-4 mb-5 fw-bold">
+            <i class="fa fa-comments"></i>
+            {{ "Messagerie"|trans }}
+        </h3>
+        <div class="row">
+            {% set recus = '' %}
+            {% set envoyes = '' %}
+            {% set corbeille = '' %}
+            {{ include('message/menu.html.twig') }}
+            <div class="col-9 p-5" style="border-top: 2px solid var(--vert);border-left: 2px solid var(--vert);">
+                <div class="tab-content" id="v-pills-tabContent">
+                    {{ form_start(form) }}
+                    <div class="col-12 mb-4">
+                        {{ form_row(form.title, {'attr': {'placeholder': 'Objet *'}, 'label': 'Objet *'}) }}
+                    </div>
+                    <div class="col-12 mb-4">
+                        {{ form_row(form.message, {'attr': {'placeholder': 'Ecrivez votre message ici *', 'rows': '10'}, 'label': 'Message'}) }}
+                    </div>
+                    <div class="col-md-6 offset-md-3 my-4 p-3 fond-7">
+                        <div class="centrer gap-3">
+                            <button type="button" class="btn btn-green" data-bs-toggle="modal"
+                                    data-bs-target="#destinataire">
+                                <i class="fa fa-user"></i>
+                                {{ "Destinataire"|trans }}
+                            </button>
+                            <a href="{{ path("received") }}" class="btn btn-success-light">
+                                <i class="fa fa-undo"></i>
+                                {{ 'Annuler'|trans }}
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="destinataire" tabindex="-1" aria-labelledby="destinataireLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="destinataireLabel">
+                                        {{ "Selectionner le(s) destinataire(s)"|trans }}
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    {{ form_widget(form.recipients, {'label': 'Choisir destinataire(s)'}) }}
+                                    {#    <table class="table table-success-light table-bordered table-hover table-striped my-3"
+                                               id="liste">
+                                            <thead>
+                                            <tr>
+                                                <th>
+                                                    <input type="checkbox">
+                                                </th>
+                                                <th>{{ 'Nom et Prenom'|trans }}</th>
+                                                <th>{{ 'Poste'|trans }}</th>
+                                                <th>{{ 'Département'|trans }}</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for employe in employes %}
+                                                <tr>
+                                                    <td>
+                                                        <input type="checkbox">
+                                                    </td>
+                                                    <td data-label="{{ 'Nom et Prenom'|trans }}">
+                                                        Mamadou AliouneSARR
+                                                    </td>
+                                                    <td data-label="{{ 'Poste'|trans }}">
+                                                        Développeur
+                                                    </td>
+                                                    <td data-label="{{ 'Département'|trans }}">
+                                                        Informatique
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+    #}
+                                </div>
+                                <div class="modal-footer centrer">
+                                    <button type="submit" class="btn btn-green btn-normal me-3"
+                                            id="send" {#onclick="envoie()"#}>
+                                        <i class="fa-solid fa-paper-plane"></i>
+                                        {{ 'Envoyer'|trans }}
+                                    </button>
+                                    <button type="button" class="btn btn-success-light" data-bs-dismiss="modal">
+                                        <i class="fa fa-undo"></i>
+                                        {{ 'Annuler'|trans }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{ form_rest(form) }}
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

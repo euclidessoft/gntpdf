@@ -1,0 +1,66 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Retour stock"|trans }} - GNT Pharma {% endblock %}
+{% block stock %}active{% endblock %}
+{% block retour_stock %}active{% endblock %}
+{% block new_retour %}active{% endblock %}
+
+{% block body %}
+    <div class="container mt-4 fond-7">
+        <h3 class="mt-4 mb-5 fw-bold">
+            <i class="fas fa-warehouse"></i><i class="fas fa-undo"></i>
+            {{ "Retours de produits"|trans }}
+        </h3>
+
+        {% for message in app.flashes('notice') %}
+            <div role="alert" class="alert alert-success alert-dismissible fade show radius-10 shadow-black">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                {{ message|trans }}
+            </div>
+        {% endfor %}
+        <a href="{{ path('stock_retour') }}" class="btn btn-green my-4">
+            <i class="fa fa-plus"></i>
+            {{ "Nouveau"|trans }}
+        </a>
+        <table class="table table-success-light table-bordered table-hover table-striped w-100 mt-4" id="liste">
+            <thead>
+            <tr>
+                <th>{{'N° Retour'|trans}}</th>
+                <th>{{'N° Commande'|trans}}</th>
+                <th>{{'Date de retour'|trans}}</th>
+                <th>{{'Client'|trans }} </th>
+                <th> </th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for retour in retours %}
+                <tr>
+                    <td>{{ retour.id }}</td>
+                    <td>{{ retour.commande.id }}</td>
+                    <td>{{ retour.date|date('d/m/Y') }}</td>
+                    <td>{{ retour.commande.user.nom }}</td>
+                    <td>
+                        <a id="{{retour.id }}" onclick="load({{ retour.id }})" href="{{ path('stock_retour_history_show', {'id' : retour.id}) }}" class="btn btn-success">
+                            <i class="fa fa-list"></i>
+                            {{ 'Détails'|trans }}
+                        </a>
+                    </td>
+                </tr>
+            {% else %}
+
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

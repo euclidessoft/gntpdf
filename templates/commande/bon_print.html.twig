@@ -1,0 +1,73 @@
+{% extends 'print.html.twig' %}
+{% block title %} {{ "Bon de commande"|trans }} BC{{ commande.id }}{{ commande.numerofacture }} {% endblock %}
+
+{% block contenu %}
+    <h4 class="text-center fw-bold text-uppercase mt-4">
+        {{ ' Bon de commande'|trans }}
+    </h4>
+    <h6 class="text-center text-uppercase mb-3">
+        {{ 'Numero'|trans }} : BC{{ commande.id }}{{ commande.numerofacture }}
+    </h6>
+    <div class="contenu">
+        <div class="row my-5">
+            <div class="col-5"></div>
+            <div class="col-7">
+                <table class="text-center w-100">
+                    <thead>
+                    <tr>
+                        <th>{{ 'Date'|trans }}</th>
+                        <th>{{ 'N° Commande'|trans }}</th>
+                        <th>{{ 'NIU'|trans }}</th>
+                        <th>{{ 'RCCM'|trans }}</th>
+                        {% if commande.credit == 1 and commande.payer == 0 %}
+                            <th>{{ 'Echeance paiement'|trans }}</th>
+                        {% endif %}
+                        <th>{{ 'Passé par'|trans }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{{ commande.date|date('d/m/Y H:m:s') }}</td>
+                        <td>{{ commande.id }}</td>
+                        <td>{{ commande.user.niu }}</td>
+                        <td>{{ commande.user.rccm }}</td>
+                        {% if commande.credit == 1 and commande.payer == 0 %}
+                            <td>  {{ commande.echeance ? commande.echeance|date('d/m/Y'): '' }}</td>
+                        {% endif %}
+                        <td>{{ commande.pharmaemploye ? commande.pharmaemploye.nom ~" "~ commande.pharmaemploye.prenom : commande.user.nom ~" "~ commande.user.prenom }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% set total=0 %}
+        {% set reduction=0 %}
+        {% set tva=0 %}
+        <table class="text-center w-100">
+            <thead>
+            <tr>
+                <th>{{ 'CIP'|trans }}</th>
+                <th class="text-start">{{ 'Désignation'|trans }}</th>
+                <th>{{ 'Quantité'|trans }}<br>{{ 'commandée'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for commandeproduit in commandeproduits %}
+                {% set reductionproduit = 0 %}
+                <tr>
+                    <td> {{ commandeproduit.produit.reference }} </td>
+                    <td class="text-start">{{ commandeproduit.produit.desigantion }} </td>
+                    <td>
+                        {{ commandeproduit.quantite }}
+                        {% if commandeproduit.ug != 0 %}
+                            <span class="badge bg-danger">
+                                        + {{ commandeproduit.ug }} U.G
+                            </span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

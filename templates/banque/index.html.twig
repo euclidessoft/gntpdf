@@ -1,0 +1,55 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Banques"|trans }} - GNT Pharma {% endblock %}
+{% block finance %}active{% endblock %}
+{% block banque %}active{% endblock %}
+{% block all_banque %}active{% endblock %}
+{% block body %}
+<div class="col-lg-6 mt-4 fond-7">
+    <h3 class="mt-4 mb-5 fw-bold">
+        <i class="fa fa-money-bill me-2"></i>
+        {{ "Liste des banques"|trans }}
+    </h3>
+     {% for message in app.flashes('notice') %}
+            <div role="alert" class="alert alert-success alert-dismissible fade show radius-10 shadow-black">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                {{ message|trans }}
+            </div>
+        {% endfor %}
+
+    <a href="{{ path('banque_new') }}" class="btn btn-success mb-4"><i class="fas fa-plus"></i> Ajouter banque</a>
+    
+    <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+        <thead>
+            <tr>
+                <th>{{('Nº Compte'|trans)}}</th>
+                <th>{{('Nom'|trans)}}</th>
+                <th>{{('Actions'|trans)}}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for banque in banques %}
+            <tr>
+                <td data-label="{{('Nº Compte'|trans)}}">{{ banque.compte }}</td>
+                <td data-label="{{('Nom'|trans)}}">{{ banque.nom }}</td>
+                <td data-label="{{('Actions'|trans)}}">
+                    <a id="{{ banque.id }}" onclick="load({{banque.id}})" href="{{ path('finance_journal_banque', { banque : banque.id })}}" class="btn btn-success"><i class="fas fa-eye"></i></a>
+                    <a href="{{ path('banque_edit', {'id': banque.id}) }}" class="btn btn-success-light"><i class="fas fa-edit"></i></a>
+                    {{ include('banque/_delete_form.html.twig') }}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

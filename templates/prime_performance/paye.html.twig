@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+<title>PrimePerformance index</title>
+
+{% block body %}
+    <h1>PrimePerformance index</h1>
+
+
+    <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('prime_performance_index') }}">
+                    {{ 'Non payées'|trans }}
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="#">
+                    {{ 'déja payées'|trans }}
+                </a>
+            </li>
+        </ul>
+
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>CreateAt</th>
+                <th>Montant</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for prime_performance in prime_performances %}
+            <tr>
+                <td>{{ prime_performance.id }}</td>
+                <td>{{ prime_performance.createAt ? prime_performance.createAt|date('Y-m-d') : '' }}</td>
+                <td>{{ prime_performance.montant }}</td>
+                
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('prime_performance_new') }}">Create new</a>
+{% endblock %}

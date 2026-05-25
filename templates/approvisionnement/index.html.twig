@@ -1,0 +1,376 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Commande"|trans }} - GNT Pharma {% endblock %}
+{% block stock %}active{% endblock %}
+{% block appro %}active{% endblock %}
+{% block new_appro %}active{% endblock %}
+{% block body %}
+    <div class="container-fluid mt-4 fond-7">
+        <h3 class="mt-4 mb-5 fw-bold">
+            <i class="fa fa-shop me-2"></i>
+            {{ "Approvisionnement"|trans }}
+        </h3>
+        <div class="row">
+            <div class="col-lg-5 mt-5">
+                {% for message in app.flashes('notice') %}
+                    <div role="alert" class="alert alert-primaire alert-dismissible fade show radius-10 shadow-black">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        {{ message|trans }}
+                    </div>
+                {% endfor %}
+
+{#                {% set inlist = [] %}#}
+{#                {% for produit in panier %}#}
+
+{#                    {% set inlist = inlist|merge([produit['id']]) %}#}
+{#                {% else %}#}
+
+{#                {% endfor %}#}
+
+                <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+                    <thead>
+                    <tr>
+                        <th>{{ 'Référence'|trans }}</th>
+                        <th>{{ 'Désignation'|trans }}</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for produit in produits %}
+                        <tr id="listprod{{ produit.id }}">
+                            <td>{{ produit.reference }}</td>
+                            <td>{{ produit.desigantion }}</td>
+                            <td>
+                                <!-- Button trigger modal -->
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal{{ produit.id }}"
+                                       id="btn{{ produit.id }}" {# onclick="fournisseur({{ produit.id }})"#}>
+                                    <i class="fa fa-plus"></i> {{ 'Ajouter'|trans }}
+                                </button>
+                                <!-- Modal -->
+                                <div class="modal fade" id="modal{{ produit.id }}" tabindex="-1"
+                                     aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                                    <div class="modal-dialog modal-dialog-centered text-center">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h4 class="modal-title fs-5" id="exampleModalLabel">
+                                                    {{ produit.reference }} {{ produit.desigantion }} {{ produit.fabriquant }}</h4>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close">
+                                                </button>
+                                            </div>
+                                            <div class="modal-body px-5">
+                                                <div class="mt-4">
+                                                    {{'Fournisseur'|trans}}
+                                                    <label for="fourniss{{ produit.id }}"></label>
+                                                    <select class="form-control"
+                                                           id="fourniss{{ produit.id }}">
+
+                                                        {% for fournisseur in produit.fournisseurs %}
+                                                            <option value='{{ fournisseur.id }}'>{{ fournisseur.designation }}</option>
+                                                        {% else %}
+                                                            <option>aucun fournisseur</option>
+                                                        {% endfor %}
+{#                                                        <option><i class='fa-solid fa-spinner fa-spin-pulse text-dark'></i></option>#}
+                                                    </select>
+                                                </div>
+                                                <div class="mt-4">
+                                                    {{'Renseignez la quantité'|trans}}
+                                                    <label for="quant{{ produit.id }}"></label>
+                                                    <input type="number" class="form-control"
+                                                           id="quant{{ produit.id }}">
+                                                </div>
+                                                <div class="mt-4">
+                                                    {{ 'Numero lot'|trans }}
+                                                    <label for="numero{{ produit.id }}"></label>
+                                                    <input type="text" class="form-control"
+                                                           id="numero{{ produit.id }}">
+                                                </div>
+                                                <div class="mt-4">
+                                                    {{ 'Date péremption'|trans}}
+                                                    <label for="peremp{{ produit.id }}"></label>
+                                                    <input type="date" class="form-control"
+                                                           id="peremp{{ produit.id }}">
+                                                </div>
+
+                                            </div>
+                                            <div class="modal-footer px-5 py-4">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                                                        id="annuler{{ produit.id }}">
+                                                    {{ 'Annuler'|trans }}
+                                                </button>
+                                                <button type="button" class="btn btn-success ms-3"
+                                                        id="ajouter{{ produit.id }}"
+                                                        onclick="ajouter({{ produit.id }})">
+                                                    <i class="fa fa-plus"></i>
+                                                    {{ 'Ajouter'|trans }}
+                                                </button>
+                                                <div id="modification{{ produit.id }}"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="3">no records found</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-lg-7 mt-5">
+                <button onclick="validerappro()"
+                        class="btn btn-success float-right mb-3 {% if panier|length == 0 %} disabled {% endif %}"
+                        id="valider1"
+                        title="Valider">
+                    <i class="fa fa-check"></i>
+                    {{ 'Valider'|trans }}
+                </button>
+
+                <table class="table table-success-light table-bordered table-hover table-striped w-100" id="aprovision">
+                    <thead class="text-center">
+                    <tr>
+                        <th>{{ 'Ref'|trans }}</th>
+                        <th class="text-start">{{ 'Fournisseur'|trans }}</th>
+                        <th class="text-start">{{ 'Designation'|trans }}</th>
+                        <th class="text-nowrap">{{'N° Lot'|trans}}</th>
+                        <th>{{'Péremption'|trans}}</th>
+                        <th>{{ 'Quantite'|trans }}</th>
+                        <th>{{ 'Actions'|trans }}</th>
+                    </tr>
+                    </thead>
+                    <tbody id="selectprod" class="text-center">
+                    {% for produit in panier %}
+                        <tr id="tr{{ produit['id']}}{{ produit['lot'] }}">
+                            <td>{{ produit['reference'] }}</td>
+                            <td>{{ produit['fournisseur'] }}</td>
+                            <td class="text-start">{{ produit['designation'] }}</td>
+                            <td>{{ produit['lot'] }} </td>
+                            <td> {{ produit['peremption'] }}</td>
+
+                            <td>
+                                <span id="changequantite{{ produit['idtab'] }}">
+                                {{ produit['quantite'] }}
+                                </span>
+
+                            </td>
+                            <td class="w-25">
+
+
+
+<span id='btnmodf{{ produit['idtab'] }}'>
+{#                                <button class="btn btn-success"#}
+    {#                                        title="Supprimer cet article"#}
+    {#                                        onclick="modif({{ produit.produit.id }},{{ produit['produit'].quantite }})">#}
+    {#                                    <i class="fa fa-edit"></i>#}
+    {#                                </button>#}
+</span>
+                                <button class="btn btn-danger me-2 mb-2"
+                                        title="{{ 'Supprimer cet article'|trans }}" onclick="supprim({{ produit['id'] }}, '{{ produit['lot'] }}')">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+
+{#                                <button type="button" class="btn btn-success mb-2"#}
+{#                                        data-bs-toggle="modal" data-bs-target="#modal{{ produit['id'] }}"#}
+{#                                        id="btn{{ produit['id'] }}">#}
+{#                                    <i class="fa fa-plus"></i> Lot#}
+{#                                </button>#}
+
+                            </td>
+                        </tr>
+
+                    {% else %}
+
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+
+                <button onclick="validerappro()"
+                        class="btn btn-success float-right  {% if panier|length == 0 %} disabled {% endif %}"
+                        id="valider2"
+                        title="Valider">
+                    <i class="fa fa-check"></i>
+                    {{ 'Valider'|trans }}
+                </button>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        function ajouter(produit) {
+
+            var quant = $("#quant" + produit);
+            var numero = $("#numero" + produit);
+            var peremp = $("#peremp" + produit);
+            var fournisseur = $("#fourniss"+ produit+" option:selected");
+            // var peremp = new Date($("#peremp" + produit).val());
+            if(quant.val() != "" && numero.val() !="" && peremp.val() != "" && new Date($("#peremp" + produit).val()) > new Date()){
+            if (quant.val() > 0) {
+                $("#ajouter" + produit).html("<i class='fa-solid fa-spinner fa-spin-pulse'></i>");
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('stock_appro_add') }}",
+                    data: "prod=" + produit + "&quantite=" + quant.val() + "&lot=" + numero.val() + "&perem=" + peremp.val()+ "&fournisseur=" + fournisseur.val(),
+                    success: function (data) {
+                        if (data['id'] == 'ok') {
+                            $('#selectprod').append(" <tr id='tr" + produit + numero.val() + "'>\n" +
+                                "                        <td>" + data['ref'] + "</td>\n" +
+                                "                        <td>" + fournisseur.text() + "</td>\n" +
+                                "                        <td>" + data['designation'] + "</td>\n" +
+                                "                        <td>" + data['lot'] + "</td>\n" +
+                                "                        <td>" + data['peremption'] + "</td>\n" +
+                                "                        <td class='text-center'><span id='changequantite" + produit + "'>" + data['quantite'] + "</span></td>\n" +
+                                "                        <td><span id='btnmodf" + produit + "'>" +
+                                // "<button class='btn btn-success'\n" +
+                                // "                                   title='Supprimer cet article' onclick='modif(" + produit + "," + quant.val() + ")'>\n" +
+                                // "                                    <i class='fa fa-edit'></i>\n" +
+                                // "                                </button></span>\n" +
+                                "                                <button class='btn btn-danger me-2 mb-2'\n" +
+                                "                                   title=\"{{ 'Supprimer cet article'|trans}}\" onclick=\"supprim(" + produit + ",'"+ numero.val() +"')\">\n" +
+                                "                                    <i class='fa fa-trash'></i>\n" +
+                                "                                </button>\n");
+                               // "<button type='button' class='btn btn-success mb-2' data-bs-toggle='modal' data-bs-target='#modal" + produit + "'  id='btn" + produit + "'> <i class='fa fa-plus'></i> Lot </button></td></tr>"
+
+                            //$('#btn' + produit).addClass('disabled');
+                            $('#valider1').removeClass('disabled');
+                            $('#valider2').removeClass('disabled');
+                            $("#annuler" + produit).trigger('click');
+                            quant.val("");
+                            numero.val("");
+                            peremp.val("");
+                           $("#ajouter" + produit).html("<i class='fa fa-plus'></i> {{ 'Ajouter'|trans }}");
+                        } else {
+                            alert(data['id']);
+                            $("#ajouter" + produit).html("<i class='fa fa-plus'></i> {{ 'Ajouter'|trans }}");
+                        }
+                    },
+                    error: function () {
+                        alert("{{ 'La requête n’a pas abouti'|trans }}");
+                    }
+                });
+            } else {
+                alert("{{'Veillez bien renseigner la quantité'|trans}}");
+            }
+                }
+            else{
+                alert("{{ 'Veillez bien renseigner tous les champs'|trans }}");
+            }
+        }
+
+        function supprim(produit,numero) {
+
+            if (confirm("{{ 'Etes-vous sur de vouloir supprimer?'|trans }}")) {
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('stock_delete') }}",
+                    data: {prod: produit , lot: numero},
+                    success: function (data) {
+                        if (data['id'] == 'ok') {
+                             const rowId =  + produit + escapeJquerySelector(numero);
+                             $("#tr" + rowId).remove();
+                            $('#btn' + produit).removeClass('disabled');
+                            $("#quant" + produit).val('');// vider le champ quantite dans modal ajouter
+                            $("#ajouter" + produit).show();// afficher le bouton ajouter
+                            $("#ajouter" + produit).html("<i class=\"fa fa-plus\"></i> {{ 'Ajouter'|trans }}");// afficher le bouton ajouter
+
+                            $("#modification" + produit).html("");// vider div modification
+                            if (data['nb'] == 0) {
+                                $('#valider1').addClass('disabled');
+                                $('#valider2').addClass('disabled');
+                            }
+                        }
+                    },
+                    error: function () {
+                        alert("{{ 'La requête n’a pas abouti'|trans }}");
+                    }
+                });
+            }
+        }
+
+        {#function fournisseur(produit) {#}
+        {#        $.ajax({#}
+        {#            type: "POST",#}
+        {#            url: "{{ path('stock_fournisseur') }}",#}
+        {#            data: "prod=" + produit,#}
+        {#            success: function (data) {#}
+        {#                if (data[0]['test'] == 'ok') {#}
+        {#                    $("#fourniss" + produit).html(" <option>{{ 'selectionnez le fournisseur'|trans }}</option>");#}
+        {#                    for (var i=0; i < data.length; i++) {#}
+        {#                        $("#fourniss" + produit).append("<option value='"+data[i]['id']+"'>"+data[i]['designation']+"</option>")#}
+        {#                    }#}
+
+        {#                }else{#}
+        {#                    $("#fourniss" + produit).html(" <option>{{ 'aucun fournisseur'|trans }}</option>");#}
+        {#                }#}
+        {#            },#}
+        {#            error: function () {#}
+        {#                alert("{{ 'La requête n’a pas abouti'|trans }}");#}
+        {#            }#}
+        {#        });#}
+        {#}#}
+
+        function modif(produit, quantite) {// fonction declenchement modification
+            $("#quant" + produit).val(quantite);
+            $("#ajouter" + produit).hide();
+            /* remplissage div modification*/
+            $("#modification" + produit).html("<button type='button' class='btn btn-success ms-3' id='modifier" + produit + "' onclick=modifier(" + produit + ")><i class='fa fa-edit'></i> {{ 'Modifier'|trans }}</button>");
+            $("#btn" + produit).trigger('click');// declenchement modification
+        }
+
+        function modifier(produit) {//fonction modification
+            var quant = $("#quant" + produit);
+            if (quant.val() > 0) {
+                $("#modifier" + produit).html("<i class='fa-solid fa-spinner fa-spin-pulse'></i>");
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('stock_edit') }}",
+                    data: "prod=" + produit + "&quantite=" + quant.val(),
+                    success: function (data) {
+                        if (data['id'] == 'ok') {
+                            $('#changequantite' + produit).html($("#quant" + produit).val());
+                            // $('#btnmodf' + produit).html("<button class='btn btn-success'\n" +
+                            //     "                                   title='Modifier cet article' onclick='modif(" + produit + "," + quant.val() + ")'>\n" +
+                            //     "                                    <i class='fa fa-edit'></i>\n" +
+                            //     "                                </button>");
+                            $("#annuler" + produit).trigger('click');
+                            prdt.val("");
+                        }
+                    },
+                    error: function () {
+                        alert("{{ 'La requête n’a pas abouti'|trans }}");
+                    }
+                });
+            } else {
+                alert("{{'Veillez bien renseigner la quantité'|trans}}");
+            }
+
+        }
+
+        function validerappro() {
+            if (confirm("Confirmation validation?")) {
+                document.location.href = "{{ path('stock_valider') }}";
+            }
+        }
+
+        function escapeJquerySelector(id) {
+            return id.replace(/([ #;?%&,.+*~\':"!^$[\]()=>|\/@])/g, '\\$1');
+        }
+
+    </script>
+
+
+{% endblock %}

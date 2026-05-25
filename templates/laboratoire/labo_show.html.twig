@@ -1,0 +1,87 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ 'statistique produit: '|trans }}  - GNT Pharma {% endblock %}
+{% block laboratoire %}active{% endblock %}
+{% block body %}
+<div class="container mt-4 fond-7">
+     <h3 class="mt-4 mb-5 fw-bold">
+       <i class="fa-solid fa-flask-vial me-2"></i>
+        {{ "Statistique Laboratoire"|trans }}
+    </h3>
+    <ul class="nav nav-tabs mb-4">
+         <li class="nav-item">
+              {% if is_granted("ROLE_LABORATOIRE") %}
+            <a class="nav-link" href="{{ path('commande_index')}}">
+            {{ 'Produits'|trans }}
+            </a>
+        {% else %}
+        <a class="nav-link" href="{{ path('app_laboratoire_show_admin', {'id':laboratoire.id}) }}">
+            {{ 'Produits'|trans }}
+            </a>
+        {% endif %}
+        </li>
+      
+        <li class="nav-item">
+            <a class="nav-link active" href="#">
+                {{'Mensuel'|trans}}
+            </a>
+        </li>
+    </ul>
+     <div class="centrer fond-7">
+                {# <a href="{{ path('fournisseur_analyse_print', {'date1': day1|date('Y-m-d'),'date2': day2|date('Y-m-d')}) }}" class="btn btn-success-light">
+                    <i class="fa fa-print"></i>
+                    {{ 'imprimer'|trans }}
+                </a>#}
+                 <a target="_blank" href="{{ path('laboratoire_mois_pdf', {'laboratoire' : laboratoire.id, 'mois' : mois})}}" class="btn btn-danger ms-3">
+                    <i class="fa fa-file-pdf"></i>
+                    {{ 'vers Pdf'|trans }}
+                </a>
+            </div>
+               <table class="table table-success-light table-bordered table-hover table-striped mt-3 text-center">
+       <thead>
+            <tr>
+                <th colspan="7">STATISTIQUE DE VENTE DES PRODUITS DU LABORATOIRE {{ app.user.nom}} </th>
+            </tr>
+            <tr>
+                <th>{{"mois"|trans}}</th>
+                <th>{{"Designation"|trans}}</th>
+                <th>{{"Stock de depart"|trans}}</th>
+                <th>{{"Stock au debut du mois"|trans}}</th>
+                <th>{{"Stock actuel"|trans}}</th>
+                <th>{{"Quantite vendue du mois"|trans}}</th>
+                <th>{{"% de vente"|trans}}</th>
+            </tr>
+       </thead>
+        <tbody>
+        {% for produit in produits %}
+            <tr>
+                <td>{{ produit.reference }}</td>
+                <td>{{ produit.desigantion }}</td>
+                 {% set stk = stocklabo(produit, mois) %}
+                <td>{{ stk.depart|number_format(0,'', ' ') }}</td>
+                <td>{{ stk.debut|number_format(0,'', ' ') }}</td>
+                <td>{{ produit.stock|number_format(0,'', ' ') }}</td>
+                <td>{{ stk.vente|number_format(0,'', ' ') }}</td>
+                <td>
+                {% if stk.depart != 0%}
+                    {{ (stk.vente * 100 / stk.depart)|number_format(4, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                {% else %}
+                    {{ 0|number_format(4, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+       </tbody> 
+       </table> 
+</div>
+{% endblock %}

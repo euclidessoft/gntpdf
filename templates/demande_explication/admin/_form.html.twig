@@ -1,0 +1,62 @@
+{{ form_start(form, {'attr': {'id': 'form'}}) }}
+
+{% for message in app.flashes('notice') %}
+<div role="alert" class="alert alert-success alert-dismissible fade show radius-10 shadow-black">
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    {{ message|trans }}
+</div>
+{% endfor %}
+
+<div class="row">
+
+    <!-- Sélection des employés -->
+    <div class="col-lg-6">
+        <label for="employes">Sélectionner les employés :</label>
+        <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+            <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" id="select_all">
+                    </th>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for employe in employes %}
+                <tr>
+                    <td>
+                        <input type="checkbox" name="demande[employes][]" class="employe_checkbox" value="{{ employe.id }}">
+                    </td>
+                    <td>{{ employe.nom }}</td>
+                    <td>{{ employe.prenom }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-lg-6">
+
+        <!-- Objet de la demande -->
+        <div class="col-12 mb-4">
+            {{ form_row(form.objet, {'attr': {'placeholder': 'Objet de la demande *'}, 'label': false}) }}
+        </div>
+
+        <!-- Détails de la demande -->
+        <div class="col-12 mb-4">
+            {{ form_row(form.details, {'attr': {'placeholder': 'Détails de la demande *','rows': 10,}, 'label': false}) }}
+        </div>
+    </div>
+
+</div>
+{{ form_end(form) }}
+
+<script>
+    document.getElementById('select_all').addEventListener('change', function() {
+        var checkboxes = document.querySelectorAll('.employe_checkbox');
+        checkboxes.forEach(function(checkbox) {
+            checkbox.checked = document.getElementById('select_all').checked;
+        });
+    });
+</script>

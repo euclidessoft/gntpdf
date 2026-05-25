@@ -1,0 +1,27 @@
+{{ form_start(form, {'attr': {'id': 'form'}}) }}
+
+
+    {% for message in app.flashes('notice') %}
+        <div role="alert" class="alert alert-success alert-dismissible fade show radius-10 shadow-black">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            {{ message|trans }}
+        </div>
+    {% endfor %}
+
+<div class="row">
+    <div class="col-12 mb-4">
+        {{ form_row(form.employe, {'attr': {'placeholder': 'Sélectionnez l\'employé *'}, 'label': false}) }}
+    </div>
+
+    <div class="col-12 mb-4">
+        {{ form_row(form.description, {'attr': {'placeholder': 'Nom de la prime *'}, 'label': false}) }}
+    </div>
+    <div class="col-12 mb-4">
+        {{ form_row(form.montant, {'attr': {'placeholder': 'Montant *'}, 'label': false}) }}
+    </div>
+</div>
+
+{{ form_rest(form) }}
+</div>
+
+{{ form_end(form) }}

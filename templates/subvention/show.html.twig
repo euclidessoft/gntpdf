@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Subvention{% endblock %}
+
+{% block body %}
+    <h1>Subvention</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ subvention.id }}</td>
+            </tr>
+            <tr>
+                <th>Montant</th>
+                <td>{{ subvention.montant }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ subvention.description }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_subvention_index') }}">back to list</a>
+
+    <a href="{{ path('app_subvention_edit', {'id': subvention.id}) }}">edit</a>
+
+    {{ include('subvention/_delete_form.html.twig') }}
+{% endblock %}

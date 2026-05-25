@@ -1,0 +1,71 @@
+{% extends 'client.html.twig' %}
+{% block title %} {{ "Commande"|trans }} - GNT Pharma {% endblock %}
+{% block commande %}active{% endblock %}
+{% block my_commande %}active{% endblock %}
+
+{% block body %}
+    <div class="container mt-4 fond-7">
+        <h3 class="mt-4 mb-5 fw-bold">
+            <i class="fa fa-shopping-cart me-2"></i>
+            {{ "Suivi des commandes"|trans }}
+        </h3>
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+                <a class="nav-link active" href="#">{{ 'En attente de validation'|trans }}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('commande_panier_history') }}">{{'Commandes déjà payées'|trans}}</a>
+            </li>
+        </ul>
+
+        <table class="table table-success-light table-bordered table-hover table-striped w-100 my-4" id="liste">
+            <thead>
+            <tr>
+                <th>{{'Numero Commande'|trans}}</th>
+                <th>{{ 'Date'|trans }}</th>
+                    {% if is_granted("ROLE_CLIENT_ADMIN") %}
+                <th>{{ 'Passée par'|trans }}</th>
+                {% endif %}
+{#                <!-- <th>{{ 'Client'|trans }} </th> -->#}
+             {% if is_granted("ROLE_CLIENT_ADMIN")%}   <th>{{ 'Montant'|trans }}</th> {% endif %}
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for commande in commandes %}
+                <tr>
+                    <td>
+                    {{ commande.id }}
+                     {% if commande.extranet == true %}
+                     <a href="{{ path('commande_panier_suivi_extranet')}}">
+                        <span class="badge bg-danger"> Extranet </span>
+                        </a>
+                    {% endif %}
+                    </td>
+
+                    <td>{{ commande.date|date('d/m/Y H:s:i') }}</td>
+                    {% if is_granted("ROLE_CLIENT_ADMIN") %}
+                    <td>{{ commande.pharmaemploye ? commande.pharmaemploye.nom ~" "~ commande.pharmaemploye.prenom : "" }}</td>
+                    {% endif %}
+{#                    <!-- <td> {{ commande.user.nom }}</td> -->#}
+                  {% if is_granted("ROLE_CLIENT_ADMIN")%}  <td>{{ commande.montant|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td> {% endif %}
+                    <td>
+                   
+                        <a id="{{ commande.id }}" onclick="load({{ commande.id }})" href="{{ path('commande_panier_Detail', {'commande' : commande.id}) }}" class="btn btn-success">
+                        <i class="fa fa-money-bill"></i>
+                            {{ 'Facture'|trans }}
+                        </a>
+
+                         <a id="b{{ commande.id }}" onclick="load('b{{ commande.id }}')" href="{{ path('commande_panier_bon', {'commande' : commande.id}) }}" class="btn btn-success">
+                        <i class="fa fa-list"></i>
+                            {{ 'Bon de commande'|trans }}
+                        </a>
+                    </td>
+                </tr>
+            {% else %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

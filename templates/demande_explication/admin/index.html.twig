@@ -1,0 +1,63 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+
+{% block discipline %}active{% endblock %}
+{% block explications %}active{% endblock %}
+
+{% block body %}
+    <div class="container-fluid mt-4 fond-7">
+        <h3 class="mt-4 fw-bold">
+            <i class="fa fa-money-bill me-2"></i>
+            {{ "Listes des demandes d'explication"|trans }}
+        </h3>
+        <a href="{{ path('explication_new') }}" class="btn btn-success my-3"><i class="fas fa-plus"></i>Nouvelle demande</a>
+        <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+            <thead>
+            <tr>
+                <th>{{ 'Date demande d\'explication'|trans }}</th>
+                <th>{{ 'Objet demande'|trans }}</th>
+                <th>{{ 'Employés'|trans }}</th>
+                <th>{{ 'Actions'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for demande in demandes %}
+                <tr>
+                    <td data-label="{{ 'Date demande d\'explication'|trans }}">
+                        {{ demande.date ? demande.date|date('d/m/Y') : '' }}
+                    </td>
+                    <td data-label="{{ 'Objet demande'|trans }}">{{ demande.objet }}</td>
+
+                    <!-- Affichage des employés associés -->
+                    <td data-label="{{ 'Employés'|trans }}">
+                        {% for employe in demande.employe %}
+                            {{ employe.nom ~ ' ' ~ employe.prenom }}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+
+                    <td data-label="{{ 'Actions'|trans }}" class="text-nowrap">
+                        <a id="{{ demande.id }}" onclick="load({{ demande.id }})" href="{{ path('explication_show', {'id': demande.id}) }}" title="{{ 'Voir'|trans }}" class="btn btn-success">
+                            <i class="fa fa-eye"></i>
+                            Details
+                        </a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="7" class="text-center">{{ 'Aucune demande d\'explication trouvée'|trans }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

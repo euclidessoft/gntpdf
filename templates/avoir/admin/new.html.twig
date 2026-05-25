@@ -1,0 +1,63 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Créer un avoir"|trans }} - GNT Pharma {% endblock %}
+{% block officine %}active{% endblock %}
+{% block new_avoir %}active{% endblock %}
+{% block client_suivi %}active{% endblock %}
+
+{% block body %}
+    <div class="container_paiement  mt-4 fond-7 text-center">
+        <h3 class="mt-4 mb-5 fw-bold">
+            <i class="fa-solid fa-money-bill me-2"></i>
+            {{ 'Créer un avoir par'|trans }}
+        </h3>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row justify-content-center">
+                    <div class="col-lg-5">
+                        <a href="#">
+                        <div class="p-3 rounded border border-green avoir">
+                            <div class="text-green textavoir text-center py-3 rounded-top">
+                                <i class="fas fa-rotate fa-3x"></i>
+                            </div>
+                            <div class="fw-bold text-green textavoir text-center py-3 rounded-bottom">
+                                {{'Réclamation'|trans}}
+                            </div>
+                        </div>
+                        </a>
+                    </div>
+
+
+                    <div class="col-lg-5">
+                        <a href="#">
+                        <div class="p-3 rounded border border-green avoir">
+                            <div class="text-green textavoir text-center py-3 rounded-top border-green">
+                                <i class="fas fa-truck-fast fa-3x"></i>
+                            </div>
+                            <div class="text-green textavoir fw-bold text-center py-3 rounded-bottom">
+                                {{'Reste à livrer'|trans}}
+                            </div>
+                        </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+
+{% endblock %}

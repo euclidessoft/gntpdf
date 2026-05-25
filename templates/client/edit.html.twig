@@ -1,0 +1,37 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Modifier client"|trans }} - GNT Pharma {% endblock %}
+{% block employe %}active{% endblock %}
+{% block employe_new %}active{% endblock %}
+
+{% block body %}
+<div class="col-lg-5 offset-lg-2 mt-4 fond-7 pb-5 pt-3 px-5">
+    <h3 class="mb-5">
+        <i class="fa-solid fa-user-edit"></i>
+        {{ 'Modifier client'|trans }}
+    </h3>
+    <h6 class="mt-4 text-danger">
+        {{ 'Les champs marqués par * sont obligatoires'|trans }}
+    </h6>
+    {% for message in app.flashes('notice') %}
+    <div role="alert" class="alert alert-danger alert-dismissible fade show radius-10 shadow-black">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        {{ message|trans }}
+    </div>
+    {% endfor %}
+
+    {{ include('client/_form.html.twig') }}
+
+</div>
+{#{{ form_rest(form) }}#}
+{% endblock %}

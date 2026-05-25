@@ -1,0 +1,113 @@
+{% extends 'client.html.twig' %}
+{% block title %} {{ "Paiement Commande"|trans }} - GNT Pharma {% endblock %}
+{% block commande %}active{% endblock %}
+
+{% block body %}<div class="container mt-4 fond-7">
+    <h3 class="mt-4 mb-5 fw-bold">
+        <i class="fa fa-shopping-cart me-2"></i>
+        {{ "Paiement commande"|trans }}
+    </h3>
+
+    <div class="row justify-content-end">
+        <div class="col-lg-4">
+            <table class="table table-success-light table-bordered table-hover table-striped">
+                <thead>
+                <tr>
+                    <th>{{ 'Date'|trans }}</th>
+                    <th>{{ 'Numero Commande'|trans }}</th>
+                    <th>{{ 'Date de Livraison'|trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <td>{{ commande.date|date('d/m/Y') }}</td>
+                <td>{{ commande.id }}</td>
+                <td> </td>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% set total=0 %}
+    {% set reduction=0 %}
+    <table class="table table-success-light table-bordered table-hover table-striped w-100">
+        <thead>
+        <tr>
+            <th>{{ 'CIP'|trans }}</th>
+            <th>{{ 'Désignation'|trans }}</th>
+            <th>{{ 'Quantité Commandée'|trans }}</th>
+            <th>{{ 'Prix Cession'|trans }}</th>
+            <th>{{ 'Prix Public'|trans }}</th>
+            <th>{{ 'Montant'|trans }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for commandeproduit in commandeproduits %}
+            <tr>
+                <td> {{ commandeproduit.produit.reference }} </td>
+                <td>{{ commandeproduit.produit.desigantion }} </td>
+                <td> {{ commandeproduit.quantite }} </td>
+                <td>
+                    {{ commandeproduit.produit.prix|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                    {% if commandeproduit.promotion is not null %}
+                        {% if commandeproduit.promotion.reduction is not null %}
+                            {% set reduction =  reduction + (commandeproduit.quantite * commandeproduit.session * commandeproduit.promotion.reduction /100) %}
+                            <span class="badge bg-danger">
+                                    -{{ commandeproduit.promotion.reduction }}%
+                            </span>
+                        {% endif %}
+                    {% endif %}
+                </td>
+                <td>{{ commandeproduit.produit.prixpublic|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                <td class="text-nowrap">
+                    {{ (commandeproduit.quantite * commandeproduit.produit.prix)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                    {% set total = total + (commandeproduit.quantite * commandeproduit.produit.prix) %}
+                </td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="5" class="text-end">
+                {{ "Total"|trans }}
+            </td>
+            <td>
+                <span id="" class="text-nowrap">{{ total|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</span>
+            </td>
+        </tr>
+        {% if reduction != 0 %}
+            <tr>
+                <td colspan="5" class="text-end">
+                    {{ "Réduction"|trans }}
+                </td>
+                <td>
+                    <span id="" class="text-nowrap">{{ reduction|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</span>
+                </td>
+            </tr>
+        {% endif %}
+        <tr>
+            <td colspan="5" class="text-end">
+                {{ "Net à payer"|trans }}
+            </td>
+            <td>
+                <span id="total">{{ (total-reduction)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+    <div class="container mt-4 mb-5 pt-3 pb-3 fond-7">
+        <div class="centrer">
+            <div class="row">
+
+                <a id="print" onclick="load('print')" target="_blank" href="{{ path('commande_panier_print_Detail', {'commande' : commande.id}) }}" class="btn btn-success float-end">
+                    <i class="fa fa-print"></i>
+                    {{ "Imprimer"|trans }}
+                </a>
+                <a id="payer" onclick="load('payer')" href="{{ path('commande_panier_choix_paiement', {'commande' : commande.id}) }}" class="ms-3 btn btn-success float-end">
+                    <i class="fa fa-money-bill"></i>
+                    {{ "Payer"|trans }}
+                </a>
+
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

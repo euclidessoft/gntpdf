@@ -1,0 +1,103 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Lignes de depenses"|trans }} - GNT Pharma {% endblock %}
+{% block employe %}active{% endblock %}
+{% block formation_index %}active{% endblock %}
+{% block all_formations %}active{% endblock %}
+{% block body %}
+<div class="container mt-5 mb-5 p-5 fond-7">
+    <h4 class="fw-bold mb-5">
+        <i class="fa fa-user me-2"></i>
+        {{ 'Profil utilisateur'|trans }}
+    </h4>
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+            <a class="nav-link" href="{{ path('security_profile') }}">
+                {{'Informations'|trans }}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ path('security_profile_professionnelle') }}">
+                {{'Professionnelles'|trans}}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ path('security_change_password') }}">
+                {{'Securite'|trans}}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ path('evaluation_suivi') }}">
+                {{'Discipline'|trans}}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" href="{{ path('mes_bulletins') }}">
+                {{'Bulletins'|trans}}
+            </a>
+        </li>
+    </ul>
+    <h3 class="mt-4 mb-5 fw-bold">
+        <i class="fa fa-money-bill me-2"></i>
+        {{ "Bulletins de paies"|trans }}
+    </h3>
+    <!-- Filtre par mois et année -->
+    <div class="row mb-4">
+        <div class="col-12">
+            {{ form_start(form, {'attr': {'class': 'row w-100'}}) }}
+{#            <div class="col-md-3 d-flex align-items-center">#}
+{#                {{ form_label(form.employe, null, {'label_attr': {'class': 'me-2 fw-bold'}}) }}#}
+{#                {{ form_widget(form.employe) }}#}
+{#            </div>#}
+            <div class="col-md-4 d-flex align-items-center">
+                {{ form_label(form.mois, null, {'label_attr': {'class': 'me-2 fw-bold'}}) }}
+                {{ form_widget(form.mois) }}
+            </div>
+            <div class="col-md-4 d-flex align-items-center">
+                {{ form_label(form.annee, null, {'label_attr': {'class': 'me-2 fw-bold'}}) }}
+                {{ form_widget(form.annee) }}
+            </div>
+            <div class="col-md-4">
+                {{ form_widget(form.filtrer, {'attr': {'class': 'btn btn-success w-70'}}) }}
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+    <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+        <thead>
+            <tr>
+                <th>{{('Date paiement '|trans)}}</th>
+                <th>{{('Mois de paiement '|trans)}}</th>
+                <th>{{('Salaire de base'|trans)}}</th>
+                <th>{{('Salaire net'|trans)}}</th>
+                <th>{{('actions'|trans)}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bulletin in bulletins %}
+            <tr>
+                <td data-label="Date paiement">{{ bulletin.date ? bulletin.date|date('d/m/Y') }}</td>
+                <td data-label="Mois de paiement">{{ bulletin.mois.nom }}</td>
+                <td data-label="Salaire de base">{{ bulletin.salaireBase|number_format(0,'',' ') }} FCFA</td>
+                <td data-label="Salaire net">{{ bulletin.salaireNet|number_format(0,'',' ') }} FCFA</td>
+                <td data-label="Actions">
+                    <a href="{{ path('paie_historique_show', {'id': bulletin.id}) }}" class="btn btn-success">Details</a>
+                </td>
+            </tr>
+            {% else %}
+
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

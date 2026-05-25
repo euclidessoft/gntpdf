@@ -1,0 +1,91 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block administration %}active{% endblock %}
+{% block config %}active{% endblock %}
+
+{% block body %}
+<div class="col-lg-8 mt-4 pb-4 fond-7">
+    <h3 class="mt-4 mb-5 fw-bold">
+        <i class="fa-brands fa-product-hunt me-2"></i>
+        {{ "Détails dépense"|trans }}
+    </h3>
+
+    <table class="table table-success-light table-bordered text-center table-hover table-striped w-100">
+        <tbody>
+            <tr>
+                <th>Poste</th>
+                <td>{{ poste.nom }} </td>
+            </tr>
+            <tr>
+                <th>Département du poste</th>
+                <td>{{ poste.departement.nom }} </td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ poste.description }} </td>
+            </tr>
+            <tr>
+                <th>Salaire</th>
+                <td>{{ poste.salaire|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }} </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="col-lg-8 mt-4 pb-4 fond-7">
+    <h3 class="mt-4 fw-bold">
+        <i class="fa-brands fa-product-hunt me-2"></i>
+        {{ "Liste des employés qui occupe cet poste"|trans }}
+    </h3>
+    <!-- Bouton pour attribuer des employés au poste -->
+    <div class="py-4">
+        
+        <a href="{{ path('poste_attribuer', {'id': poste.id}) }}" class="btn btn-success">
+            <i class="fa fa-plus-circle"></i> {{ 'Attribuer des employés'|trans }}
+        </a>
+    </div>
+    <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+        <thead>
+            <tr>
+                <th>{{('Nom'|trans)}}</th>
+                <th>{{('Prénom'|trans)}}</th>
+                <th>{{('Téléphone'|trans)}}</th>
+                <th>{{('Email'|trans)}}</th>
+                <th>{{('Adresse'|trans)}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for employe in employes %}
+            <tr>
+                <td data-label="Nom">{{ employe.nom }}</td>
+                <td data-label="Description">{{ employe.prenom }}</td>
+                <td data-label="Description">{{ employe.phone }}</td>
+                <td data-label="Description">{{ employe.email }}</td>
+                <td data-label="Description">{{ employe.adresse }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="col-md-4 offset-md-3 mt-4 py-3 fond-7">
+    <div class="centrer">
+        {#            <a class="btn btn-success me-3" href="{{ path('poste_edit', {'id': poste.id}) }}">#}
+        {#                <i class="fa fa-edit"></i> Modifier</a>#}
+        <a id="{{ poste.id }}" onclick="load({{ poste.id }})" class="btn btn-success-light text-green" href="{{ path('poste_index') }}">
+            <i class="fa fa-undo"></i>
+            {{ 'Retour'|trans }}
+        </a>
+    </div>
+</div>
+
+</div>
+{% endblock %}

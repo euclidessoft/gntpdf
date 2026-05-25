@@ -1,0 +1,59 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+
+{% block body %}
+<div class="container pt-5 mt-5 fond-7">
+    <div class="mb-4">
+        <h3>Informations sur l'Employé</h3>
+        <p><strong>Matricule :</strong> {{ evaluation.employe.matricule }}</p>
+        <p><strong>Employé:</strong> {{ evaluation.employe.nom }} {{ evaluation.employe.prenom }}</p>
+        <p><strong>Poste:</strong> {{ evaluation.employe.poste.departement.nom }}</p>
+        <p><strong>Poste:</strong> {{ evaluation.employe.poste.nom }}</p>
+        <p><strong>Date d'Évaluation :</strong> {{ evaluation.dateEvaluation ? evaluation.dateEvaluation|date('d/m/Y') : '' }}</p>
+    </div>
+
+    <!-- Détails de l'évaluation -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Détails de l'Évaluation</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Critère d'évaluation</th>
+                        <th>Note</th>
+                        <th>Commentaire</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for detail in evaluation.evaluationDetails %}
+                    <tr>
+                        <td>{{ detail.critereEvaluation.nom }}</td>
+                        <td>{{ detail.note }}/10</td>
+                        <td>{{ detail.commentaire ? detail.commentaire : 'Aucun commentaire' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- Moyenne des notes -->
+    <div class="mb-4">
+        <h4>Moyenne des notes : {{ evaluation.moyenne ? evaluation.moyenne|number_format(2) : 'Non calculée' }}</h4>
+    </div>
+    <div class="my-4 text-center">
+        <a href="{{ path('evaluation_index') }}" class="btn btn-success-light">Retour à la liste</a>
+    </div>
+</div>
+{% endblock %}

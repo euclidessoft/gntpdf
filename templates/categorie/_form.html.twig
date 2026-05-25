@@ -1,0 +1,40 @@
+{{ form_start(form, {'attr': {'id': 'form'}}) }}
+
+
+    {% for message in app.flashes('notice') %}
+        <div role="alert" class="alert alert-success alert-dismissible fade show radius-10 shadow-black">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            {{ message|trans }}
+        </div>
+    {% endfor %}
+
+    <div class="row">
+ 
+        <div class="col-12 mb-4">
+            {{ form_row(form.nom, {'attr': {'placeholder': 'libele ligne de dépense *'}, 'label': 'libele ligne de dépense *'}) }}
+        </div>
+
+        <div class="col-12 mb-4">
+           {{ form_row(form.compte, {'attr': {'placeholder': 'Numéro de compte  *'}, 'label': 'Numéro compte *'}) }}
+            {# <div class="input-group">
+                {# <div class="input-group-prepend">
+                    <span class="input-group-text">
+                        605
+                    </span>
+                </div>
+                {{form_widget(form.compte, {'attr':{'placeholder':'Numéro compte *'}, 'label':'Numéro compte *'}) }} #}
+            </div>
+        </div>
+
+        <div class="col-12 mb-4">
+            {{ form_row(form.description, {'attr': {'placeholder': 'Description *'}, 'label': 'Description *'}) }}
+        </div>
+        <div class="col-12 mb-4">
+            {{ form_row(form.amortissement, {'attr': {'placeholder': 'Amortissement en annee'}, 'label': 'Amortissement en annee' }) }}
+        </div>
+    </div>
+
+    {{ form_rest(form) }}
+</div>
+
+{{ form_end(form) }}

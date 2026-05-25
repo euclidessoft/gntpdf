@@ -1,0 +1,36 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ 'creer nouvel utilisateur'|trans }} - GNT Pharma {% endblock %}
+{% block body %}
+
+    <div class="row">
+        <div class="col-12">
+            <div class="col-lg-6 offset-lg-3 pb-1 fond-7">
+                <h1 class="text-center bleu">GNT PHARMA</h1>
+
+                {% for message in app.flashes('notice') %}
+                    <div role="alert" class="alert alert-success alert-dismissible fade show radius-10 shadow-black">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        {{ message|trans }}
+                    </div>
+                {% endfor %}
+                <div class="col-12">
+                    {{ 'Les champs avec * sont obligatoires'|trans }}
+                </div>
+                {{ include('security/security/admin/userform.html.twig') }}
+                <br/>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

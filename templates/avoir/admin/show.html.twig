@@ -1,0 +1,179 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Avoir"|trans }} - GNT Pharma {% endblock %}
+{% block officine %}active{% endblock %}
+{% block all_avoir %}active{% endblock %}
+{% block client_suivi %}active{% endblock %}
+
+{% block body %}
+    {% set commande = avoir.commande %}
+     <div class="container mt-4 fond-7">
+        <h3 class="mt-4 mb-5 fw-bold">
+            <i class="fa fa-shopping-cart me-2"></i>
+            {{ "Détails commande"|trans }}
+        </h3>
+
+        <a href="#" onclick="history.back()" class="btn btn-success-light mb-3">
+            <i class="fa fa-chevron-left"></i> {{ "Retour"|trans }} </a>
+        <h3 class="text-center fw-bold text-uppercase mt-4">
+            {{ 'Facture Avoir'|trans }}
+        </h3>
+        <h6 class="text-center fw-bold text-uppercase mb-3">
+        {{ 'Numero'|trans }} : {{ commande.id}}-{{ commande.numerofacture }}-{{ avoir.id}}
+        </h6>
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-success-light table-bordered table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th>{{ 'N° Commande'|trans }}</th>
+                        <th>{{ 'Date Commande'|trans }}</th>
+                        <th>{{ 'Date Traitement'|trans }}</th>
+                        <th>{{ 'Client'|trans }}</th>
+                         <th>{{ 'NIU'|trans }}</th>
+                         <th>{{ 'RCCM'|trans }}</th>
+                        {% if commande.credit == 1 and commande.payer == 0 %}
+                        <th>{{ 'date d\'echeance de paiement'|trans }}</th>
+                        {% endif %}
+                        {# <th>{{ 'Status Commande'|trans }}</th> #}
+                        {#            <th>Date de Livraison</th>#}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <td>{{ commande.id }}</td>
+                    <td>{{ commande.date|date('d/m/Y H:is') }}</td>
+                    <td>{{ commande.traitement|date('d/m/Y H:i:s') }}</td>
+                     <td>{{ commande.user.nom ~ " " ~ commande.user.prenom }}</td>
+                     <td>{{ commande.user.niu }}</td>
+                     <td>{{ commande.user.rccm }}</td>
+                         {% if commande.credit == 1 and commande.payer == 0 %}
+                             <td> {{ commande.echeance ? commande.echeance|date('d/m/Y'): ''  }}</td>
+                        {% endif %}
+                    {#        <td> </td>#}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% set total=0 %}
+        {% set reduction=0 %}
+        {% set tva=0 %}
+        <table class="table table-success-light table-bordered table-hover table-striped w-100 my-4">
+            <thead>
+            <tr>
+                <th>{{ 'CIP'|trans }}</th>
+                <th>{{ 'Désignation'|trans }}</th>
+                {# <th>{{ 'DCI'|trans }}</th> #}
+                <th>{{ 'Quantité Retournée'|trans }}</th>
+                {#            <th>Quantite Restante</th>#}
+                <th>{{ 'Prix Cession'|trans }}</th>
+                <th>{{ 'TVA'|trans }}</th>
+                <th>{{ 'Prix Public'|trans }}</th>
+                <th>{{ 'Montant'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for commandeproduit in commandeproduits %}
+                {% set ug = 0 %}
+                {% set reductionproduit = 0 %}
+                <tr>
+                    <td> {{ commandeproduit.produit.reference }} </td>
+                    <td>{{ commandeproduit.produit.desigantion }} </td>
+                    {# <td>{{ commandeproduit.produit.dci }} </td> #}
+                    <td>
+                       - {{ commandeproduit.quantite }}
+                     
+                    </td>
+                    {#                <td> </td>#}
+                    <td class="montant noExport">
+                        - {{ commandeproduit.prix|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+
+                    </td>
+                    <td>
+                        {{ commandeproduit.tva != 0 ? commandeproduit.tva : '' }}
+                        {% set tva = tva + commandeproduit.tva %}
+                           
+                    </td>
+                    <td class="montant">{{ commandeproduit.prixpublic|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                    <td class="montant">
+                        - {{ (commandeproduit.quantite * commandeproduit.prix)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                        {% set total = total + (commandeproduit.quantite * commandeproduit.prix) %}
+                    </td>
+                </tr>
+            {% endfor %}
+            <tbody>
+            <tfoot>
+            <tr>
+                <td colspan="6" class="text-end">
+                    {{ "Total HT"|trans }}
+                </td>
+                <td class="montant">
+                    <span id="" class="text-nowrap">- {{ total|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6" class="text-end">
+                    {{ "Total TVA"|trans }}
+                </td>
+                <td class="montant">
+                    <span id="" class="text-nowrap">- {{ avoir.tva|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6" class="text-end">
+                    {{ "Prélèvement (2%)"|trans }}
+                </td>
+                <td class="text-end">
+               
+                    <span id="">- {{ avoir.prelevement != 0 ? avoir.prelevement|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}</span>
+                    <input type="hidden" value="{{ tva }}" id="totaltamp"/>
+                </td>
+            </tr>
+
+            <tr class="fw-bold">
+                <td colspan="6" class="text-end">
+                    {{ "Net à payer"|trans }}
+                </td>
+                <td class="montant">
+                    <span class="text-nowrap">- {{ avoir.montant|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</span>
+                          <span id="total" class="text-nowrap" style="display:none;">{{ (total  + tva)|number_format(2, '.' , '') }}</span>
+                </td>
+            </tr>
+            </tfoot>
+        </table
+
+        {#Conversion prix en lettre #}
+        <div class="my-5">
+            {{ 'Arrêtée la présente à la somme de '|trans }} <b id="conversion"></b><b id="virgule"></b> <b>franc CFA TTC</b>
+        </div>
+        {#/***** end*****/#}
+    </div>
+     <div class="container mt-4 mb-5 p-3 fond-7">
+     <input type="hidden" id="numfact" value="{{ commande.id}}-{{ commande.numerofacture }}"/>
+        <div class="centrer">
+        <a target="__blank" id="print" onclick="load('print')"
+               href="{{ path('avoir_show_pdf',{'id': avoir.id }) }}"
+               class="btn btn-danger me-2">
+                <i class="fa fa-file-pdf"></i>
+                {{ "vers Pdf"|trans }}
+            </a>
+
+            <a id="print" onclick="load('print')"
+               href="{{ path('avoir_show_print',{'id': avoir.id }) }}"
+               class="btn btn-success float-end me-2">
+                <i class="fa fa-print"></i>
+                {{ "Imprimer"|trans }}
+            </a>
+             {# <span id="exportexcel" class=""></span> #}
+        </div>
+    </div>
+{% endblock %}

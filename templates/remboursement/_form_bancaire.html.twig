@@ -1,0 +1,35 @@
+{{ form_start(form, {'attr': {'id': 'form'}}) }}
+
+    {% for message in app.flashes('notice') %}
+    <div role="alert" class="alert alert-success alert-dismissible fade show radius-10 shadow-black">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        {{ message|trans }}
+    </div>
+    {% endfor %}
+
+    <div class="row">
+
+        <div class="col-12 mb-4">
+            {{ form_row(form.montant, {'attr': {'placeholder': 'Montant *'}, 'label': 'Montant *'}) }}
+        </div>
+
+        <div class="col-12 mb-4">
+            {{ form_row(form.libele, {'attr': {'placeholder': 'libelé *'}, 'label': 'libelé *'}) }}
+        </div>
+
+        <div class="col-12 mb-4">
+            {{ form_row(form.financement, {'attr': {'placeholder': 'compte *'}, 'label': 'Pret *'}) }}
+        </div>
+         <div class="form-group mb-4">
+            {{ form_row(form.numero, {'label':'Réference', 'attr' : {'placeholder':'Numéro'}}) }}
+        </div>
+
+    </div>
+    <!-- <div id="versement">
+        <div class="form-group">
+            {{ form_row(form.banque, {'label':false, 'attr' : {'placeholder':'Banque'}}) }}
+        </div>
+       
+    </div> -->
+    
+    {{ form_rest(form) }}

@@ -1,0 +1,125 @@
+
+{% extends 'client.html.twig' %}
+    {% block title %} {{ "Commande"|trans }} - GNT Pharma {% endblock %}
+    {% block promotion %}active{% endblock %}
+
+{% block start %} onkeyup="entrer()" {% endblock %}
+    {% block body %}
+        <div class="container mt-4 fond-7">
+            <h3 class="mt-4 mb-5 fw-bold">
+                <i class="fa fa-shop me-2"></i>
+                {{ "Promotion"|trans }}
+            </h3>
+            <table class="table table-success-light table-bordered table-hover table-striped w-100">
+                <thead>
+                <tr>
+                    <th>{{'Désignation'|trans}}</th>
+                    <th>{{'Date de début'|trans}}</th>
+                    <th>{{ 'Date de fin'|trans }}</th>
+                    <th>{{ 'Type'|trans }}</th>
+                    <th>{{ 'Avantages'|trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>{{ promotion.designation }}</td>
+                    <td>{{ promotion.debut ? promotion.debut|date('d/m/Y') : '' }}</td>
+                    <td>{{ promotion.fin ? promotion.fin|date('d/m/Y') : '' }}</td>
+                    <td>{{ promotion.type }}</td>
+                    <td>
+                        {% if promotion.premier is null %}
+                            {{ promotion.reduction }} % {{"de réduction"|trans}}
+
+                        {% else %}
+                            {{ promotion.premier }} {{ "pour"|trans }} {{ promotion.ugpremier }} {{ "gratuits"|trans }}<br>
+                            {{ promotion.deuxieme }} {{ "pour"|trans }} {{ promotion.ugdeuxieme }} {{ "gratuits"|trans }}<br>
+                            {{ promotion.troisieme }} {{ "pour"|trans }} {{ promotion.ugtroisieme }} {{ "gratuits"|trans }}<br>
+                            {{ promotion.quatrieme }} {{ "pour"|trans }} {{ promotion.ugquatrieme }} {{ "gratuits"|trans }}<br>
+                            {{ promotion.cinquieme }} {{ "pour"|trans }} {{ promotion.ugcinquieme }} {{ "gratuits"|trans }}<br>
+                        {% endif %}
+                    </td>
+
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="container mt-4 fond-7">
+            <h3 class="mt-4 mb-5 fw-bold">
+                <i class="fa-brands fa-product-hunt me-2"></i>
+                {{ "Produits"|trans }}
+            </h3>
+
+            <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+                <thead>
+                <tr>
+                    <th>{{ 'CIP'|trans }}</th>
+                    <th>{{ 'Désignation'|trans }}</th>
+                    <th>{{ 'DCI'|trans }}</th>
+                    <th>{{ 'Cession'|trans }}</th>
+                    <th>{{ 'Public'|trans }}</th>
+                    <th>{{ 'Commande'|trans }}<br> {{ 'Minimum'|trans }}</th>
+                    <th>{{ 'Fabricant'|trans }}</th>
+                    <th>{{ 'Quantité'|trans }}</th>
+
+                    <th>{{ 'Actions'|trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for produit in promotion.produits %}
+                    <tr>
+                        <td>{{ produit.reference }}</td>
+                        <td>{{ produit.desigantion }}</td>
+                        <td>{{ produit.dci }}</td>
+                        <td>{{ produit.prix|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                        <td>{{ produit.prixpublic|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                        <td>{{ produit.mincommande }}</td>
+                        <td>{{ produit.fabriquant }}</td>
+                        {% set tamp ='no' %}
+                        <td class="text-center" id="tdprod{{ produit.id }}">
+
+                            {% for pan in panier %}
+                                {% if pan['produit'].id == produit.id %}
+                                    {% set tamp = pan['produit'].quantite %}
+                                {% endif %}
+                            {% endfor %}
+                            {% if tamp != 'no' %}
+                                {{ tamp }}
+                            {% else %}
+                                <input type="number" id="text{{ produit.id }}" class="form-control"
+                                       onfocus="focu({{ produit.id }}, {{ produit.mincommande }}, {{ produit.stock }})" onblur="nofocu()"
+                                        style="vertical-align: middle; margin: auto; width: 80px; height: 40px;" {% if produit.stock <= produit.mincommande or promo == 0 %} disabled {%  endif %}>
+                                <label for="text{{ produit.id }}"></label>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if tamp != 'no' %}
+                                <button type="button" class="btn btn-success disabled" id="btn{{ produit.id }}">
+                                    <i class="fa fa-cart-shopping"></i>
+                                </button>
+                            {% else %}
+                                <button type="button" class="btn btn-success{% if produit.stock <= produit.mincommande or promo == 0 %} disabled {%  endif %}" id="btn{{ produit.id }}"
+                                        onclick="addinPanier({{ produit.id }}, {{ produit.mincommande }}, {{ produit.stock }})">
+                                    <i class="fa fa-cart-shopping"></i>
+                                </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <input type="hidden" id="tampon"/>
+        <input type="hidden" id="min"/>
+        <input type="hidden" id="stock"/>
+
+        </div>
+        <div class="col-md-12 mt-5 mb-5 pt-2 pb-2 fond-7">
+            <div class="centrer">
+                <a target="__blank" href="{{ path('promotion_show_pdf', {'id': promotion.id}) }}"
+                   class="btn btn-danger me-3">
+                    <i class="fa fa-file-pdf"></i>
+                    {{ "Vers Pdf"|trans }}
+                </a>
+            </div>
+        </div>
+    {% endblock %}

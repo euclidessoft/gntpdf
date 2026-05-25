@@ -1,0 +1,78 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Gestion des permission"|trans }} - GNT Pharma {% endblock %}
+{% block discipline %}active{% endblock %}
+{% block conges %}active{% endblock %}
+{% block body %}
+<div class="container mt-4 fond-7">
+    <h3 class="mt-4 mb-5 fw-bold">
+        <i class="fa fa-user-slash me-2"></i>
+        {{ "Gestion des demandes de permission"|trans }}
+    </h3>
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+            <a class="nav-link" href="{{ path('conges_admin_suivi') }}">
+                {{ 'Demandes en cours'|trans }}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ path('conge_admin_accepter') }}">
+                {{ 'Demandes acceptées'|trans }}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" href="{{ path('conge_admin_refuser') }}">
+                {{'Demandes refusées'|trans}}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ path('conges_admin_index') }}">
+                {{'Toutes les demandes'|trans}}
+            </a>
+        </li>
+    </ul>
+    <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+        <thead>
+            <tr>
+                <th>{{ "Matricule"|trans }}</th>
+                <th>{{ "Employé"|trans }}</th>
+                <th>{{ "Type de congé"|trans }}</th>
+                <th>{{ "Période demandée"|trans }}</th>
+                <th>{{ "Période accordée"|trans }}</th>
+                <th>{{ "Raison"|trans }}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for conge in conges %}
+            <tr>
+                <td data-label="{{ 'Matricule'|trans }}">{{ conge.employe.matricule }}</td>
+                <td data-label="{{ 'Employé'|trans }}">{{ conge.employe.prenom }} {{ conge.employe.nom }}</td>
+                <td data-label="{{ 'Type de congé'|trans }}">{{ conge.type.nom }}</td>
+                <td data-label="{{ 'Période demandée'|trans }}">{{ conge.dateDebut|date('d/m/Y') }} <small>au</small> {{ conge.dateFin|date('d/m/Y') }}
+                    <br> {{ "Durée"|trans }} : {{ conge.dateFin.diff(conge.dateDebut).days + 1 }} {{ "jours"|trans }}
+                </td>
+                <td data-label="{{ 'Période accordée'|trans }}">
+                    {% if conge.dateDebutAccorder is not null and conge.dateFinAccorder is not null %}
+                        {{ conge.dateDebutAccorder|date('d/m/Y') }} <small>au</small> {{ conge.dateFinAccorder|date('d/m/Y') }}
+                        <br> Durée : {{ conge.dateFinAccorder.diff(conge.dateDebutAccorder).days + 1 }} jours
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td data-label="{{ 'Raison'|trans }}">{{ conge.description }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

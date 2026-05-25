@@ -1,0 +1,20 @@
+{{ form_start(form, {'attr': {'id': 'form'}}) }}
+<div class="row gap-5">
+
+    <div class="col-12">
+        {{ form_row(form.employe, {'attr': {'placeholder': 'Employé à sanctionner *'}, 'label': 'Employé à sanctionner *'}) }}
+    </div>
+
+    <div class="col-12">
+        {{ form_row(form.typeSanction, {'attr': {'placeholder': 'Type sanction *'}, 'label': 'Type sanction à infliger *'}) }}
+    </div>
+
+    <div class="col-12" id="dateDebut">
+        {{ form_row(form.dateDebut, {'attr': {'title': 'Date de debut mis à pied *'}, 'label': 'Date de debut mis à pied *'}) }}
+    </div>
+    <div class="col-12" id="dateFin">
+        {{ form_row(form.dateFin, {'attr': {'title': 'Date de fin mis à pied*'}, 'label': 'Date de fin mis à pied*'}) }}
+    </div>
+
+    {{ form_rest(form) }}
+</div>

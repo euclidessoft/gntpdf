@@ -1,0 +1,73 @@
+<script>
+    function userdisable(id) {
+        let bouton = $('#btn' + id);
+        let etat = $('#statut' + id);
+        if (confirm("{{ 'Voulez-vous vraiment désactiver ce client ?'|trans }}")) {
+            bouton.html("<i class='fa fa-spinner'></i>");
+            $.ajax({
+                type: "POST",
+                url: "{{ path('security_user_disable') }}",
+                data: "usr=" + id,
+                success: function (data) {
+                    if (data['ok'] !== '') {
+                        bouton.attr('class', 'btn btn-green me-2 mb-2');
+                        bouton.attr('onclick', 'userenable(' + id + ')');
+                        bouton.attr('title', ' {{ "Activer ce client"|trans }}');
+                        bouton.html('<i class="fa fa-user-check"></i>{{ "Activer"|trans }}');
+                        etat.html("{{ 'Inactif'|trans }}");
+                    }
+                },
+                error: function () {
+                    alert('{{ "La requête n'a pas abouti"|trans }}');
+                }
+            });
+        }
+    }
+
+    function userenable(id) {
+        let bouton = $('#btn' + id);
+        let etat = $('#statut' + id);
+        if (confirm("{{ 'Voulez-vous vraiment activer ce client ?'|trans }}")) {
+            bouton.html("<i class='fa fa-spinner'></i>");
+            $.ajax({
+                type: "POST",
+                url: "{{ path('security_user_enable') }}",
+                data: "usr=" + id,
+                success: function (data) {
+                    if (data['ok'] !== '') {
+                        bouton.attr('class', 'btn btn-danger me-2 mb-2');
+                        bouton.attr('onclick', 'userdisable(' + id + ')');
+                        bouton.attr('title', ' {{ "Désactiver ce client"|trans }}');
+                        bouton.html('<i class="fa fa-user-lock"></i>{{ "Désactiver"|trans }}');
+                        etat.html("{{ 'Actif'|trans }}");
+                    }
+                },
+                error: function () {
+                    alert('{{ "La requête n'a pas abouti"|trans }}');
+                }
+            });
+        }
+
+    }
+
+    function del(id) {
+        if (confirm("{{ 'Voulez-vous vraiment supprimer ce client ?'|trans }}")) {
+            $('#btn' + id).html("<i class='fa fa-spinner'></i>");
+            $.ajax({
+                type: "POST",
+                url: "{{ path('security_user_delete') }}",
+                data: "usr=" + id,
+                success: function (data) {
+                    if (data['ok'] !== '') {
+                        document.location.href = data['ok'];
+                    }
+                },
+                error: function () {
+                    alert('{{ "La requête n'a pas abouti"|trans }}');
+                }
+            });
+        }
+
+    }
+
+</script>

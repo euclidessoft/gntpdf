@@ -1,0 +1,166 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    'layout.html.twig' %}
+{% block title %} {{ "Commande"|trans }} - GNT Pharma {% endblock %}
+{% block retour_stock %}active{% endblock %}
+{% block produit %}active{% endblock %}
+{% block body %}
+    <div class="container mt-4 pb-4 fond-7">
+        <h3 class="mt-4 mb-3 fw-bold">
+            <i class="fa fa-shop me-2"></i>
+            {{ "Retour Stock"|trans }}
+        </h3>
+        <div id="message">
+
+        </div>
+        <div class="col-6 fond-7">
+            <table class="table table-success-light table-bordered table-hover table-striped mt-3">
+                <thead>
+                <tr>
+                    <th>{{ 'N° Retour'|trans }}</th>
+                    <th>{{ 'Date retour'|trans }}</th>
+                    <th>{{ 'Client'|trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>{{ retour.id }}</td>
+                    <td>{{ retour.date|date('d/m/Y') }}</td>
+                    <td> {{ retour.commande.user.nom }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 mt-5">
+
+                {#                {% set inlist = [] %} #}
+                {#                {% for produit in panier %} #}
+
+                {#                    {% set inlist = inlist|merge([produit['id']]) %} #}
+                {#                {% else %} #}
+
+                {#                {% endfor %} #}
+
+                <table class="table table-success-light table-bordered table-hover table-striped text-center w-100" id="facture">
+                    <thead>
+                    <tr>
+                        <th>{{ "CIP"|trans }}</th>
+                        <th class="text-start">{{ "Désignation"|trans }}</th>
+                        <th>{{ "N° lot"|trans }}</th>
+                        <th>{{ "Motif"|trans }}</th>
+                        <th>{{ "Qté retournée"|trans }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for retourproduit in retourproduits %}
+                        <tr id="listprod{{ retourproduit.produit.id }}">
+                            <td>{{ retourproduit.produit.reference }}</td>
+                            <td class="text-start">{{ retourproduit.produit.desigantion }}</td>
+                            {# <td>{{ retourproduit.produit.dci }}</td> #}
+                            <td>{{ retourproduit.lot }}</td>
+                            <td>{{ retourproduit.motif }}</td>
+                            <td>{{ retourproduit.quantite }}</td>
+
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+    <div class="container mt-4 mb-5 p-3 fond-7">
+        <div class="centrer">
+       
+           <a target="__blank" id="{{retour.id }}" onclick="load({{ retour.id }})" href="{{ path('stock_retour_history_show_print', {'id' : retour.id}) }}" class="btn btn-success-light me-3">
+                            <i class="fa fa-print"></i>
+                            {{ 'Imprimer'|trans }}
+                        </a>
+                        
+           <a target="__blank" id="{{retour.id }}" onclick="load({{ retour.id }})" href="{{ path('stock_retour_history_show_pdf', {'id' : retour.id}) }}" class="btn btn-danger me-3">
+                            <i class="fa fa-file-pdf"></i>
+                            {{ 'vers pdf'|trans }}
+                        </a>
+             <span id="exportexcel" class=""></span>
+        </div>
+    </div>
+
+{% endblock %}
+{% block scripts %}
+    <script>
+        function retour_reapprovisionner(id, produit, lot, peremption, quantite) {
+
+            if (confirm("voulez-vous vraiment réapprovisionner ce produit?")) {
+                $("#btn" + produit + lot).html("<i class='fa-solid fa-spinner fa-spin-pulse'></i>");
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('stock_retour_reapprovisionner') }}",
+                    data: {produit: produit, quantite: quantite, lot: lot, peremption: peremption, retour: id},
+                    success: function (data) {
+                        $("#message").html("<div class=\"alert alert-success alert-dismissible fade show radius-10 shadow-black\">\n" +
+                            "                <button type=\"button\" class=\"close\" data-bs-dismiss=\"alert\" aria-hidden=\"true\">\n" +
+                            "                    &times;\n" +
+                            "                </button>" + data['id'] + "</div>");
+                        $("#spn" + produit + lot).html("");
+                    },
+                    error: function () {
+                        alert("{{ 'La requête n’a pas abouti'|trans }}");
+                    }
+                });
+            }
+        }
+
+        function retour_valider_remboursement(id, produit, lot) {
+
+            if (confirm("voulez-vous vraiment?")) {
+                $("#valid" + produit + lot).html("<i class='fa-solid fa-spinner fa-spin-pulse'></i>");
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('stock_retour_valider_remboursement') }}",
+                    data: {produit: produit, lot: lot, retour: id},
+                    success: function (data) {
+                        $("#message").html("<div class=\"alert alert-success alert-dismissible fade show radius-10 shadow-black\">\n" +
+                            "                <button type=\"button\" class=\"close\" data-bs-dismiss=\"alert\" aria-hidden=\"true\">\n" +
+                            "                    &times;\n" +
+                            "                </button>" + data['id'] + "</div>");
+                        $("#spnvalid" + produit + lot).html("");
+                    },
+                    error: function () {
+                        alert("{{ 'La requête n’a pas abouti'|trans }}");
+                    }
+                });
+            }
+        }
+{# 
+        function retour_creer_avoir(id, produit, lot) {
+
+            if (confirm("voulez-vous vraiment?")) {
+                $("#valid" + produit + lot).html("<i class='fa-solid fa-spinner fa-spin-pulse'></i>");
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('stock_retour_creer_avoir') }}",
+                    data: {retour: id},
+                    success: function (data) {
+                        $("#message").html("<div class=\"alert alert-success alert-dismissible fade show radius-10 shadow-black\">\n" +
+                            "                <button type=\"button\" class=\"close\" data-bs-dismiss=\"alert\" aria-hidden=\"true\">\n" +
+                            "                    &times;\n" +
+                            "                </button>" + data['id'] + "</div>");
+                        $("#spnvalid" + produit + lot).html("");
+                    },
+                    error: function () {
+                        alert("{{ 'La requête n’a pas abouti'|trans }}");
+                    }
+                });
+            }
+        } #}
+    </script>
+
+
+{% endblock %}

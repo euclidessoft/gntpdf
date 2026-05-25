@@ -1,0 +1,117 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Approvisionnement"|trans }} No {{ approvisionner.id }} - GNT Pharma {% endblock %}
+{% block stock %}active{% endblock %}
+{% block appro %}active{% endblock %}
+{% block all_appro %}active{% endblock %}
+
+{% block body %}
+    <div class="container mt-4 fond-7">
+        <h3 class="mt-4 mb-5 fw-bold">
+            <i class="fa fa-shop me-2"></i>
+            {{ "Détails Approvisionnement"|trans }}
+        </h3>
+
+        <div class="row justify-content-end">
+            <div class="col-lg-5">
+                <table class="table table-success-light table-bordered table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th>{{ 'Numéro'|trans }}</th>
+                        <th>{{ 'Date'|trans }}</th>
+                       <th>{{ 'Utilisateur'|trans }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{{ approvisionner.id }}</td>
+                        <td>{{ approvisionner.date|date('d/m/Y') }}</td>
+                        <td>{{ approvisionner.user.prenom }} {{ approvisionner.user.nom }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% set total=0 %}
+        <table class="table table-success-light table-bordered table-hover table-striped w-100 text-center mt-5">
+            <thead>
+            <tr>
+                <th>{{ 'CIP'|trans }}</th>
+                <th class="text-start">{{ 'Désignation'|trans }}</th>
+                <th>{{'Fournisseur'|trans}}</th>
+                <th>{{'N° Lot'|trans}}</th>
+                <th>{{'Péremption'|trans}}</th>
+                {#            <th>etat stosk</th>#}
+                <th>{{'Quantité'|trans}}</th>
+                <th>{{'PGHT'|trans}}</th>
+                <th>{{'PGHT Total'|trans}}</th>
+                <th>{{'P. Cession'|trans}}</th>
+                <th>{{'P. Cession Total'|trans}}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% set pght = 0 %}
+            {% set pghtproduit = 0 %}
+            {% set cession = 0 %}
+            {% set cessionproduit = 0 %}
+            {% for approvisionnement in approvisionnements %}
+                <tr>
+                    <td> {{ approvisionnement.produit.reference }} </td>
+                    <td class="text-start"><a href="{{ path('produit_show', {'id': approvisionnement.produit.id}) }}">{{ approvisionnement.produit.desigantion }}</a> </td>
+                    <td>{{ approvisionnement.fournisseur ? approvisionnement.fournisseur.designation : 'Retour Produit'}} </td>
+                    <td>{{ approvisionnement.lot }} </td>
+                    <td>{{ approvisionnement.peremption|date('d/m/Y') }} </td>
+                    {#                <td> {{ approvisionnement.produit.stock }} </td>#}
+                    <td>{{ approvisionnement.quantite }}</td>
+                    <td>{{ approvisionnement.pght|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                    <td>{{ (approvisionnement.pght * approvisionnement.quantite)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}</td>
+                    <td>{{ approvisionnement.cession|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                    <td>{{ (approvisionnement.cession * approvisionnement.quantite)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}</td>
+            {% set pght = pght + approvisionnement.pght %}
+            {% set pghtproduit = pghtproduit + approvisionnement.pght * approvisionnement.quantite %}
+            {% set cession = cession + approvisionnement.cession %}
+            {% set cessionproduit = approvisionnement.cession * approvisionnement.quantite %}
+
+
+                </tr>
+
+            {% else %}
+              
+            {% endfor %}
+            </tbody>
+            <tfooter>
+                <tr>
+                    <th colspan="6">Totaux</th>
+                    <th>{{ pght|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</th>
+                    <th>{{ pghtproduit|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</th>
+                    <th>{{ cession|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</th>
+                    <th>{{ cessionproduit|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</th>
+                </tr>
+            </tfooter>
+        </table>
+
+        <div class="col-md-12 offset-md-4 mt-5 mb-5 pt-2 pb-2 fond-7">
+            <div class="centrer">
+             <a target="__blank" id="{{ approvisionner.id }}" onclick="load({{ approvisionner.id }})" href="{{ path('stock_show_pdf',{ 'id': approvisionner.id}) }}" class="btn btn-danger me-2">
+                    <i class="fa fa-file-pdf"></i>
+                    {{ "vers Pdf"|trans }}
+                </a>
+            
+                <a id="{{ approvisionner.id }}" onclick="load({{ approvisionner.id }})" href="{{ path('stock_show_print',{ 'id': approvisionner.id}) }}" class="btn btn-success float-end">
+                    <i class="fa fa-print"></i>
+                    {{ "Imprimer"|trans }}
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

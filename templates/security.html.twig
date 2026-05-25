@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="{{ app.request.locale }}">
+
+<head>
+
+    <title> {% block title %} GNT Pharma {% endblock %} </title>
+
+    {% block stylesheets %}
+        <link href="{{ asset('fontawesome/css/all.css') }}" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="{{ asset('css/login.css') }}" rel="stylesheet">
+        <link rel="shortcut icon" href="{{ asset('images/gntpharma.jpeg') }}" type="image/x-icon">
+    {% endblock %}
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+
+    <!--[if lt IE 9]>
+    <script src="{{ asset('js/html5shiv.js') }}"></script>
+    <script src="{{ asset('js/respond.min.js') }}"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+<div class="col-lg-4 offset-lg-4 col-md-8 offset-md-2 col-sm-10 offset-sm-1 fond mt-n7 p-5">
+    <div class="row align-items-center justify-content-center">
+        <div class="col-5">
+            <img class="img-fluid w-100" src="{{ asset('images/gntpharma.png') }}" alt="Logo Hajjalbayt">
+        </div>
+        <div class="col-7 d-flex align-items-center justify-content-center gap-3 mb-4">
+            <label for="langue"><i class="fa fa-globe fa-2x"></i></label>
+            <select name="langue" id="langue" onchange="choixlangue()" class="px-4"></select>
+        </div>
+
+    {% block body %}
+
+    {% endblock %}
+    </div>
+    <button type="button" id="install_button" onclick="installApp()" hidden></button>
+
+{#    <p class="mt-4 mb-4 text-muted"></p>#}
+</div>
+<!-- Footer Start -->
+<footer class="text-light">
+    <div class="container-fluid copyright px-0">
+        <div class="d-flex flex-column flex-md-row justify-content-between">
+            <div class="py-4 px-5 text-center text-md-start">
+                <p class="mb-0">&copy; 2023 GNT Pharma, {{ "Tout droits réservés."|trans }}</p>
+            </div>
+            <div class="py-4 px-5 bg-secondaire footer-shape position-relative text-center text-md-end">
+                <p class="mb-0 text-primaire">
+                    Designed By
+                    <a class="fwb text-primaire" href="https://euclideservices.com" target="_blank">EUCLIDES</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- Footer End -->
+
+{% block javascripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/js/all.min.js"></script>
+{% endblock %}
+
+<script>
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker
+            .register('/sw.js')
+            .then(function (registration) {
+                console.log(
+                    'Service Worker registration successful with scope:', registration.scope
+                );
+            })
+            .catch(function (err) {
+                console.log('Service Worker registration failed:', err);
+            });
+    }
+
+    let deferredPrompt; // Allows to show the install prompt
+    const installButton = document.getElementById("install_button");
+
+    window.addEventListener("beforeinstallprompt", e => {
+        console.log("beforeinstallprompt fired");
+        // Prevent Chrome 76 and earlier from automatically showing a prompt
+        e.preventDefault();
+        // Stash the event so it can be triggered later.
+        deferredPrompt = e;
+        // Show the install button
+        installButton.hidden = false;
+        installButton.addEventListener("click", installApp);
+    });
+
+    function installApp() {
+
+        // Show the prompt
+        deferredPrompt.prompt();
+        installButton.disabled = true;
+
+        // Wait for the user to respond to the prompt
+        deferredPrompt.userChoice.then(choiceResult => {
+            if (choiceResult.outcome === "accepted") {
+                console.log("PWA setup accepted");
+                installButton.hidden = true;
+            } else {
+                console.log("PWA setup rejected");
+            }
+            installButton.disabled = false;
+            deferredPrompt = null;
+        });
+    }
+
+    function choixlangue() {
+        var url = $(location).attr("href");
+        var index;
+        var langselect = $('#langue option:selected');
+        if (langselect.val() === 'Francais') {
+            url = url.replace("/en/", "/fr/");
+        } else {
+            url = url.replace("/fr/", "/en/");
+        }
+        document.location.href = url;
+    }
+
+    function positionlangue() {
+
+        var url = $(location).attr("href");
+        var fr = url.indexOf("/fr/");
+        var en = url.indexOf("/en/");
+        if (fr !== -1) {
+            $("#langue").html("<option value='Francais'>Français</option><option value='English'>English</option>")
+
+        } else if (en !== -1) {
+            $("#langue").html("<option value='English'>English</option><option value='Francais'>Français</option>")
+
+
+        }
+
+    }
+
+    $(document).ready(function () {
+        positionlangue();
+    });
+
+</script>
+</body>
+
+</html>

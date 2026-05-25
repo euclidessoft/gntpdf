@@ -1,0 +1,25 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Editer un avoir"|trans }} - GNT Pharma {% endblock %}
+{% block avoir %}active{% endblock %}
+{% block client_suivi %}active{% endblock %}
+
+{% block body %}
+    <h1>{{ 'Editer Avoir'|trans }}</h1>
+
+    {{ include('avoir/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('avoir_index') }}">back to list</a>
+
+    {{ include('avoir/_delete_form.html.twig') }}
+{% endblock %}

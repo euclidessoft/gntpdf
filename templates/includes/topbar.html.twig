@@ -1,0 +1,280 @@
+<div class="container-fluid topbar">
+    <div class="row">
+        <div class="topbar-menu">
+            <div id="navbtn" class="navbtn" onclick="openNav()">
+                <i class="fas fa-align-justify fa-2x"></i>
+            </div>
+        </div>
+        <div class="topbar-item">
+            <div class="row">
+                <div class="col-lg-5 col-md-2 col-6 text-nowrap">
+                    <span class="history-box">
+                        <i class="fa fa-arrow-circle-left history-btn" title="Page précédente"
+                           onclick="window.history.back(); window.addEventListener('pageshow', () => location.reload());"></i>
+                        <i class="fa fa-arrow-circle-right history-btn ms-3" title="Page suivante"
+                           onclick="window.history.forward(); window.addEventListener('pageshow', () => location.reload());"></i>
+                        <i class="fa fa-redo-alt history-btn ms-3" title="Actualiser la page"
+                           onclick="window.location.reload()"></i>
+                    </span>
+
+                    <button type="button" id="install_button" onclick="installApp()" hidden></button>
+                </div>
+
+                <div class="col-lg-2 col-md-1 col-6 text-nowrap">
+                    <!-- Empty column for spacing or other content -->
+                    <div class="text-end">
+                        <div class="dropdown">
+                            <a href="#" class="d-flex align-items-center" data-bs-toggle="dropdown">
+                                <i class="fa fa-bell fa-lg"></i> <!-- Icône des notifications -->
+                                <span id="notification-count" class="badge bg-danger"></span>
+                                <!-- Badge pour le nombre de notifications -->
+                            </a>
+                            <div class="dropdown-menu p-4" id="notifications-menu">
+                                <!-- Les notifications seront affichées ici -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6 text-nowrap">
+                    <div class="row">
+                        <div class="col-3">
+
+                        </div>
+                        <div class="col-9">
+                            <div class="text-end">
+                                <label for="langue">
+                                    <i class="fa fa-globe"></i>
+                                </label>
+                                <select name="langue" id="langue" onchange="choixlangue()">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-3 col-6 text-nowrap">
+                    <div class="text-end">
+                        <div class="dropdown">
+                            <a href="#" class="" data-bs-toggle="dropdown">
+                                {{ app.user.nom }}
+                                <img src="{{ asset('images/avatar-homme.avif') }}" class="user-thumb" alt="User Image">
+                            </a>
+                            <div class="dropdown-menu">
+                                <div class="row">
+                                    <div class="col-5">
+                                        <img src="{{ asset('images/avatar-homme.avif') }}" alt=""
+                                             class="w-100 mx-2">
+                                    </div>
+                                    <div class="col-7">
+                                        <div class="mt-0">
+                                            <h6 class="fw-bold text-wrap">
+                                                {{ app.user.nom }}
+                                                {{ app.user.prenom }}
+                                            </h6>
+                                        </div>
+                                        <div class="mt-3">
+                                            <a href="{{ path('security_profile') }}">
+                                                <i class="fa fa-user"></i>
+                                                {{ 'Profil'|trans }}
+                                            </a>
+                                        </div>
+                                        {#{% if is_granted('ROLE_RH') %}
+                                            <div class="mt-2">
+                                                <a href="{{ path('employe_manage') }}">
+                                                    <i class="fa-solid fa-users-gear"></i>
+                                                    {{ 'Gestion utilisateurs'|trans }}
+                                                </a>
+                                            </div>
+                                        {% endif %}
+                                        {% if is_granted('ROLE_FINANCE') %}
+                                            <div class="mt-2">
+                                                <a href="{{ path('security_clients') }}">
+                                                    <i class="fa-solid fa-user-tag"></i>
+                                                    {{ 'Gestion clients'|trans }}
+                                                </a>
+                                            </div>
+                                        {% endif %}#}
+                                        <div class="mt-2">
+                                            <a href="{{ path('security_logout') }}" data-bs-toggle="modal"
+                                               data-bs-target="#logout">
+                                                <i class="fa fa-power-off"></i>
+                                                {{ 'Déconnexion'|trans }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+   
+
+     <div class="modal fade" id="choiximport" tabindex="-1" tabindex="-1" aria-labelledby="" aria-hidden="true"
+            aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered text-center modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-5" id="exampleModalLabel">
+                        Importation Commande</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close">
+
+                    </button>
+                </div>
+                <div class="modal-body px-5">
+                    <a class="btn btn-success" href="{{ path('importpromo')}}" onclick="load('promo')" id="promo"> tenir compte des promos</a>
+                    <a class="btn btn-success-light  ms-2" href="{{ path('importsanspromo')}}"  onclick="load('sanspromo')" id="sanspromo"> ne pas tenir compte des promos</a>
+
+                </div>
+                <div class="modal-footer px-5 py-4">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="modal fade" id="logout" tabindex="-1" aria-labelledby="deconnexion" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered text-center">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title fs-5" id="deconnexion">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    {{ 'Déconnexion'|trans }}
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body px-5 pb-5">
+                <p class="">
+                    <b>{{ 'Voulez-vous vraiment vous déconnecter ?'|trans }}</b>
+                </p>
+                <button type="button" id="oui" onclick="deconnexion()" class="btn btn-danger me-2">
+                    Oui
+                </button>
+                <button type="button" class="btn btn-success-light" data-bs-dismiss="modal" aria-label="Close">
+                    Non
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade about" id="about" tabindex="-1" aria-labelledby="aboutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <img src="{{ asset('images/gntpharma.jpeg') }}" alt="Logo"
+                             class="img-fluid mt-n4 mb-4 align-center">
+                    </div>
+                    <div class="col-lg-6">
+                        <h3 class="text-center fw-bold">GNT PHARMA v{{ include('includes/version.html.twig') }}</h3>
+                        <p class="text-center mt-3">
+                            Copyright &copy; 2023-{{ 'now'|date('Y') }}
+                            <b>
+                                <a class="text-green" href="http://euclideservices.com" target="_blank">EUCLIDES</a>
+                            </b>
+                            <br>{{ 'Tous droits réservés'|trans }}
+                        </p>
+                        <p class="text-center mt-n2">
+                            {{ 'Protégée par'|trans }} :
+                            <br>- {{ 'La loi sur les droits d\'auteurs'|trans }}
+                            <br>- {{ 'La loi sur la propriété intellectuelle'|trans }}
+                        </p>
+                        <span class="row mt-n2">
+                            <span class="col-5 text-end">Contact :</span>
+                            <span class="col-7 ms-n4"><a class="text-green"
+                                                         href="tel:+221754443384">(+221) 75 444 33 84</a></span>
+                            <span class="col-5 text-end"></span>
+                            <span class="col-7 ms-n4"><a class="text-green"
+                                                         href="tel:+221775423500">(+221) 77 542 35 00</a></span>
+                            <span class="col-5 text-end"></span>
+                            <span class="col-7 ms-n4">
+                                <a class="text-green" href="tel:+221787333434">
+                                    (+221) 78 733 34 34
+                                </a>
+                            </span>
+                            <span class="col-12 text-center">Email :
+                                <a class="text-green" href="mailto:infos@euclideservices.com">infos@euclideservices.com</a>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{#
+{% block javascripts %}
+    <script>
+        const locale = 'fr';
+        let isFetching = false; // Éviter les requêtes multiples
+//
+        // Fonction pour récupérer les notifications
+        function fetchNotifications() {
+            if (isFetching) return; // Empêche les requêtes multiples
+            isFetching = true;
+//
+            fetch(`/${locale}/notifications/check`)
+                .then(response => response.json())
+                .then(data => {
+                    const notificationCount = document.getElementById('notification-count');
+                    const notificationsMenu = document.getElementById('notifications-menu');
+//
+                    if (notificationCount && notificationsMenu) {
+                        if (data.count > 0) {
+                            notificationCount.textContent = data.count;
+//
+                            // Vérifier et ajouter seulement les nouvelles notifications
+                            data.notifications.forEach(notification => {
+                                if (!document.querySelector(`[data-id='${notification.id}']`)) {
+                                    const li = document.createElement('a');
+                                    li.classList.add('dropdown-item');
+                                    li.textContent = notification.message;
+                                    li.href = notification.lien;
+                                    li.dataset.id = notification.id;
+                                    li.style.cursor = 'pointer';
+                                    li.addEventListener('click', () => markAsRead(notification.id, li));
+                                    notificationsMenu.appendChild(li);
+                                }
+                            });
+                        } else {
+                            notificationCount.textContent = '';
+                            notificationsMenu.innerHTML = '<li class="dropdown-item">Aucune nouvelle notification</li>';
+                        }
+                    }
+                })
+                .catch(error => console.error('Erreur récupération notifications:', error))
+                .finally(() => isFetching = false);
+        }
+//
+        // Fonction pour marquer une notification comme lue
+        function markAsRead(notificationId, notificationElement) {
+            fetch(`/${locale}/notifications/Read/${notificationId}`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        notificationElement.style.textDecoration = 'line-through';
+                        notificationElement.style.color = 'gray';
+                        notificationElement.removeEventListener('click', () => markAsRead(notificationId, notificationElement));
+                    }
+                })
+                .catch(error => console.error('Erreur lors de la mise à jour de la notification:', error));
+        }
+//
+        // Lancer le chargement des notifications
+        document.addEventListener('DOMContentLoaded', function () {
+            fetchNotifications();
+            setInterval(fetchNotifications, 60000); // Vérifie toutes les 60 secondes
+        });
+//
+    </script>
+{% endblock %}#}

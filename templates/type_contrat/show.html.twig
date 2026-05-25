@@ -1,0 +1,42 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+
+{% block body %}
+<div class="container mt-4 fond-7">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Détails du contrat</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Nom :</strong> {{ type_contrat.type }}
+                    </div>
+                    <div class="mb-3">
+                        <strong>Contenu :</strong>
+                        <p>{{ type_contrat.contenu|nl2br }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center">
+                <a id="{{ type_contrat.id }}" onclick="load({{ type_contrat.id }})" href="{{ path('type_contrat_index') }}"
+                    class="btn btn-success-light btn-normal mb-3">
+                    <i class="fa fa-undo"></i>
+                    {{ 'Retour'|trans }}
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

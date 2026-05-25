@@ -1,0 +1,48 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    'layout.html.twig' %}
+{% block title %} {{ "Nouvelle banque"|trans }} - GNT Pharma {% endblock %}
+{% block finance %}active{% endblock %}
+{% block banque %}active{% endblock %}
+{% block new_banque %}active{% endblock %}
+
+{% block body %}
+    <div class="col-lg-5 offset-lg-2 mt-4 fond-7 pb-5 p-4">
+        <h4 class="mb-5 fw-bold">
+            <i class="fa-solid fa-landmark"></i><i class="fa fa-plus me-2"></i>
+            {{ 'Nouvelle banque'|trans }}
+        </h4>
+
+        {% for message in app.flashes('notice') %}
+            <div role="alert" class="alert alert-success alert-dismissible fade show radius-10 shadow-black">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                {{ message|trans }}
+            </div>
+        {% endfor %}
+
+            {{ include('banque/_form.html.twig') }}
+
+    </div>
+    <div class="col-lg-5 offset-lg-2 mt-4 fond-7 p-3">
+        <div class="centrer gap-3">
+            <button type="button" class="btn btn-shadow btn-green btn-normal" id="send" onclick="envoie()">
+                <i class="fa fa-save"></i>
+                {{ 'Enregistrer'|trans }}
+            </button>
+
+            <button type="reset" class="btn btn-shadow btn-danger btn-normal">
+                <i class="fa fa-delete-left"></i>
+                {{ 'Effacer'|trans }}
+            </button>
+            {{ form_rest(form) }}
+        </div>
+        {{ form_end(form) }}
+    </div>
+
+{% endblock %}

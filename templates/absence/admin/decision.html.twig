@@ -1,0 +1,103 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+
+{% block body %}
+{{ form_start(form, {'attr': {'id': 'form'}}) }}
+
+<div class="col-lg-6 offset-lg-2 mt-4 fond-7 pb-5 pt-3 px-5">
+    <h4 class="mb-3">
+        <i class="fa-brands fa-product-hunt me-2"></i><i class="fa fa-plus me-2"></i>
+        {{ 'Nouvelle décision'|trans }}
+    </h4>
+
+    {% for message in app.flashes('notice') %}
+    <div role="alert" class="alert alert-success alert-dismissible fade show radius-10 shadow-black">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-hidden="true">&times;</button>
+        {{ message|trans }}
+    </div>
+    {% endfor %}
+
+    <div class="row">
+        <div class="col-12 mb-4">
+            {{ form_row(form.motif, {'attr': {'placeholder': 'Entrez le motif du refus *'}, 'label': false}) }}
+        </div>
+
+        <div class="col-12 mb-4">
+            {{ form_row(form.type, {'attr': {'title': 'Sélectionnez le type de sanction *'}, 'label': false}) }}
+        </div>
+
+        <div class="col-12 mb-4" id="typeSanction">
+            {{ form_row(form.typeSanction, {'attr': {'placeholder': 'Sélectionnez la sanction *'}, 'label': false}) }}
+        </div>
+
+        <div class="col-12 mb-4" id="reponse-form">
+            {{ form_row(form.demandes, {'attr': {'placeholder': 'Détails de la réponse d\'explication *', 'rows': 10}, 'label': false}) }}
+        </div>
+        <div class="col-12 mb-4" id="dateDebut">
+            {{ form_row(form.dateDebut, {'attr': {'title': 'Date debut mis à pied *'}, 'label': false}) }}
+        </div>
+        <div class="col-12 mb-4" id="dateFin">
+            {{ form_row(form.dateFin, {'attr': {'title': 'Date fin mis à pied*'}, 'label': false}) }}
+        </div>
+
+    </div>
+
+</div>
+
+<div class="col-md-3 offset-md-3 mt-4 pt-3 fond-7">
+    <div class="centrer">
+        <button type="submit" class="btn btn-shadow btn-green btn-normal mb-3 me-3" id="send">
+            <i class="fa fa-save"></i>
+            {{ 'Envoyer la notification'|trans }}
+        </button>
+    </div>
+</div>
+
+{{ form_end(form) }}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        $('#typeSanction, #reponse-form, #dateDebut, #dateFin').hide();
+        $('#decision_type').on('change', function() {
+            const selected = $(this).find('option:selected').text().trim();
+
+            if (selected === 'Sanction') {
+                $('#typeSanction').show();
+                $('#reponse-form').hide();
+            } else if (selected === 'Demande d\'explication') {
+                $('#reponse-form').show();
+                $('#typeSanction').hide();
+            } else {
+                $('#typeSanction').hide();
+                $('#reponse-form').hide();
+            }
+        });
+        $('#decision_typeSanction').on('change', function() {
+            const selectedSanction = $(this).find('option:selected').text().trim();
+            if (selectedSanction === 'mis a pied' || selectedSanction === 'Retenue sur les congés') {
+                $('#dateDebut').show();
+                $('#dateFin').show();
+            } else {
+                $('#dateDebut').hide();
+                $('#dateFin').hide();
+            }
+        });
+
+        $('#send').on('click', function() {
+            $('#form').submit();
+        });
+    });
+</script>
+{% endblock %}

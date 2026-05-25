@@ -1,0 +1,132 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Balance journalier caisse"|trans }} - GNT Pharma {% endblock %}
+{% block finance %}active{% endblock %}
+{% block journal %}active{% endblock %}
+{% block body %}
+    <div class="container">
+        <div class="container mt-4 mb-5 fond-7 pt-3 pb-3">
+            <div class="centrer">
+                <a href="{{ path('finance_brouyard_caisse_print') }}" class="btn btn-success-light">
+                    <i class="fa fa-print"></i>
+                    {{ 'imprimer'|trans }}
+                </a>
+                <span id="exporter"></span>
+            </div>
+        </div>
+        <div class="card border-green shadow-black mt-5 mb-3 fond-5">
+            <div class="card-header bg-success-light bb-success">
+                <h5 class="text-success fw-bold">
+                    <i class="fa-solid fa-chart-simple"></i>
+                    {{ 'Balance journalier caisse'|trans }}
+                </h5>
+            </div>
+             <div class="card-body">
+                <h4 class="text-success fw-bold mb-4">
+                    {{ 'Solde d\'ouverture : '|trans }} {{ouverture|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                </h4>
+                <div class="row">
+                <div class="col-6">
+                <table class="table table-success-light table-bordered table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th  class="text-center" colspan="3">{{ "Encaissement"|trans }}</th>
+                    </tr>
+                    <tr>
+                        <th class="text-center"> {{ 'Date'|trans }}</th>
+                        <th>{{ 'Motif'|trans }}</th>
+                        <th class="text-center">{{ 'Montant'|trans }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                     {% set montant1 = 0 %}
+                    {% for credit in credits %}
+                       
+                        <tr>
+                            <td data-label="{{ 'Date'|trans }}" class="text-center">
+                                    {{ credit.date|date('d/m/Y') }}
+                            </td>
+                            <td data-label="{{ 'Libellé'|trans }}">
+                                {{ credit.libelle}}
+                            </td>
+                            <td data-label="{{ 'Débit'|trans }}" class="text-end">
+                                    {{ credit.montant|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                                    {% set montant1 = montant1 + credit.montant %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    
+                    <tfooter>
+                     <tr>
+                        <th  class="text-center" colspan="3">
+                       Total: {{ montant1|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                        </th>
+                    </tr>
+                    </tfooter>
+                </table>
+                </div>
+                <div class="col-6">
+
+                <table class="table table-success-light table-bordered table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th  class="text-center" colspan="3">{{ "Décaissement"|trans }}</th>
+                    </tr>
+                    <tr>
+                        <th class="text-center"> {{ 'Date'|trans }}</th>
+                        <th>{{ 'Motif'|trans }}</th>
+                        <th class="text-center">{{ 'Montant'|trans }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                     {% set montant2 = 0 %}
+                    {% for debit in debits %}
+                       
+                        <tr>
+                            <td data-label="{{ 'Date'|trans }}" class="text-center">
+                                    {{ debit.date|date('d/m/Y') }}
+                            </td>
+                            <td data-label="{{ 'Libellé'|trans }}">
+                                  {{ debit.libelle}}
+                            </td>
+                            <td data-label="{{ 'Débit'|trans }}" class="text-end">
+                                    {{ debit.montant|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                            {% set montant2 = montant2 + debit.montant %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    
+                    <tfooter>
+                     <tr>
+                        <th  class="text-center" colspan="3">
+                         Total: {{ montant2|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                        </th>
+                    </tr>
+                    </tfooter>
+                </table>
+                </div>
+                </div>
+            </div>
+            <div class="card-footer bg-success-light bt-success">
+                <h4 class="text-success fw-bold">
+                    {{ 'Solde'|trans }} :
+                    <span class="text-nowrap">
+                    {{ (caisse)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }} F CFA
+                </span>
+                </h4>
+            </div>
+        </div>
+    </div>
+{% endblock %}

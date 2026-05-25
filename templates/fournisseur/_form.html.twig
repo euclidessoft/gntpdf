@@ -1,0 +1,41 @@
+{{ form_start(form, {'attr': {'id': 'form'}}) }}
+
+<div class="col-lg-5 offset-lg-2 mt-4 fond-7 pb-5 pt-3 px-5">
+    <h4 class="mb-5">
+        <i class="fa-solid fa-hospital-user"></i><i class="fa fa-plus"></i>
+        {{ 'Nouveau fournisseur'|trans }}
+    </h4>
+
+    {% for message in app.flashes('notice') %}
+    <div role="alert" class="alert alert-success alert-dismissible fade show radius-10 shadow-black">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        {{ message|trans }}
+    </div>
+    {% endfor %}
+
+    <div class="row">
+ 
+        <div class="col-12 mb-4">
+            {{ form_row(form.designation, {'attr': {'placeholder': 'Nom fournisseur*'}, 'label': 'Nom fournisseur*'}) }}
+        </div>
+
+        <div class="col-12 mb-4">
+            {{ form_row(form.telephone, {'attr': {'placeholder': 'Téléphone fournisseur *'}, 'label': 'Téléphone fournisseur *'}) }}
+        </div>
+
+        <div class="col-12 mb-4">
+            {{ form_row(form.email, {'attr': {'placeholder': 'Email *'}, 'label': 'Email *'}) }}
+        </div>
+
+        <div class="col-12 mb-4">
+            {{ form_row(form.adresse, {'attr': {'placeholder': 'Adresse fournisseur *'}, 'label': 'Adresse fournisseur *'}) }}
+        </div>
+
+        <div class="col-12 mb-4">
+            {{ form_row(form.pays, {'attr': {'placeholder': 'Pays fournisseur *'}, 'label': 'Pays fournisseur *'}) }}
+        </div>
+
+    </div>
+
+{#    {{ form_rest(form) }}#}
+</div>

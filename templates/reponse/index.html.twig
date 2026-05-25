@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+<title>{{ 'Reponse index'|edit }}</title>
+
+{% block body %}
+    <h1>{{ 'Reponse index'|edit }}</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>{{ 'Message'|edit }}</th>
+                <th>{{ 'Actions'|edit }}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for reponse in reponses %}
+            <tr>
+                <td>{{ reponse.id }}</td>
+                <td>{{ reponse.message }}</td>
+                <td>
+                    <a href="{{ path('reponse_show', {'id': reponse.id}) }}">{{ 'show'|edit }}</a>
+                    <a href="{{ path('reponse_edit', {'id': reponse.id}) }}">{{ 'edit'|edit }}</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('reponse_new') }}">{{ 'Create new'|trans }}</a>
+{% endblock %}

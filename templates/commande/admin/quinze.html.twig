@@ -1,0 +1,228 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Officine"|trans }} - GNT Pharma {% endblock %}
+{% block commande %}active{% endblock %}
+{% block suivi %}active{% endblock %}
+
+{% block body %}
+    <div class="container mt-4 fond-7">
+        <h3 class="mt-4 mb-1 fw-bold">
+            <i class="fa fa-user fa-lg"></i>
+            {{ user.nom ~ " " ~ user.prenom}}  
+        </h3>
+        <h4 class="mt-2 mb-5 fw-bold">
+            <i class="fa fa-list fa-lg"></i>
+            {% if releve.periode != "Precedent" %}
+            {{ "Releve Factures"|trans }} {{releve.quinzaine}} {{ "quinzaine"}} {{ releve.periode|date("m/Y")}} 
+            {% else %} 
+             {{ "Releve Factures de la periode precedente à la deuxieme quinzaine d'avril 20226"|trans }} 
+            {% endif %}
+        </h4>
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('commande_panier_suivi') }}">
+                    {{ 'Validation paiement'|trans }}
+                </a>
+            </li>
+            {% if is_granted("ROLE_FINANCE")%}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('commande_panier_validation_credit') }}">
+                    {{'Validation crédit'|trans}}
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('commande_panier_credit') }}">
+                    {{'Commandes à crédit'|trans}}
+                </a>
+            </li>
+            {% endif %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('commande_panier_history') }}">
+                    {{'Commandes déjà payées'|trans}}
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active " href="#">
+                    {{'Relevé Factures'|trans}}
+                </a>
+            </li>
+        </ul>
+         <h4 class="text-center fw-bold text-uppercase mt-4">
+            {{ 'Releve'|trans }}
+        </h4>
+        <h6 class="text-center text-uppercase mb-3  fw-bold">
+            {{ 'Numero'|trans }} : {{ releve.numero }}
+        </h6>
+          <table class="table table-success-light table-bordered table-hover table-striped w-100 my-4">
+            <thead>
+            <tr>
+                <th colspan="5">{{ 'factures'|trans }}</th>
+            </tr>
+            <tr>
+                {# <th>{{ 'Date Commande'|trans }}</th> #}
+                <th>{{ 'Date Facturation'|trans }}</th>
+                <th>{{'Numero Facture'|trans}}</th>
+                <th>{{'Mode Paiement'|trans}}</th>
+                <th>{{ 'Montant'|trans }}</th>
+                <th>{{'Date due'|trans}}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% set tva = 0 %}
+            {% set prelevement = 0 %}
+            {% set avoir = 0 %}
+            {% set prelevementavoir = 0 %}
+            {% set montant = 0 %}
+            {% set total = 0 %}
+            {% set avance = 0 %}
+            {% for commande in commandes %}
+                <tr>
+                    {# <td>{{ commande.date }}</td> #}
+                    <td>{{ commande.date }}</td>
+                    <td> {{ commande.numerofacture}}</td>
+                    <td>{{ commande.datedue ? 'CREDIT': 'AVOIR'}}</td>
+                  <td>
+                  {% if commande.datedue != ""%} 
+                    {{ commande.montant|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                 {% else %}
+                     {{ "-"~commande.montant|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                    {% set avoir = avoir + commande.montant %}
+                    {# {% set prelevementavoir = prelevementavoir + commande.prelevement %} #}
+                  {% endif %}
+                  {# {% set montant = montant + (commande.montant - commande.tva - commande.acompte ) %}
+                  {% set avance = avance + commande.versement %}
+                  {% set total = total + commande.montant %}
+                  {% set tva = tva + commande.tva %}
+                  {% set prelevement = prelevement + commande.acompte %} #}
+                  </td>
+                  <td>
+                  {{ commande.datedue }}
+                  </td>
+                </tr>
+            {% else %}
+            {% endfor %}
+            </tbody>
+        </table>
+       
+
+         <table class="table table-success-light table-bordered table-hover table-striped w-100 my-4 mt-4">
+            <thead>
+            <tr>
+                <th>{{ 'TAUX TVA'|trans }}</th>
+                <th>{{'TAUX PRELEVEMENT'|trans}}</th>
+                <th>{{'T.V.A'|trans}}</th>
+                <th>{{ 'TOTAL H.T'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>0,000%</td>
+                    <td>2%</td>
+                    <td>{{ releve ? releve.tva|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}</td>
+                    <td>{{ releve ? (releve.ht - releve.htavoir)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}</td>
+                </tr>
+                <tr>
+                    <td>Prelevement factures initiales</td>
+                    <td>{{ releve ? releve.prelevement|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}</td>
+                    <td>{{ releve ? releve.tva|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}</td>
+                    <td>{{ releve ? releve.ht|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}</td>
+                </tr>
+                {% if avoir != 0 %}
+                    <tr>
+                        <td>Prelevement factures AVOIR</td>
+                        <td>{{ releve ? "-"~releve.prelevementavoir|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '0'}}</td>
+                        <td>{{ releve ? "-"~releve.tvaavoir|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : "0"}}</td>
+                        <td>-{{ releve ? (releve.avoir - releve.prelevementavoir - releve.tvaavoir)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+        {% set  totalavantage = 0 %}
+        {% if avantage|length > 0 %}
+            <table class="table table-success-light table-bordered table-hover table-striped w-100 my-4 mt-4">
+                <thead>
+                <tr>
+                    <th>{{ 'ESCOMPTE'|trans }}</th>
+                    <th>{{'COMMISSION'|trans}}</th>
+                    <th>{{'RISTOURNE'|trans}}</th>
+                    <th>{{ 'TOTAL H.T'|trans }}</th>
+                    <th>{{ 'TVA/COMMISSION'|trans }}</th>
+                    <th>{{ 'TOTAL avantage'|trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ avantage[0].escompte|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                        <td>{{ avantage[0].commission|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                        <td>{{ avantage[0].ristourne|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                        <td>
+                        {% set toatalav = avantage[0].escompte + avantage[0].commission + avantage[0].ristourne %}
+                        {{ toatalav|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                        <td>
+                        {% set tvacom = avantage[0].commission * avantage[0].tva /100 %}
+                        {{ tvacom|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                        <td>
+                        {% set totalavantage = toatalav - tvacom %}
+                        {{ totalavantage|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        {% endif %}
+
+        <table class="table table-success-light table-bordered table-hover table-striped w-100 my-4 mt-4">
+            <thead>
+            <tr>
+                <th>{{'PRELEVEMENT'|trans}} {{ releve ? (releve.prelevement - releve.prelevementavoir)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}</th>
+                <th>{{'TOTAL T.V.A'|trans}} {{ releve ? (releve.tva - releve.tvaavoir)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}</th>
+                <th>{{ 'TOTAL T.T.C'|trans }} {{releve ? (releve.reste - totalavantage)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}</th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td  class="fw-bold" colspan="3"> AVANCE : {{ releve ? releve.avance|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}</td>
+                </tr>
+                 <tr>
+                    <td class="fw-bold" colspan="3"> RESTE : {{ releve ? (releve.reste - totalavantage)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}
+                   <span id="total" class="text-nowrap" style="display:none;">{{ releve ? (releve.reste - totalavantage)|number_format(2, '.' , '') : '' }}</span>
+                    </td>
+                </tr>
+                 <tr>
+                    <td colspan="3">SOIT À VOTRE DEBIT <b id="conversion"></b><b id="virgule"></b> <b>franc CFA TTC</b></td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+    <div class="container mt-4 mb-5 py-3 fond-7">
+    <div class="centrer">
+               
+{# 
+                 <a id="print" href="{{ path('commande_panier_print_Detail',{'commande': commande.id }) }}"
+                   class="btn btn-success-light me-3">
+                    <i class="fa fa-print"></i>
+                    {{ "Imprimer"|trans }}
+                </a> #}
+
+                 <a id="print" target="_blank" href="{{ path('commande_panier_releve_quinzaine_pdf', { 'releve': releve.id}) }}"
+                   class="btn btn-danger me-3">
+                    <i class="fa fa-file-pdf"></i>
+                    {{ "Vers Pdf"|trans }}
+                </a>
+                
+
+
+    
+        </div>
+        </div>
+
+{% endblock %}

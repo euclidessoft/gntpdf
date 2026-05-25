@@ -1,0 +1,182 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+
+{% block title %}{{ 'Balance à une date'|trans }} - GNT Pharma{% endblock %}
+
+{% block finance %}active{% endblock %}
+
+{% block journal %}active{% endblock %}
+
+{% block body %}
+
+    <div class="col-lg-6 mt-5 mb-5 pb-lg-5 fond-7">
+        <h3 class="mt-4 fw-bold">
+            <i class="fa-solid fa-magnifying-glass-chart"></i>
+            {{ 'Balance à une date'|trans }}
+        </h3>
+
+        <div class="col-lg-10 offset-lg-1 mb-5 mt-4">
+            <div class="card border-green shadow-black mt-4">
+                <div class="card-header bg-success-light text-green bb-green">
+                    <h6 class="mb-n1">
+{#                        <i class="fa-solid fa-magnifying-glass-chart"></i>#}
+                        {{ 'Entrer la date'|trans }}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="form-group mt-1">
+                        <input type="date" id="day" name="day" class="form-control" onchange="dayenable()">
+                    </div>
+                    {% if is_granted("ROLE_FINANCE")%}
+                    <button data-bs-toggle="modal" data-bs-target="#jour"
+                            class="btn btn-shadow btn-td btn-green mt-2 mb-n1 float-right disabled" id="daybtn">
+                        <i class="fa fa-check-circle"></i>
+                        {{ 'Valider'|trans }}
+                    </button>
+                    {% else %}
+                     <button onclick="daycaisse()"
+                            class="btn btn-shadow btn-td btn-green mt-2 mb-n1 float-right disabled" id="daybtn">
+                        <i class="fa fa-check-circle"></i>
+                        {{ 'Valider'|trans }}
+                    </button>
+                    {% endif %}
+                    <div class="modal fade mt-5" id="jour" tabindex="-1" aria-labelledby="" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+                            <div class="modal-content radius-10">
+                                <div class="modal-header bb-green">
+                                    <h5 class="mt-3 text-center fw-bold">
+                                        {{ 'Balance à une autre date'|trans }}
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <h4 class="text-center fw-bold text-dark mt-4">
+                                        {{ 'Quelle balance voulez-vous ?'|trans }}
+                                    </h4>
+                                    <div class="col-12 mt-5 mb-4">
+                                        <div class="centrer">
+                                            <div class="row">
+                                                <button type="button" class="btn btn-shadow btn-green me-3"
+                                                        onclick="daycaisse()">
+                                                    &emsp;
+                                                    <i class="fa fa-cash-register fa-lg"></i>
+                                                    {{ 'Caisse'|trans }}
+                                                    &emsp;
+                                                </button>
+                                                <button type="button" class="btn btn-shadow btn-primary me-3"
+                                                        onclick="daybanque()">
+                                                    &emsp;
+                                                    <i class="fa fa-university fa-lg"></i>
+                                                    {{ 'Banque'|trans }}
+                                                    &emsp;
+                                                </button>
+                                                <button type="button" class="btn btn-shadow btn-success-light"
+                                                        onclick="day()">
+                                                    &emsp;
+                                                    <!-- <i class="fa fa-university fa-lg"></i> -->
+                                                    <i class="fa-solid fa-square-poll-vertical fa-lg"></i>
+                                                    {{ 'Tous'|trans }}
+                                                    &emsp;
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% block script %}
+        <script>
+            //situation journaliere caisse
+            function day() {
+                var date1 = new Date($('#day').val());
+                if (date1 < new Date()) {
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ path('finance_day_brouyard_lien') }}",
+                        data: "date1=" + $('#day').val(),
+                        success: function (data) {
+                            window.open(data['ok'], '_self');
+                            // window.location.reload();
+                        },
+                        error: function () {
+                            alert("{{ 'La requête n a pas abouti'|trans }}");
+                        }
+                    });
+                } else {
+                    $('#day').val('');
+                    alert("{{ 'Choisis une date anterieur à la date du jour'|trans }}");
+                }
+
+            }
+
+            function daycaisse() {
+                var date1 = new Date($('#day').val());
+                if (date1 < new Date()) {
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ path('finance_day_brouyard_lien_caisse') }}",
+                        data: "date1=" + $('#day').val(),
+                        success: function (data) {
+                            window.open(data['ok'], '_self');
+                            // window.location.reload();
+                        },
+                        error: function () {
+                            alert("{{ 'La requête n a pas abouti'|trans }}");
+                        }
+                    });
+                } else {
+                    $('#day').val('');
+                    alert("{{ 'Choisis une date anterieur à la date du jour'|trans }}");
+                }
+
+            }
+
+            //situation journaliere banque
+            function daybanque() {
+                var date1 = new Date($('#day').val());
+                if (date1 < new Date()) {
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ path('finance_day_brouyard_lien_banque') }}",
+                        data: "date1=" + $('#day').val(),
+                        success: function (data) {
+                            window.open(data['ok'], '_self');
+                            // window.location.reload();
+                        },
+                        error: function () {
+                            alert("{{ 'La requête n a pas abouti'|trans }}");
+                        }
+                    });
+                } else {
+                    alert("{{ 'Vérifiez la date saisie'|trans }}");
+                }
+
+            }
+            //activation bouton date
+            function dayenable() {
+                if ($('#day').val() != '') {
+                    $('#daybtn').removeClass("disabled");
+                } else {
+                    $('#daybtn').addClass("disabled");
+                }
+            }
+
+        </script>
+    {% endblock %}
+
+{% endblock %}

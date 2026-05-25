@@ -1,0 +1,380 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Commande"|trans }} - GNT Pharma {% endblock %}
+{% block commande %}active{% endblock %}
+{% block extranet %}active{% endblock %}
+
+{% block body %}
+    <div class="container-fluid mt-4 fond-7">
+        <h3 class="mt-4 mb-5 fw-bold">
+            <i class="fa fa-shopping-cart me-2"></i>
+            {{ "Commande Extranet"|trans }}
+        </h3>
+ <!-- Button trigger modal -->
+                                <button type="button" style="display: none;"
+                                        class="btn btn-success"
+                                        data-bs-toggle="modal" data-bs-target="#modalvalider"
+                                        id="btnmodalvalider">
+                                    {{ 'Ajouter'|trans }}
+                                </button>
+
+                                <!-- Modal -->
+                                <div class="modal fade" id="modalvalider" tabindex="-1" tabindex="-1" aria-labelledby="" aria-hidden="true"
+                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered text-center modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title fs-5" id="exampleModalLabel">
+                                                   Validation Commande</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close">
+
+                                                </button>
+                                            </div>
+                                            <div class="modal-body px-5">
+                                               <button class="btn btn-success" onclick="validerappro()"> tenir compte des promos</button>
+                                               <button class="btn btn-success-light  ms-2"  onclick="validersans()"> ne pas tenir compte des promos</button>
+
+                                            </div>
+                                            <div class="modal-footer px-5 py-4">
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+        <div class="row">
+            <div class="col-lg-6 fond-7">
+                <h3 class="mt-4 mb-5 fw-bold">
+                    <i class="fa fa-product-hunt me-2"></i>
+                    {{ "Liste de produits"|trans }}
+                </h3>
+                {% for message in app.flashes('notice') %}
+                    <div role="alert" class="alert alert-primaire alert-dismissible fade show radius-10 shadow-black">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        {{ message|trans }}
+                    </div>
+                {% endfor %}
+
+                {% set inlist = [] %}
+                {% for produit in panier %}
+
+                    {% set inlist = inlist|merge([produit['produit'].id]) %}
+                {% else %}
+
+                {% endfor %}
+
+                <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+                    <thead>
+                    <tr>
+                        <th>{{ 'Référence'|trans }}</th>
+                        <th>{{ 'Désignation'|trans }}</th>
+                        <th>{{ 'Minimum'|trans }}</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for prod in produits %}
+                    {% set produit = prod.produit %}
+
+                        <tr id="listprod{{ produit.id }}">
+                            <td data-label="Réference">{{ produit.reference }}</td>
+                            <td data-label="Désignation">{{ produit.desigantion }}</td>
+                            <td data-label="Minimum" class="text-center">{{ produit.mincommande }}</td>
+                            <td>
+
+                                <!-- Button trigger modal -->
+                                <button type="button"
+                                        class="btn btn-success {% if produit.id in inlist %} disabled {% endif %}"
+                                        data-bs-toggle="modal" data-bs-target="#modal{{ produit.id }}"
+                                        id="btn{{ produit.id }}">
+                                    <i class="fa fa-plus"></i>
+                                    {{ 'Ajouter'|trans }}
+                                </button>
+
+                                <!-- Modal -->
+                                <div class="modal fade" id="modal{{ produit.id }}" tabindex="-1" tabindex="-1" aria-labelledby="" aria-hidden="true"
+                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered text-center">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title fs-5" id="exampleModalLabel">
+                                                    {{ produit.reference }} {{ produit.desigantion }} {{ produit.fabriquant }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close">
+
+                                                </button>
+                                            </div>
+                                            <div class="modal-body px-5">
+                                                {{'Renseignez la quantité'|trans }}<input type="number" class="form-control"
+                                                                               id="quant{{ produit.id }}">
+                                            </div>
+                                            <div class="modal-footer px-5 py-4">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                                                        id="annuler{{ produit.id }}">
+                                                    {{ 'Annuler'|trans }}
+                                                </button>
+                                                <button type="button" class="btn btn-success ms-3"
+                                                        id="ajouter{{ produit.id }}"
+                                                        onclick="ajouter({{ produit.id }})"><i
+                                                            class="fa fa-plus"></i>
+                                                    {{ 'Ajouter'|trans }}
+                                                </button>
+                                                <div id="modification{{ produit.id }}"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-lg-6 mt-5">
+                {{ form_start(form) }}
+                {{ form_widget(form) }}
+                {{ form_end(form) }}
+
+                <table class="table table-success-light table-bordered table-hover table-striped mt-5 w-100"
+                       id="aprovision">
+                    <thead>
+                    <tr>
+                        <th>{{ 'Référence'|trans }}</th>
+                        <th>{{ 'Désignation'|trans }}</th>
+                        <th>{{ 'Fabriquant'|trans }}</th>
+                        <th>{{ 'Quantité'|trans }}</th>
+
+                        <th>{{ 'actions'|trans }}</th>
+                    </tr>
+                    </thead>
+                    <tbody id="selectprod">
+                    {% for produit in panier %}
+                        <tr id="tr{{ produit['produit'].id }}">
+                            <td>{{ produit['produit'].reference }}</td>
+                            <td>{{ produit['produit'].desigantion }}</td>
+                            <td>{{ produit['produit'].fabriquant }}</td>
+
+                            <td class="text-center">
+<span id="changequantite{{ produit.produit.id }}">
+
+                                {{ produit['produit'].quantite }}
+</span>
+
+                            </td>
+                            <td>
+
+
+
+<span id='btnmodf{{ produit.produit.id }}'>
+                                <button class="btn btn-success"
+                                        title="{{ 'Supprimer cet article'|trans }}"
+                                        onclick="modif({{ produit.produit.id }},{{ produit['produit'].quantite }})">
+                                    <i class="fa fa-edit"></i>
+                                </button>
+</span>
+                                <button class="btn btn-danger"
+                                        title="{{ 'Supprimer cet article'|trans }}" onclick="supprim({{ produit.produit.id }})">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+
+                            </td>
+                        </tr>
+
+                    {% else %}
+
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+
+                <button onclick="validercommande()"
+                        class="btn btn-success float-right  {% if inlist|length == 0 %} disabled {% endif %}"
+                        id="valider2"
+                        title="Valider">
+                    <i class="fa fa-check"></i>
+                    {{ 'Valider'|trans }}
+                </button>
+
+            </div>
+        </div>
+    </div>
+     
+{% endblock %}
+{% block scripts %}
+    <script>
+        function ajouter(produit) {
+
+            var quant = $("#quant" + produit);
+            if (quant.val() > 0) {
+                $("#ajouter" + produit).html("<i class='fa-solid fa-spinner fa-spin-pulse'></i>");
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('commande_add_extranet') }}",
+                    data: "prod=" + produit + "&quantite=" + quant.val(),
+                    success: function (data) {
+                        if (data['id'] == 'ok') {
+                            $('#selectprod').append(" <tr id='tr" + produit + "'>\n" +
+                                "                        <td>" + data['ref'] + "</td>\n" +
+                                "                        <td>" + data['designation'] + "</td>\n" +
+                                "                        <td>" + data['fabriquant'] + "</td>\n" +
+                                "                        <td class='text-center'><span id='changequantite" + produit + "'>" + data['quantite'] + "</span></td>\n" +
+                                "                        <td><span id='btnmodf" + produit + "'><button class='btn btn-success'\n" +
+                                "                                   title='Modifier cet article' onclick='modif(" + produit + "," + quant.val() + ")'>\n" +
+                                "                                    <i class='fa fa-edit'></i>\n" +
+                                "                                </button></span>\n" +
+                                "                                <button class='btn btn-danger'\n" +
+                                "                                   title='Supprimer cet article' onclick='supprim(" + produit + ")'>\n" +
+                                "                                    <i class='fa fa-trash'></i>\n" +
+                                "                                </button></td>\n" +
+                                "\n" +
+                                "                    </tr>");
+                            $('#btn' + produit).addClass('disabled');
+                            $('#valider1').removeClass('disabled');
+                            $('#valider2').removeClass('disabled');
+                            $("#annuler" + produit).trigger('click');
+                            prdt.val("");
+                            $("#ajouter" + produit).html("<i class='fa fa-plus'></i> {{ 'Ajouter'|trans }}");
+                        } else {
+                            alert("{{ 'vérifier la quantité saisie'|trans }}")
+                        }
+                    },
+                    error: function () {
+                        alert("{{ 'La requête n\'a pas abouti'|trans }}");
+                    }
+                });
+            } else {
+                alert("{{ 'veillez bien renseigner la quantité'|trans }}");
+            }
+        }
+
+        function supprim(produit) {
+
+            if (confirm("{{ 'Etes-vous sur de vouloir supprimer?'|trans }}")) {
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('commande_delete_extranet') }}",
+                    data: "prod=" + produit,
+                    success: function (data) {
+                        if (data['id'] == 'ok') {
+                            $("#tr" + produit).remove();
+                            $('#btn' + produit).removeClass('disabled');
+                            $("#quant" + produit).val('');// vider le champ quantite dans modal ajouter
+                            $("#ajouter" + produit).show();// afficher le bouton ajouter
+                            $("#ajouter" + produit).html("<i class=\"fa fa-plus\"></i> {{ 'Ajouter'|trans }}");// afficher le bouton ajouter
+
+                            $("#modification" + produit).html("");// vider div modification
+                            if (data['nb'] == 0) {
+                                $('#valider1').addClass('disabled');
+                                $('#valider2').addClass('disabled');
+                            }
+                        }
+                    },
+                    error: function () {
+                        alert("{{ 'La requête n\'a pas abouti'|trans }}");
+                    }
+                });
+            }
+        }
+
+        function modif(produit, quantite) {// fonction declenchement modification
+            $("#quant" + produit).val(quantite);
+            $("#ajouter" + produit).hide();
+            /* remplissage div modification*/
+            $("#modification" + produit).html("<button type='button' class='btn btn-success ms-3' id='modifier" + produit + "' onclick=modifier(" + produit + ")><i class='fa fa-edit'></i> {{ 'Modifier'|trans }}</button>");
+            $("#btn" + produit).trigger('click');// declenchement modification
+        }
+
+        function modifier(produit) {//fonction modification
+            var quant = $("#quant" + produit);
+            if (quant.val() > 0) {
+                $("#modifier" + produit).html("<i class='fa-solid fa-spinner fa-spin-pulse'></i>");
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('commande_edit_extranet') }}",
+                    data: "prod=" + produit + "&quantite=" + quant.val(),
+                    success: function (data) {
+                        if (data['id'] == 'ok') {
+                            $('#changequantite' + produit).html($("#quant" + produit).val());
+                            $('#btnmodf' + produit).html("<button class='btn btn-success'\n" +
+                                "                                   title='Modifier cet article' onclick='modif(" + produit + "," + quant.val() + ")'>\n" +
+                                "                                    <i class='fa fa-edit'></i>\n" +
+                                "                                </button>");
+                            $("#annuler" + produit).trigger('click');
+                            prdt.val("");
+                        }
+                    },
+                    error: function () {
+                        alert("{{ 'La requête n\'a pas abouti'|trans }}");
+                    }
+                });
+            } else {
+                alert("{{'veillez bien renseigner la quantité'|trans}}");
+            }
+
+        }
+
+        function validerappro() {
+            if ($('#commande_user option:selected').val() != '') {
+                if (confirm("{{ 'Confirmation validation en tenant compte des promos?'|trans }}")) {
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ path('commande_panier_client_extranet') }}",
+                        data: {client: $('#commande_user option:selected').val()},
+                        success: function (data) {
+                            if (data['id'] == 'ok') {
+                                document.location.href = "{{ path("commande_panier_choix_paiement_extranet_promo", {'commande': 0}) }}";
+                            }
+                        },
+                        error: function () {
+                            alert("{{ 'La requête n\'a pas abouti'|trans }}");
+                        }
+                    });
+
+
+                }
+            } else alert('{{ 'Veillez sélectionner un client'|trans }}')
+        }
+
+         function validersans() {
+            if ($('#commande_user option:selected').val() != '') {
+                if (confirm("{{ 'Confirmation validation sans tenir compte des promos?'|trans }}")) {
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ path('commande_panier_client_extranet') }}",
+                        data: {client: $('#commande_user option:selected').val()},
+                        success: function (data) {
+                            if (data['id'] == 'ok') {
+                                document.location.href = "{{ path("commande_panier_choix_paiement_extranet", {'commande': 0}) }}";
+                            }
+                        },
+                        error: function () {
+                            alert("{{ 'La requête n\'a pas abouti'|trans }}");
+                        }
+                    });
+
+
+                }
+            } else alert('{{ 'Veillez sélectionner un client'|trans }}')
+        }
+
+         function validercommande() {
+            if ($('#commande_user option:selected').val() != '') {
+                $("#btnmodalvalider").trigger('click');
+            } else alert('{{ 'Veillez sélectionner un client'|trans }}')
+        }
+
+    </script>
+
+
+{% endblock %}

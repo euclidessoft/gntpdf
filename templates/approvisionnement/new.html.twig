@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+
+<title>{{ 'Nouveau Approvisionnement'|trans}}</title>
+
+{% block body %}
+
+    <h1>{{ 'Créer un nouvel approvisionnement'|trans }}</h1>
+
+    {{ include('approvisionnement/_form.html.twig') }}
+
+    <a href="{{ path('approvisionnement_index') }}">back to list</a>
+{% endblock %}

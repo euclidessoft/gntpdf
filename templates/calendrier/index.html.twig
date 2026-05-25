@@ -1,0 +1,48 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    'layout.html.twig' %}
+{% block administration %}active{% endblock %}
+{% block planning %}active{% endblock %}
+{% block body %}
+    <div class="col-lg-8 mt-4 fond-7">
+        <h3 class="mt-4 mb-5 fw-bold">
+            <i class="fa fa-money-bill me-2"></i>
+            {{ "Planning des congés"|trans }}
+        </h3>
+        {% if is_granted("ROLE_RH")%}
+            <a href="{{ path('calendrier_new') }}" class="btn btn-success"><i class="fas fa-plus"></i>Nouveau</a>
+        {% endif %}
+        <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+            <thead>
+            <tr>
+                <th>Matricule</th>
+                <th>Employé</th>
+                <th>Date Debut</th>
+                <th>Date Fin</th>
+                <th>actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for calendrier in calendriers %}
+                <tr>
+                    <td>{{ calendrier.employe.matricule }}</td>
+                    <td>{{ calendrier.employe.nom~' '~calendrier.employe.prenom }}</td>
+                    <td>{{ calendrier.dateDebut ? calendrier.dateDebut|date('d/m/Y') : '' }}</td>
+                    <td>{{ calendrier.dateFin ? calendrier.dateFin|date('d/m/Y') : '' }}</td>
+                    <td>
+                        <a href="{{ path('calendrier_edit', {'id': calendrier.id}) }}" class="btn btn-success-light"><i
+                                    class="fas fa-edit"></i></a>
+                        {{ include('calendrier/_delete_form.html.twig') }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

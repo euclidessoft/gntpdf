@@ -1,0 +1,17 @@
+{{ form_start(form, {'attr': {'id': 'form'}}) }}
+
+<div class="row gap-4">
+    <div class="col-lg-10 offset-lg-1">
+        <div class="input-group">
+            {# <span class="input-group-text fw-bold">52</span> #}
+            <div class="form-floating">
+                {{ form_widget(form.compte, {'attr':{'placeholder':'Numéro compte *'}}) }}
+                {{ form_label(form.compte, 'Numéro compte *') }}
+            </div>
+        </div>
+        {{ form_errors(form.compte) }}
+    </div>
+    <div class="col-lg-10 offset-lg-1">
+        {{ form_row(form.nom, {'attr': {'placeholder': 'Nom de la banque  *'}, 'label': 'Nom de la banque  *'}) }}
+    </div>
+</div>

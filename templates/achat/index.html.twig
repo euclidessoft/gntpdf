@@ -1,0 +1,45 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Commande"|trans }} - GNT Pharma {% endblock %}
+{% block finance %}active{% endblock %}
+{% block achat %}active{% endblock %}
+{% block all_achat %}active{% endblock %}
+{% block body %}
+<div class="container mt-4 fond-7">
+    <h3 class="mt-4 mb-5 fw-bold">
+        <i class="fa fa-money-bill me-2"></i>
+        {{ "Liste des paiements"|trans }}
+    </h3>
+    <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+        <thead>
+            <tr>
+                <th>{{ ('Fournisseur'|trans) }}</th>
+                <th>{{ ('Montant'|trans) }}</th>
+                <th>{{ ('Banque'|trans) }}</th>
+                <th>{{ ('Numéro'|trans) }}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for achat in achats %}
+            <tr>
+                <td><a href="{{ path('fournisseur_show', { id: achat.fournisseur.id }) }}">{{ achat.fournisseur.designation }}</a></td>
+                <td>{{ achat.montant|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                <td>{{ achat.banque ? achat.banque.nom : '' }}</td>
+                <td>{{ achat.numero }}</td>
+            </tr>
+
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

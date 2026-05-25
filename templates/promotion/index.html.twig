@@ -1,0 +1,41 @@
+{% extends 'client.html.twig' %}
+{% block title %} {{ "Commande"|trans }} - GNT Pharma {% endblock %}
+{% block promotion %}active{% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-4 fond-7 pb-3">
+    <h3 class="mt-4 mb-5 fw-bold">
+        <i class="fa fa-shopping-cart me-2"></i>
+        {{ "Liste des promotions"|trans }}
+    </h3>
+
+    <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+        <thead>
+            <tr>
+                <th>{{ 'Désignation'|trans }}</th>
+                <th>{{ 'Début'|trans }}</th>
+                <th>{{ 'Fin'|trans }}</th>
+                <th>{{ 'Type'|trans }}</th>
+                <th>{{ 'Actions'|trans }}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for promotion in promotions %}
+            <tr>
+                <td>{{ promotion.designation }}</td>
+                <td>{{ promotion.debut ? promotion.debut|date('d/m/Y') : '' }}</td>
+                <td>{{ promotion.fin ? promotion.fin|date('d/m/Y') : '' }}</td>
+                <td>{{ promotion.type }}</td>
+                <td>
+                    <a id="{{ promotion.id }}" onclick="load({{ promotion.id }})" class="btn btn-success" href="{{ path('promotion_show', {'id': promotion.id}) }}">
+                        <i class="fa fa-list"></i>
+                        {{' Afficher'|trans }}
+                    </a>
+                </td>
+            </tr>
+        {% else %}
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

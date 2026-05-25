@@ -1,0 +1,60 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block discipline %}active{% endblock %}
+{% block explications %}active{% endblock %}
+
+{% block body %}
+<div class="col-lg-8 mt-4 fond-7">
+    <div class="card">
+        <div class="card-header text-white">
+            <h4>Détails de la demande d'explication</h4>
+        </div>
+        <div class="card-body">
+
+            <!-- Information de l'employé -->
+            <h5 class="mb-3">
+                <i class="fa-solid fa-user"></i> Informations de l'employé
+            </h5>
+            <ul class="list-group mb-4">
+                <li class="list-group-item"><strong>Nom & Prénom :</strong> {{ employe.nom ~ ' ' ~ employe.prenom }}</li>
+                <li class="list-group-item"><strong>Matricule :</strong> {{ employe.matricule }}</li>
+                <li class="list-group-item"><strong>Poste :</strong> {{ employe.poste.nom }}</li>
+            </ul>
+
+            <!-- Détails de la demande -->
+            <h5 class="mb-3">
+                <i class="fa-solid fa-info-circle"></i> Détails de la reponse
+            </h5>
+            <ul class="list-group">
+                <li class="list-group-item"><strong>Objet :</strong> {{ demandeExplication.objet }}</li>
+                <li class="list-group-item"><strong>Date de reponse :</strong> {{ reponse.dateReponse ? reponse.dateReponse|date('d/m/Y') : 'N/A' }}</li>
+                <li class="list-group-item">
+                    <p class="mt-2">{{ reponse.reponse }}</p>
+                    <p>Cordialement,</p>
+                    <p class="mt-2 text-end">
+                        <strong>{{reponse.employe.nom ~' '~ reponse.employe.prenom }}</strong><br>
+                        {{ reponse.employe.poste.nom }}<br>
+                        {{ reponse.employe.email }} | {{ reponse.employe.phone }}
+                    </p>
+                </li>
+            </ul>
+        </div>
+            <div class="centrer">
+                <a href="{{ path('explication_show', {'id': demandeExplication.id }) }}" class="btn btn-success mb-3">
+                    <i class="fa fa-undo"></i> {{ 'Retour'|trans }}
+                </a>
+            </div>
+
+        </div>
+    </div>
+    {% endblock %}

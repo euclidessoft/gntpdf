@@ -1,0 +1,34 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ 'Modification profil'|trans }} - GNT Paharma {% endblock %}
+{% block officine %}active{% endblock %}
+{% block clients %}active{% endblock %}
+{% block body %}
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="col-lg-8 offset-lg-2 mt-5 mb-5 pb-1 fond-7">
+                <h4 class="mt-4 mb-5 fw-bold">
+                    <i class="fa fa-user-plus"></i>
+                    {{ 'Modifier profil'|trans }}
+                </h4>
+                <div class="col-12">
+                    {{ 'Les Champs avec * sont obligatoires'|trans }}
+                </div>
+                {{ include('security/security/userform.html.twig') }}
+                <br/>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

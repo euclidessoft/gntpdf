@@ -1,0 +1,49 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Liste des Subvention"|trans }} - GNT Pharma {% endblock %}
+{% block subvention %}active{% endblock %}
+
+{% block body %}
+    <div class="col-lg-10 mt-4 fond-7">
+        <h3 class="mt-4 mb-5 fw-bold">
+            <i class="fa fa-money-bill me-2"></i>
+            {{ "Subventions"|trans }}
+        </h3>
+ <a href="{{ path('app_subvention_new') }}" class="btn btn-success">Nouvelle Subvention</a>
+     <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+        <thead>
+            <tr>
+                <th>Montant</th>
+                <th>Description</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for subvention in subventions %}
+            <tr>
+                <td>{{ subvention.montant }}</td>
+                <td>{{ subvention.description }}</td>
+                <td>
+                    <a href="{{ path('app_subvention_show', {'id': subvention.id}) }}">show</a>
+                    <a href="{{ path('app_subvention_edit', {'id': subvention.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+          
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+   
+{% endblock %}

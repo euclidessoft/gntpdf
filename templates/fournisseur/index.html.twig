@@ -1,0 +1,74 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Fournisseurs"|trans }} - GNT Pharma {% endblock %}
+{% block fournisseur %}active{% endblock %}
+{% block all_fournisseurs %}active{% endblock %}
+{% block body %}
+    <div class="container mt-4 fond-7">
+        <h3 class="my-4 fw-bold">
+            <i class="fa-solid fa-hospital-user"></i>
+            {{ "Liste des fournisseurs"|trans }}
+        </h3>
+         {% for message in app.flashes('notice') %}
+            <div role="alert" class="alert alert-success alert-dismissible fade show radius-10 shadow-black">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                {{ message|trans }}
+            </div>
+        {% endfor %}
+        
+        <a class="btn btn-green mb-" href="{{ path('fournisseur_new') }}">
+            <i class="fa-solid fa-hospital-user"></i><i class="fa-solid fa-plus"></i>
+            {{ 'Nouveau fournisseur'|trans }}
+        </a><a class="btn btn-green float-end" href="{{ path('fournisseur_rapport_analyse') }}">
+            <i class="fa-solid fa-hospital-user"></i><i class="fa-solid fa-plus"></i>
+            {{ 'Analyse Fournisseurs'|trans }}
+        </a>
+        <table class="table table-success-light table-bordered table-hover table-striped my-3" id="affichage">
+            <thead>
+            <tr>
+                <th>{{ 'Nº Compte'|trans }}</th>
+                <th>{{ 'Nom'|trans }}</th>
+                <th>{{ 'Adresse'|trans }}</th>
+                <th>{{ 'Email'|trans }}</th>
+                <th>{{ 'Pays'|trans }}</th>
+                <th>{{ 'Téléphone'|trans }}</th>
+                <th>{{ 'Actions'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for fournisseur in fournisseurs %}
+                <tr>
+                    <td data-label="Nº Compte">{{ fournisseur.compte }}</td>
+                    <td data-label="Nom">{{ fournisseur.designation }}</td>
+                    <td data-label="Adresse">{{ fournisseur.adresse }}</td>
+                    <td data-label="Email">{{ fournisseur.email }}</td>
+                    <td data-label="Pays">{{ fournisseur.pays }}</td>
+                    <td data-label="Téléphone">{{ fournisseur.telephone }}</td>
+                    <td data-label="Actions" class="text-nowrap">
+                        <a id="{{ fournisseur.id }}" onclick="load({{ fournisseur.id }})"
+                           href="{{ path('fournisseur_show', {'id': fournisseur.id}) }}" title="{{ 'Voir details'|trans }}"
+                           class="btn btn-green me-2">
+                            <i class="fa fa-eye"></i>
+                        </a>
+                        <a href="{{ path('fournisseur_edit', {'id': fournisseur.id}) }}" title="{{ 'Modifier'|trans }}"
+                           class="btn btn-success-light me-2">
+                            <i class="fa fa-edit"></i>
+                        </a>
+                        {{ include('fournisseur/_delete_form.html.twig') }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

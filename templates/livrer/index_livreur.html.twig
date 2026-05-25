@@ -1,0 +1,63 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Livraison"|trans }} - GNT Pharma {% endblock %}
+{% block livraison %}active{% endblock %}
+{% block new_livraison %}active{% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-4 fond-7">
+    <h3 class="mt-4 mb-5 fw-bold">
+        <i class="fa fa-shopping-cart me-2"></i>
+        {{ "Liste des commandes pour livraison"|trans }}
+    </h3>
+<div class="row">
+    <div class="col-lg-12">
+        <h5 class="mt-3 mb-2 fw-bold">
+            {{ "Commande en attente de livraison"|trans }}
+        </h5>
+    {% for message in app.flashes('notice') %}
+        <div role="alert" class="alert alert-success alert-dismissible fade show radius-10 shadow-black">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            {{ message|trans }}
+        </div>
+    {% endfor %}
+
+
+    <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+        <thead>
+            <tr>
+                <th>{{ 'N° Bordereau'|trans }} </th>
+                <th>{{ "Date d'émission"|trans}}</th>
+                <th>{{'Client'|trans}}</th>
+                <th>{{'Actions'|trans}}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for commande in commandes %}{# commandes represente livers #}
+            <tr>
+                <td>{{ commande.id }}</td>
+                <td>{{ commande.date|date('d/m/Y') }}</td>
+                <td>{{ commande.commande.user.nom }} {{ commande.commande.user.prenom }}</td>
+                <td>
+                    <a id="{{ commande.id }}" onclick="load({{ commande.id }})" class="btn btn-success" href="{{ path('livraison_livreur_show', {'id': commande.id}) }}"><i class="fas fa-truck-fast"></i>
+                        {{ 'Livraison'|trans }}
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+</div>
+{% endblock %}

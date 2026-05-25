@@ -1,0 +1,62 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+
+{% block body %}
+<div class="col-lg-6 mt-4 pb-4 fond-7">
+    <h3 class="mt-4 mb-5 fw-bold">
+        <i class="fa-brands fa-product-hunt me-2"></i>
+        {{ "Détails dépense"|trans }}
+    </h3>
+
+    <table class="table table-success-light table-bordered text-center table-hover table-striped w-100">
+        <tbody>
+            <tr>
+                <th>Libelle</th>
+                <td>{{ depense.libelle }}</td>
+            </tr>
+            <tr>
+                <th>Date</th>
+                <td>{{ depense.date ? depense.date|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Categorie</th>
+                <td>{{ depense.categorie ?  depense.categorie.nom : ''}}</td>
+            </tr>
+            <tr>
+                <th>Montant</th>
+                <td>{{ depense.montant }}</td>
+            </tr>
+            <tr>
+                <th>Reglement</th>
+                <td>{{ depense.type }}</td>
+            </tr>
+            <tr>
+                <th>Statut</th>
+                <td>{{ depense.statut }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="col-md-4 offset-md-3 mt-4 py-3 fond-7">
+        <div class="centrer">
+{#            <a class="btn btn-success me-3" href="{{ path('depense_edit', {'id': depense.id}) }}">#}
+{#                <i class="fa fa-edit"></i> Modifier</a>#}
+            <a id="{{ depense.id }}" onclick="load({{ depense.id }})" class="btn btn-success-light text-green" href="{{ path('depense_index') }}">
+                <i class="fa fa-undo"></i>
+                {{ 'Retour'|trans }}
+            </a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

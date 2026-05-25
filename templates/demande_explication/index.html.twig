@@ -1,0 +1,57 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+
+{% block discipline %}active{% endblock %}
+{% block explications %}active{% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-4 fond-7">
+    <h3 class="mt-4 fw-bold">
+        <i class="fa fa-money-bill me-2"></i>
+        {{ "Listes des demandes d'explication"|trans }}
+    </h3>
+
+    <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+        <thead>
+            <tr>
+                <th>{{ "Date demande d'explication"|trans }}</th>
+                <th>{{ "Objet demande"|trans }}</th>
+                <th>{{ "Statut"|trans }}</th>
+                <th>{{ "Actions"|trans }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for demandeExplication in demandeStatus %}
+                <tr>
+                    <td>{{ demandeExplication.demande.date ? demandeExplication.demande.date|date('d/m/Y') : '' }}</td>
+                    <td>{{ demandeExplication.demande.objet }}</td>
+                    <td>
+                        {% if demandeExplication.status %}
+                            <span class="badge bg-success">Répondu</span>
+                        {% else %}
+                            <span class="badge bg-warning">En attente</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ path('demande_explication_detail', {'id': demandeExplication.demande.id }) }}" class="btn btn-success" title="{{'Voir'|trans}}">
+                            <i class="fa fa-eye me-2"></i>{{ "Détails"|trans }}
+                        </a>
+                    </td>
+                </tr>
+            {% else %}
+
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

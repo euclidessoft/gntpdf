@@ -1,0 +1,56 @@
+{% extends 'client.html.twig' %}
+{% block title %} {{ "Commande-Reclamation"|trans }} - GNT Pharma {% endblock %}
+{% block reclamation %} active{% endblock %}
+{% block my_reclamation %}active{% endblock %}
+
+
+
+{% block body %}
+    <div class="container-fluid mt-4 fond-7">
+        <h3 class="mt-4 mb-5 fw-bold">
+            <i class="fa fa-rotate me-2"></i>
+            {{ 'Vos réclamations'|trans }}
+        </h3>
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+                <a class="nav-link active" href="#">{{ 'En cours'|trans }}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('reclamation_index_cloturer', {'user': app.user.id}) }}">
+                    {{ 'Clôturées'|trans }}
+                </a>
+            </li>
+        </ul>
+        {% for message in app.flashes('notice') %}
+            <div role="alert" class="alert alert-success alert-dismissible fade show radius-10 shadow-black">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                {{ message|trans }}
+            </div>
+        {% endfor %}
+        <table class="table table-success-light table-bordered table-hover table-striped" id="liste">
+            <thead>
+            <tr>
+                <th>{{'Référence'|trans}}</th>
+                <th>{{ 'Date de Création'|trans }}</th>
+                <th>{{ 'Actions'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for reclamation in reclamations %}
+                <tr>
+                    <td>RECL{{ reclamation.id }}</td>
+                    <td>{{ reclamation.creation ? reclamation.creation|date('d/m/Y') : '' }}</td>
+                    <td>
+                        <a id="{{ reclamation.id }}" onclick="load({{ reclamation.id }})" class="btn btn-success" href="{{ path('reclamation_show', {'id': reclamation.id}) }}">
+                            <i class="fa fa-list"></i>
+                            {{ 'Afficher'|trans }}
+                        </a>
+                        {#                    <a href="{{ path('reclamation_edit', {'id': reclamation.id}) }}">edit</a>#}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

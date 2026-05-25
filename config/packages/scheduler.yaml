@@ -1,0 +1,10 @@
+scheduler_bundle:
+    timezone: 'Africa/Dakar'
+    transport:
+        dsn: 'doctrine://default'   # stockage en base (Doctrine)
+    tasks:
+        Promotion:
+            type: command
+            command: 'AppCommandPromotionsCron'
+            expression: '0 0 * * *' # tous les jours a minuit
+            description: 'Commande de test'

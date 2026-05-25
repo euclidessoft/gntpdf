@@ -1,0 +1,50 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block body %}
+    <div class="col-lg-10 mt-4 fond-7">
+        <h3 class="mt-4 mb-5 fw-bold">
+            <i class="fa fa-money-bill me-2"></i>
+            {{ "Liste des contrats"|trans }}
+        </h3>
+        <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+            <thead>
+            <tr>
+               <th>Date contrat</th>
+                <th>Type de contrat</th>
+                <th>Date début</th>
+                <th>Date fin</th>
+                <th>Salaire</th>
+                <th>Status</th>
+                <th>Date de création</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for contrat in contrats %}
+                <tr>
+                    <td>{{ contrat.createdAt ? contrat.createdAt|date('d/m/Y') : '' }}</td>
+                    <td>{{ contrat.type }}</td>
+                    <td>{{ contrat.dateDebut ? contrat.dateDebut|date('d/m/Y') : '' }}</td>
+                    <td>{{ contrat.dateFin ? contrat.dateFin|date('d/m/Y') : '' }}</td>
+                    <td>{{ contrat.salaire|number_format(0,'',' ') }} FCFA</td>
+                    <td>{{ contrat.status ? 'Yes' : 'No' }}</td>
+                    <td>{{ contrat.createdAt ? contrat.createdAt|date('d/m/Y') : '' }}</td>
+                    <td>
+                        <a href="{{ path('contrat_detail_show', {'id': contrat.id}) }}" class="btn btn-success"><i class="fas fa-eye"></i></a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

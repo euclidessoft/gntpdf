@@ -1,0 +1,1120 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+
+{% block title %}{{ 'Compte Resultat'|trans }} - GNT Pharma{% endblock %}
+
+{% block finance %}active{% endblock %}
+
+{% block bilan %}active{% endblock %}
+
+{% block body %}
+
+    <div class="col-lg-11 mt-5 mb-5 fond-7">
+        <h3 class="mt-4 fw-bold">
+            <i class="fas fa-money-bill fa-lg"></i><i class="fas fa-hourglass-half"></i>
+            {{ 'Bilan'|trans }}
+        </h3>
+        {% for message in app.session.flashbag.get('notice') %}
+            <div role="alert" class="alert alert-danger alert-dismissible fade show radius-10 shadow-black mt-5 mb-5">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-hidden="true">&times;</button>
+                {{ message|trans }}
+            </div>
+        {% endfor %}
+       
+
+        <div class="card border-green shadow-black mt-5 mb-3 fond-5">
+            <div class="card-header bg-success-light bb-success">
+                <h5 class="text-success fw-bold">
+                    <i class="fa fa-money-bill-transfer"></i>
+                    {{ 'Bilan'|trans }}
+                </h5>
+            </div>
+            <div class="card-body">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">{{"Bilan Actif"|trans}}</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">{{"Bilan Passif"|trans}}</button>
+  </li>
+</ul>
+<div class="tab-content" id="myTabContent">
+  <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+  <table class="table table-success-light table-bordered table-hover table-striped mt-3">
+            <thead>
+            <tr>
+                <th class="text-center" rowspan="2"> {{ 'Ref.'|trans }}</th>
+                <th class="text-center"  rowspan="2"> {{ 'Actif'|trans }}</th>
+                <th  rowspan="2">{{ 'Note'|trans }}</th>
+                <th  colspan="3" class="text-center">{{ 'Exercice N'|trans }}</th>
+                <th class="text-center">{{ 'Exercice N-1'|trans }}</th>
+                {#                        <th class="text-center">{{ 'Solde'|trans }}</th> #}
+            </tr>
+            <tr>
+            <th>Brut</th>
+            <th>Amortissement/<br>Provision</th>
+            <th>Net</th>
+            <th>Net</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td></td>
+            <th>ACTIF IMMOBILISE (1)</th>
+            <td>3</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            </tr>
+            <tr>
+            <th>AD</th>
+            <th>Immobilisations incorporelles</th>
+            <td></td>
+            <th>
+            {% set ad = fond + brevet + developpement + autresincorp %}
+            {% set adr = amortfond + amortbrevet + amortdeveloppement + amortautresincorp %}
+            {% set add = ad - adr %}
+            {{ ad != 0 ? ad|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </th>
+            <th>
+            {{ adr != 0 ? adr|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </th>
+            <th>
+            {{ add != 0 ? add|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </th>
+            <th></th>
+            </tr>
+            <tr>
+            <td>AE</td>
+            <td>Frais de développement et de prospection</td>
+            <td></td>
+            <td></td>
+            <td>
+            {% set ae = developpement %}
+            {% set aer = amortdeveloppement %}
+            {% set aed = ae - aer %}
+            {{ ae != 0 ? ae|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+            {{ aer != 0 ? aer|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+            {{ aed != 0 ? aed|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            </tr>
+            <tr>
+            <td>AF</td>
+            <td>Brevets, licences, logiciels</td>
+            <td></td>
+            <td>
+            {% set af = brevet %}
+            {% set afr = amortbrevet %}
+            {{ af != 0 ? af|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+            {{ afr != 0 ? afr|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+            {{ (af-afr) != 0 ? (af-afr)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            </tr>
+            <tr>
+            <td>AG</td>
+            <td>Fonds commercial</td>
+            <td></td>
+            <td>
+            {%  set ag = fond %}
+            {%  set agr = amortfond %}
+            {%  set agd = ag - agr %}
+            {{ ag != 0 ? ag|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+            {{ agr != 0 ? agr|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+            {{ agd != 0 ? agd|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            </tr>
+            <tr>
+            <td>AH</td>
+            <td>Autres immobilisations incorporelles</td>
+            <td></td>
+            <td>
+            {% set ah = autresincorp %}
+            {% set ahr = amortautresincorp %}
+            {% set ahd = ah - ahr %}
+            {{ ah != 0 ? ah|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+             {{ ahr != 0 ? ahr|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+             {{ ahd != 0 ? ahd|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            </tr>
+            <tr>
+            <th>AI</th>
+            <th>Immobilisations corporelles</th>
+            <th>3</th>
+            <th>
+            {% set ai =  terrain + mobilier + transport + batiment + amenagement %}
+            {{ ai != 0 ? ai|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </th>
+            <th>
+            {% set air =  amortterrain + amortmobilier + amorttransport + amortbatiment + amortamenagement  %}
+            {{ air != 0 ? air|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </th>
+            <th>
+            {% set aid = ai - air %}
+            {{ aid != 0 ? aid|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </th>
+            <td></td>
+            </tr>
+            <tr>
+            <td>AJ</td>
+            <td>Terrains (1)
+    (1) dont en placement Net ………… / ………………</td>
+            <td></td>
+            <td>
+            {% set aj = terrain %}
+            {% set ajr = 0 %}
+             {{ aj != 0 ? aj|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            <td> {{ aj != 0 ? aj|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}</td>
+            <td></td>
+            </tr>
+            <tr>
+            <td>AK</td>
+            <td>Bâtiments
+    (1) dont en placement Net ………… / ………………</td>
+            <td></td>
+            <td>
+            {% set ak = batiment %}
+            {% set akr = amortbatiment %}
+            {% set akd = ak - akr %}
+            {{ ak != 0 ? ak|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+            {{ akr != 0 ? akr|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+            {{ akd != 0 ? akd|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            </tr>
+            <tr>
+            <td>AL</td>
+            <td>Aménagements, agencements et installations</td>
+            <td></td>
+            <td>
+             {% set al = amenagement %}
+            {% set alr = amortamenagement %}
+            {% set ald = al - alr %}
+             {{ al != 0 ? al|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+             {{ alr != 0 ? alr|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+            {{ ald != 0 ? ald|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            </tr>
+            <tr>
+            <td>AM</td>
+            <td>Matériel, mobilier et actifs biologiques</td>
+            <td></td>
+                <td>
+                {% set am = mobilier %}
+                {{ am != 0 ? am|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+                </td>
+            <td>
+            {% set amr = amortmobilier %}
+            {{ amr != 0 ? amr|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+            {% set amd = am - amr %}
+            {{ amd != 0 ? amd|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            </tr>
+            <tr>
+            <td>AN</td>
+            <td>Matériel de transport</td>
+            <td></td>
+            <td>
+             {% set  an = transport %}
+            {% set  anr = amorttransport %}
+            {% set  andd = an - anr %}
+            {{ an != 0 ? an|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+           {{ anr != 0 ? anr|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+            {{ andd != 0 ? andd|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            </tr>
+            <tr>
+            <th>AP</th>
+            <th>Avances et acomptes versés sur immobilisations</th>
+            <td>3</td>
+            <td>
+            {% set  ap = avanceimmo %}
+            {% set  apr = amortavanceimmo %}
+            {% set  apd = ap - apr %}
+            {{ ap != 0 ? ap|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+            {{ apr != 0 ? apr|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+            {{ apd != 0 ? apd|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            </tr>
+            <tr>
+            <th>AQ</th>
+            <th>Immobilisations financières</th>
+            <td>4</td>
+            <td>
+             {% set aq = titre + autresimmofin %}
+            {% set aqr = amorttitre + amortautresimmofin %}
+            {% set aqd = aq - aqr %}
+            {{ aq != 0 ? aq|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+           
+            {{ aqr != 0 ? aqr|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+            {{ aqd != 0 ? aqd|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            </tr>
+            <tr>
+            <td>AR</td>
+            <td>Titres de participation</td>
+            <td></td>
+            <td>
+             {% set ar = titre  %}
+            {% set arr = amorttitre %}
+            {% set ard = ar - arr %}
+            {{ ar != 0 ? ar|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+           
+            {{ arr != 0 ? arr|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+            {{ ard != 0 ? ard|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            </tr>
+            <tr>
+            <td>AS</td>
+            <td>Autres immobilisations financières</td>
+            <td></td>
+             <td>
+            {% set ass = autresimmofin %}
+            {% set assr = amortautresimmofin %}
+            {% set assd = ass - assr %}
+            {{ ass != 0 ? ass|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+           
+            {{ assr != 0 ? assr|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+            {{ assd != 0 ? assd|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            </tr>
+            <tr>
+            <tH>AZ</tH>
+            <th>TOTAL ACTIF IMMOBILISE</th>
+            <td></td>
+            <tH>
+            {% set az =  ad + ai + ap + aq %}
+            {% set azr =  adr + air + apr + aqr %}
+            {{ az|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}
+            </tH>
+            <tH>{{ azr|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}</tH>
+            <tH>{{ (az - azr)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}</tH>
+            <tH></tH>
+            </tr>
+            <tr>
+            <td></td>
+            <th>ACTIF CIRCULANT</th>
+            <td>3</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            </tr>
+            <tr>
+            <td>BA</td>
+            <th>Actif circulant H.A.O</th>
+            <td>5</td>
+            <td>
+            {% set ba = hao %}
+            {{ ba != 0 ? ba|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            </tr>
+            <tr>
+            <td>BB</td>
+            <th>Stocks et encours</th>
+            <td>6</td>
+            <td>
+            {% set bb = stock %}
+            {% set bbr = 0 %}
+            {{ bb != 0 ? bb|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            <td>
+                {{ bb != 0 ? bb|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+              {% set bbpassee = stockpassee %}
+                {{ bbpassee != 0 ? bbpassee|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            </tr>
+            <tr>
+            <td>BG</td>
+            <th>Créances et emplois assimilés</th>
+            <td></td>
+            <td>
+            {% set bg = creance + avancefournisseur + autrecreance %}
+            {% set bgr = 0 %}
+            {{ bg != 0 ? bg|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            <td>
+            {{ bg != 0 ? bg|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+            {% set bgpassee = creancepassee + avancefournisseurpassee + autrecreancepassee %}
+
+            {{ bgpassee != 0 ? bgpassee|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            </tr>
+            <tr>
+            <td>BH</td>
+            <td>Fournisseurs, avances versées</td>
+            <td>17</td>
+            <td>
+            {% set bh = avancefournisseur %}
+           {{ bh != 0 ? bh|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            <td>
+            {{ bh != 0 ? bh|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            </tr>
+            <tr>
+            <td>BI</td>
+            <td>Clients</td>
+            <td>7</td>
+            <td>
+            {% set bi = creance %}
+            {{ bi != 0 ? bi|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            <td>
+            {{ bi != 0 ? bi|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td>
+            {% set bipassee = creancepassee %}
+            {{ bipassee != 0 ? bipassee|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            </tr>
+            <tr>
+            <td>BJ</td>
+            <td>Autres créances</td>
+            <td>8</td>
+            <td>
+            {% set bj = autrecreance %}
+             {{ bj != 0 ? bj|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            <td>
+            {{ bj != 0 ? bj|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            </tr>
+            <tr>
+            <tH>BK</tH>
+            <th>TOTAL ACTIF CIRCULANT</th>
+            <td></td>
+            <tH>
+            {% set bk = bb + bg %}
+            {% set bkr = 0 %}
+            {{ bk != 0 ? bk|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </tH>
+            <tH>-</tH>
+            <tH>
+                {{ bk != 0 ? bk|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </tH>
+            <tH>
+             {% set bkpassee = bbpassee + bgpassee %}
+                {{ bkpassee != 0 ? bkpassee|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </tH>
+            </tr>
+            <tr>
+            <td>BQ</td>
+            <td>Titres de placement</td>
+            <td>9</td>
+            <td>
+            {% set bq = placement %}
+             {{ bq != 0 ? bq|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            <td>
+             {{ bq != 0 ? bq|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            </tr>
+            <tr>
+            <td>BR</td>
+            <td>Valeurs à encaisser</td>
+            <td>10</td>
+            <td>
+            {% set br = encaisser %}
+             {{ br != 0 ? br|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            <td>
+             {{ br != 0 ? br|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            </tr>
+            <tr>
+            <td>BS</td>
+            <td>Banques, chèques postaux, caisse</td>
+            <td>11</td>
+            <td>
+            {% set bs = solde %}
+            {% set bsr = 0 %}
+            {{ bs|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}
+            </td>
+            <td></td>
+            <td>
+            {{ bs|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}
+            </td>
+            <td>
+             {% set bspassee = soldepassee %}
+            {{ bspassee|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}
+            </td>
+            </tr>
+            <tr>
+            <tH>BT</tH>
+            <th>TOTAL TRESORERIE-ACTIF</th>
+            <td></td>
+            <tH>
+            {% set bt = bq + br + bs %}
+            {{ bt|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}
+            </tH>
+            <tH></tH>
+            <tH>
+            {{ bt|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}
+            </tH>
+            <tH>
+             {% set btpassee = bq + br + bspassee %}
+            {{ btpassee|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}
+            </tH>
+            </tr>
+            <tr>
+            <td>BU</td>
+            <th>Ecarts de conversion-Actif </th>
+            <td>12</td>
+            <td>
+            {% set bu = ecartactif %}
+            {{ bu != 0 ? bu|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            <td>
+             {{ bu != 0 ? bu|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+            </td>
+            <td></td>
+            </tr>
+
+            <tr>
+            <tH>BZ</tH>
+            <th>TOTAL GENERAL</th>
+            <td></td>
+            <tH>
+            {% set bz = az + ba + bk + bt + bu %}
+            {% set bzr = azr  %}
+                {{ bz|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}
+            </tH>
+            <tH>
+                {{ bzr|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}
+            </tH>
+            <tH>
+                {{ (bz - bzr)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}
+            </tH>
+            <tH>
+             {% set bzpassee = az + ba + bkpassee + btpassee + bu %}
+                {{ bzpassee|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}
+            </tH>
+            </tr>
+            
+            </tbody>
+        </table>
+                <!-- fin bilan actif -->
+  </div>
+  <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+  <!-- debut bilan passif -->
+
+    <table class="table table-success-light table-bordered table-hover table-striped mt-3">
+        <thead>
+        <tr>
+            <th class="text-center"> {{ 'Ref.'|trans }}</th>
+            <th class="text-center" > {{ 'Passif'|trans }}</th>
+            <th>{{ 'Note'|trans }}</th>
+            <th class="text-center">{{ 'Exercice N'|trans }}</th>
+            <th class="text-center">{{ 'Exercice N-1'|trans }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <th>
+                CA
+            </th>
+            <th>
+                Capital
+            </th>
+            <td>
+                13
+            </td>
+            <th>
+                {% set ca = capital %}
+                 {{ ca|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}                                                                
+            </th>
+            <th>
+            {% set capassee = capital %}
+                 {{ capassee|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}                                                                
+            </th>
+        </tr>
+        <tr>
+            <td>
+                CB
+            </td>
+            <td>
+                Apporteurs capital non appelé
+            </td>
+            <td>
+                13
+            </td>
+            <td>
+                {% set cb = 0 %}                                                               
+            </td>
+            <td>
+            
+            </td>
+        </tr>
+        <tr>
+            <td>
+                CD
+            </td>
+            <td>
+                Primes liées au capital social
+            </td>
+            <td>
+                14
+            </td>
+            <td>
+                {% set cd = 0 %}                                                               
+            </td>
+            <td>
+            
+            </td>
+        </tr>
+        <tr>
+            <td>
+                CE
+            </td>
+            <td>
+                Ecarts de réévaluation
+            </td>
+            <td>
+                30
+            </td>
+            <td>
+                {% set ce = 0 %}                                                               
+            </td>
+            <td>
+            
+            </td>
+        </tr>
+        <tr>
+            <td>
+                CF
+            </td>
+            <td>
+                Réserves indisponibles
+            </td>
+            <td>
+                14
+            </td>
+            <td>
+                {% set cf = 0 %}                                                               
+            </td>
+            <td>
+            
+            </td>
+        </tr>
+        <tr>
+            <td>
+                CG
+            </td>
+            <td>
+                Réserves libres
+            </td>
+            <td>
+                14
+            </td>
+            <td>
+                {% set cg = 0 %}                                                               
+            </td>
+            <td>
+            
+            </td>
+        </tr>
+        <tr>
+            <td>
+                CH
+            </td>
+            <td>
+                Report à nouveau                                     + ou -
+            </td>
+            <td>
+                14
+            </td>
+            <td>
+                {% set ch = repport %} 
+                {{ ch != 0 ? ch|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}                                                               
+            </td>
+            <td>
+                {% set chpassee = repportpassee %} 
+                {{ chpassee != 0 ? chpassee|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}                                                               
+            </td>
+        </tr>
+        <tr>
+            <th>
+                CJ
+            </th>
+            <th>
+               Résultat net de l'exercice (bénéfice + ou perte -)
+            </th>
+            <td>
+            
+            </td>
+            <th>
+                {% set cj = resultat['xi'] %}
+                {{ cj|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}                                                                
+            </th>
+            <th>
+                {% set cjpassee = resultat['xipassee'] %}
+                {{ cjpassee|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}                                                                
+            </th>
+        </tr>
+        <tr>
+            <td>
+                CL
+            </td>
+            <td>
+                Subventions d'investissement
+            </td>
+            <td>
+                15
+            </td>
+            <td>
+                {% set cl = 0 %}                                                               
+            </td>
+            <td>
+            
+            </td>
+        </tr>
+        <tr>
+            <td>
+                CM
+            </td>
+            <td>
+                Provisions règlementées
+            </td>
+            <td>
+                15
+            </td>
+            <td>
+                {% set cm = 0 %}                                                               
+            </td>
+            <td>
+            
+            </td>
+        </tr>
+        <tr>
+            <th>
+                CP
+            </th>
+            <th>
+               TOTAL CAPITAUX PROPRES (I)
+            </th>
+            <td>
+            
+            </td>
+            <th>
+                {% set cp = ca + cb + cd + ce + cf + cg + ch + cj + cl + cm %}
+                {{ cp|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}                                                                
+            </th>
+            <th>
+                {% set cppassee = capassee + cb + cd + ce + cf + cg + chpassee + cjpassee + cl + cm %}
+                {{ cppassee|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}                                                                
+            </th>
+        </tr>
+        <tr>
+            <td>
+                DA
+            </td>
+            <td>
+                Emprunts et dettes financières diverses
+            </td>
+            <td>
+                16
+            </td>
+            <td>
+                {% set da = pret + detteavoir %}
+                 {{ da != 0 ? da|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}                                                                 
+            </td>
+            <td>
+                {% set dapassee = pret + detteavoirpassee %}
+                 {{ dapassee != 0 ? dapassee|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}                                                                 
+            </td>
+        </tr>
+        <tr>
+            <td>
+                DB
+            </td>
+            <td>
+                Dettes de location acquisition
+            </td>
+            <td>
+                16
+            </td>
+            <td>
+                {% set db = 0 %}
+                 {{ db != 0 ? db|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}                                                                
+            </td>
+            <td>
+            
+            </td>
+        </tr>
+        <tr>
+            <td>
+                DC
+            </td>
+            <td>
+               Provisions financières pour risques et charges
+            </td>
+            <td>
+                16
+            </td>
+            <td>
+                {% set dc = 0 %}
+                 {{ dc != 0 ? dc|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}                                                                  
+            </td>
+            <td>
+            
+            </td>
+        </tr>
+        <tr>
+            <th>
+                DD
+            </th>
+            <th>
+               TOTAL DES DETTES FINANCIERES 
+            </th>
+            <td>
+            
+            </td>
+            <th>
+                {% set dd = da + db + dc %}
+                 {{ dd != 0 ? dd|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}                                                                
+            </th>
+            <th>
+                {% set ddpassee = dapassee + db + dc %}
+                 {{ ddpassee != 0 ? ddpassee|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}                                                                
+            </th>
+        </tr>
+        <tr>
+            <th>
+                DF
+            </th>
+            <th>
+              TOTAL RESSOURCES STABLES 
+            </th>
+            <td>
+            
+            </td>
+            <th>
+                {% set df = cp + dd %}
+                {{ df|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}                                                                
+            </th>
+            <th>
+                {% set dfpassee = cppassee + ddpassee %}
+                {{ dfpassee|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}                                                                
+            </th>
+        </tr>
+        <tr>
+            <td>
+                DH
+            </td>
+            <td>
+               Dettes circulantes H.A.O. 
+            </td>
+            <td>
+                5
+            </td>
+            <td>
+                {% set dh = 0 %}
+                 {{ dh != 0 ? dh|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}                                                                
+            </td>
+            <td>
+            
+            </td>
+        </tr>
+        <tr>
+            <td>
+                DI
+            </td>
+            <td>
+               Clients, avances reçues
+            </td>
+            <td>
+                7
+            </td>
+            <td>
+                {% set di = avanceclient %}
+                 {{ di != 0 ? di|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}                                                                
+            </td>
+            <td>
+                {% set dipassee = avanceclientpassee %}
+                 {{ dipassee != 0 ? dipassee|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}                                                                
+            </td>
+        </tr>
+        <tr>
+            <td>
+                DJ
+            </td>
+            <td>
+              Fournisseurs d'exploitaiton 
+            </td>
+            <td>
+                17
+            </td>
+            <td>
+                {% set dj = dettefournisseur %}
+                 {{ dj != 0 ? dj|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}                                                                
+            </td>
+            <td>
+                {% set djpassee = dettefournisseurpassee %}
+                 {{ djpassee != 0 ? djpassee|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}                                                                
+            </td>
+        </tr>
+        <tr>
+            <td>
+                DK
+            </td>
+            <td>
+               Dettes fiscales et sociales
+            </td>
+            <td>
+                18
+            </td>
+            <td>
+                {% set dk = 0 %}
+                 {{ dk != 0 ? dk|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}                                                                
+            </td>
+            <td>
+            
+            </td>
+        </tr>
+        <tr>
+            <td>
+                DM
+            </td>
+            <td>
+               Autres dettes
+            </td>
+            <td>
+                19
+            </td>
+            <td>
+                {% set dm = 0 %}
+                 {{ dm != 0 ? dm|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}                                                                
+            </td>
+            <td>
+            
+            </td>
+        </tr>
+        <tr>
+            <td>
+                DN
+            </td>
+            <td>
+              Provisions pour risques à court terme 
+            </td>
+            <td>
+                19
+            </td>
+            <td>
+                {% set dn = 0 %}
+                 {{ dn != 0 ? dn|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}                                                                
+            </td>
+            <td>
+            
+            </td>
+        </tr>
+        <tr>
+            <th>
+                DP
+            </th>
+            <th>
+             TOTAL PASSIF CIRCULANT 
+            </th>
+            <td>
+            
+            </td>
+            <th>
+                {% set dp = dh + di + dj + dk + dm + dn %}
+                {{ dp|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}                                                                
+            </th>
+            <th>
+                {% set dppassee = dh + dipassee + djpassee + dk + dm + dn %}
+                {{ dppassee|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}                                                                
+            </th>
+        </tr>
+        <tr>
+            <td>
+                DQ
+            </td>
+            <td>
+              Banques, crédits d'escompte
+            </td>
+            <td>
+                20
+            </td>
+            <td>
+                {% set dq = 0 %}
+                 {{ dq != 0 ? dq|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}                                                                
+            </td>
+            <td>
+            
+            </td>
+        </tr>
+        <tr>
+            <td>
+                DR
+            </td>
+            <td>
+             Banques, établissements financiers et crédits de trésorerie
+            </td>
+            <td>
+                20
+            </td>
+            <td>
+                {% set dr = 0 %}
+                 {{ dr != 0 ? dr|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}                                                                
+            </td>
+            <td>
+            
+            </td>
+        </tr>
+        <tr>
+            <th>
+                DT
+            </th>
+            <th>
+             TOTAL TRESORERIE-PASSIF 
+            </th>
+            <td>
+            
+            </td>
+            <th>
+                {% set dt = dq + dr %}
+                 {{ dt != 0 ? dt|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}                                                                
+            </th>
+            <th>
+                {% set dtpassee = dq + dr %}
+                 {{ dtpassee != 0 ? dtpassee|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}                                                                
+            </th>
+        </tr>
+        <tr>
+            <td>
+                DV
+            </td>
+            <td>
+             Ecarts de conversion-Passif (V) (Gain probable de change)
+            </td>
+            <td>
+                12
+            </td>
+            <td>
+                {% set dv = 0 %}
+                 {{ dv != 0 ? dv|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}                                                                
+            </td>
+            <td>
+            
+            </td>
+        </tr>
+        <tr>
+            <th>
+                DZ
+            </th>
+            <th>
+             TOTAL GENERAL 
+            </th>
+            <td>
+            
+            </td>
+            <th>
+                {% set dz = df + dp + dt + dv %}
+                 {{ dz|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}                                                                
+            </th>
+            <th>
+                {% set dzpassee = dfpassee + dppassee + dtpassee + dv %}
+                 {{ dzpassee|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}                                                                
+            </th>
+        </tr>
+        </tbody>
+    </table>
+  
+  </div>
+</div>
+                
+            </div>
+           
+        </div>
+    </div>
+
+{% endblock %}

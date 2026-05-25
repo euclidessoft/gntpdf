@@ -1,0 +1,93 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block discipline %}active{% endblock %}
+{% block explications %}active{% endblock %}
+
+{% block body %}
+<div class="col-lg-8 mt-4 fond-7">
+    <div class="card">
+        <div class="card-header text-white">
+            <h4>Détails de la demande d'explication</h4>
+        </div>
+        <div class="card-body">
+
+            <!-- Information des employés concernés -->
+            <h5 class="mb-3">
+                <i class="fa-solid fa-user"></i> Employés concernés
+            </h5>
+            <table class="table table-success-light table-bordered table-hover table-striped w-100">
+                <thead>
+                    <tr>
+                        <th>{{ 'Matricule'|trans }}</th>
+                        <th>{{ 'Employé(s)'|trans }}</th>
+                        <th>{{ 'Poste'|trans }}</th>
+                        <th>{{ 'Statut'|trans }}</th>
+                        <th>{{ 'Actions'|trans }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for employe in demandeExplications.employe %}
+                    <tr>
+                        <td>{{ employe.matricule }}</td>
+                        <td>{{ employe.nom ~ ' ' ~ employe.prenom }}</td>
+                        <td>{{ employe.poste.nom }}</td>
+                        <td>
+                            {% set statut = statuts[employe.id] %}
+                            {% if statut == true %}
+                                <span class="badge bg-success">Répondu</span>
+                            {% else %}
+                                <span class="badge bg-warning">En attente</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if statut == true %}
+                            <a href="{{ path('demande_explication_reponse', {'id': demandeExplications.id, 'employeId': employe.id}) }}" class="btn btn-success btn-sm"><i class="fas fa-eye"></i>Voir réponse</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-danger">Aucun employé affecté</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Détails de la demande -->
+            <h5 class="mb-3">
+                <i class="fa-solid fa-info-circle"></i> Détails de la demande
+            </h5>
+            <ul class="list-group">
+                <li class="list-group-item"><strong>Objet :</strong> {{ demandeExplications.objet }}</li>
+                <li class="list-group-item"><strong>Date de soumission :</strong> {{ demandeExplications.date ? demandeExplications.date|date('d/m/Y') : 'N/A' }}</li>
+                <li class="list-group-item">
+                    <p class="mt-2">{{ demandeExplications.details }}</p>
+                    <p>Cordialement,</p>
+                    <p class="mt-2 text-end">
+                        <strong>{{ demandeExplications.responsable.nom ~' '~ demandeExplications.responsable.prenom }}</strong><br>
+                        {{ demandeExplications.responsable.poste.nom }}<br>
+                        {{ demandeExplications.responsable.email }} | {{ demandeExplications.responsable.phone }}
+                    </p>
+                </li>
+            </ul>
+        </div>
+
+        <div class="centrer">
+            <a href="{{ path('demande_index') }}" class="btn btn-success mb-3">
+                <i class="fa fa-undo"></i> {{ 'Retour'|trans }}
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,121 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    'layout.html.twig' %}
+{% block title %} {{ "Tous les employes"|trans }} - GNT Pharma {% endblock %}
+{% block administration %}active{% endblock %}
+{% block employe %}active{% endblock %}
+{% block all_employe %}active{% endblock %}
+{% block body %}
+    <div class="container-fluid mt-4 fond-7 mb-5">
+        <h3 class="mt-4 mb-5 fw-bold">
+            <i class="fa fa-users me-2"></i>
+            {{ "Tous les employes"|trans }}
+        </h3>
+        {% for message in app.flashes('notice') %}
+            <div role="alert" class="alert alert-success alert-dismissible fade show radius-10 shadow-black mb-5">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                {{ message|trans }}
+            </div>
+        {% endfor %}
+        {% if is_granted('ROLE_RH') %}
+            <a href="{{ path('employe_new') }}" class="btn btn-green mb-4">
+                <i class="fa fa-plus"></i>
+                {{ "Ajouter employé"|trans }}
+            </a>
+        {% endif %}
+        <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+            <thead>
+            <tr>
+                <th>{{ 'Matricule'|trans }}</th>
+                <th>{{ 'Nom'|trans }}</th>
+                <th>{{ 'Prénom'|trans }}</th>
+                <th class="text-center">{{ 'Age'|trans }}</th>
+                {#                <th class="text-center">{{ 'Sexe'|trans }}</th>#}
+                {#                <th>{{ 'Téléphone'|trans }}</th>#}
+                <th>{{ 'Email'|trans }}</th>
+                <th>{{ 'Poste'|trans }}</th>
+                <th>{{ 'Niveau d\'accès'|trans }}</th>
+                <th>{{ 'Statut'|trans }}</th>
+                <th class="text-center noExport">{{ 'Action'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for employe in employes|filter(e => e.username != 'admin') %}
+            <tr>
+                <td data-label="{{ 'Matricule'|trans }}">
+                    {{ employe.matricule }}
+                </td>
+                <td data-label="{{ 'Nom'|trans }}">
+                    {{ employe.nom }}
+                </td>
+                <td data-label="{{ 'Prénom'|trans }}">
+                    {{ employe.prenom }}
+                </td>
+                <td data-label="{{ 'Age'|trans }}" class="text-nowrap">
+                    {{ 'now'|date('Y') - employe.dateNaissance|date('Y') }}
+                    {{ "ans"|trans }}
+                </td>
+                {# <td data-label="{{ 'Sexe'|trans }}" class="text-center">
+                    {{ employe.sexe }}
+                </td>
+                <td data-label="{{ 'Téléphone'|trans }}">
+                    {{ employe.phone }}
+                </td>#}
+                <td data-label="{{ 'Email'|trans }}">
+                    {{ employe.email }}
+                </td>
+                <td data-label="{{ 'Poste'|trans }}">
+                    {{ employe.poste ? employe.poste.nom: '' }}
+                </td>
+                <td data-label="{{ 'Niveau d\'accès'|trans }}">
+                    {{ employe.fonction }}
+                </td>
+                <td data-label="{{ 'Statut'|trans }}" class="text-center">
+                    {{ employe.status ? "Actif"|trans : "Inactif"|trans }}</td>
+                <td data-label="{{ 'Action'|trans }}" class="text-center text-nowrap noExport">
+                    <a href="{{ path('employe_show', {'id': employe.id}) }}" class="btn btn-green" title="{{ "Voir"|trans }}">
+                        <i class="fa fa-eye"></i>
+                    </a>
+                    {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('employe_edit', {'id': employe.id}) }}" class="btn btn-success-light"
+                       title="{{ "Modifier"|trans }}">
+                        <i class="fa fa-edit"></i>
+                    </a>
+                    {% endif %}
+                    <form action="{{ path('employe_toggle_status', { 'id': employe.id }) }}" method="post"
+                          class="d-inline" onsubmit="return confirm('{% if employe.status %} Êtes-vous sûr de vouloir désactiver cet employé ? {% else %} Êtes-vous sûr de vouloir activer cet employé ? {% endif %}');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ employe.id) }}">
+                        <button type="submit" class="btn btn-{% if employe.status %}danger{% else %}success{% endif %}">
+                            {% if employe.status %}
+                                <i class="fa fa-user-lock" title="{{ "Désactiver cet employé"|trans }}"></i>
+                            {% else %}
+                                <i class="fa-solid fa-user-check" title="{{ "Activer cet employé"|trans }}"></i>
+                            {% endif %}
+                        </button>
+                    </form>
+                </td>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+    <div class="container-fluid mt-4 fond-7 mb-5 p-3">
+        <div class="centrer gap-3">
+            <button id="exportExcel" class="btn btn-green">
+                <i class="fa fa-file-excel"></i> Exporter Excel
+            </button>
+            <button id="exportPdf" class="btn btn-danger">
+                <i class="fa fa-file-pdf"></i> Exporter PDF
+            </button>
+            <a href="#" class="btn btn-success-light me-2">
+                <i class="fa fa-print"></i> Imprimer
+            </a>
+        </div>
+    </div>
+{% endblock %}

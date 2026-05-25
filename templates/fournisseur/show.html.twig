@@ -1,0 +1,109 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    'layout.html.twig' %}
+{% block title %} {{ "Fournisseurs"|trans }} - GNT Pharma {% endblock %}
+{% block fournisseur %}active{% endblock %}
+{% block all_fournisseurs %}active{% endblock %}
+{% block body %}
+    <div class="col-lg-8 mt-4 pb-4 fond-7">
+        <h3 class="mt-4 mb-5 fw-bold">
+            <i class="fa-solid fa-hospital-user"></i>
+            {{ "Informations du fournisseur"|trans }}
+        </h3>
+        {% for message in app.flashes('notice') %}
+            <div role="alert" class="alert alert-success alert-dismissible fade show radius-10 shadow-black">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                {{ message|trans }}
+            </div>
+        {% endfor %}
+
+        <table class="table table-success-light table-bordered text-center table-hover table-striped w-100">
+            <tbody>
+            <tr>
+                <th>Nom</th>
+                <td>{{ fournisseur.designation }}</td>
+            </tr>
+            <tr>
+                <th>Téléphone</th>
+                <td>{{ fournisseur.telephone }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ fournisseur.email }}</td>
+            </tr>
+            <tr>
+                <th>Pays</th>
+                <td>{{ fournisseur.pays }}</td>
+            </tr>
+            <tr>
+                <th>Adresse</th>
+                <td>{{ fournisseur.adresse }}</td>
+            </tr>
+
+            </tbody>
+        </table>
+
+        <div class="col-md-12 offset-md-3 mt-4 py-3 fond-7">
+            <div class="centrer gap-3">
+                {#            <a class="btn btn-success me-3" href="{{ path('fournisseur_edit', {'id': fournisseur.id}) }}"> #}
+                {#                <i class="fa fa-edit"></i> Modifier</a> #}
+
+                <a id="aff{{ fournisseur.id }}" onclick="load('aff'~{{ fournisseur.id }})" class="btn btn-success"
+                   href="{{ path('fournisseur_produit',{'id' : fournisseur.id}) }}">
+                    <i class="fa-solid fa-file-import"></i>
+                    {{ 'Affecter Produits'|trans }}
+                </a>
+                <a id="{{ fournisseur.id }}" onclick="load({{ fournisseur.id }})"
+                   class="btn btn-success-light" href="{{ path('vente_chiffre_fourniseur', {'fournisseur':fournisseur.id}) }}">
+                    <i class="fas fa-chart-line"></i>
+                    {{ 'Analyser'|trans }}
+                </a>
+                <a id="{{ fournisseur.id }}" onclick="load({{ fournisseur.id }})"
+                   class="btn btn-success" href="{{ path('fournisseur_index') }}">
+                    <i class="fa fa-undo"></i>
+                    {{ 'Retour'|trans }}
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8 my-5 pb-4 fond-7">
+        <h3 class="mt-4 mb-5 fw-bold">
+            <i class="fa-brands fa-product-hunt me-2"></i>
+            {{ "Liste des produits du fournisseur"|trans }}
+        </h3>
+
+        <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+            <thead>
+            <tr>
+                <th>{{ 'Code'|trans }}</th>
+                <th>{{ 'Désignation'|trans }}</th>
+                <th>{{ 'Prix Cession'|trans }}</th>
+                <th>{{ 'Prix Public'|trans }}</th>
+                <th>{{ 'Commande'|trans }}<br> {{ 'Minimum'|trans }}</th>
+                <th>{{ 'Fabricant'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for produit in fournisseur.Produits %}
+                <tr>
+                    <td>{{ produit.reference }}</td>
+                    <td>{{ produit.desigantion }}</td>
+                    <td>{{ produit.prix|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                    <td>{{ produit.prixpublic|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                    <td>{{ produit.mincommande }}</td>
+                    <td>{{ produit.fabriquant }}</td>
+                </tr>
+            {% else %}
+
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+{% endblock %}

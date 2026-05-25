@@ -1,0 +1,61 @@
+{% extends 'client.html.twig' %}
+{% block title %} {{ "Officine"|trans }} - GNT Pharma {% endblock %}
+{% block officine %}active{% endblock %}
+
+{% block body %}
+    <div class="container mt-4 fond-7">
+        <h3 class="mt-4 mb-5 fw-bold">
+            <i class="fas fa-staff-snake fa-lg"></i>
+            {{ "Officine"|trans }} :  {{ "Factures"|trans }}
+        </h3>
+        <ul class="nav nav-tabs mb-4">
+        {% if is_granted("ROLE_CLIENT_ADMIN") %}
+            <li class="nav-item">
+                <a class="nav-link active" href="#">{{ 'Facture'|trans }}</a>
+            </li>
+        {% endif %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('avoir_officine') }}">{{'Avoir'|trans}}</a>
+            </li>
+         {% if is_granted("ROLE_CLIENT_ADMIN") %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('finance_avantage_client')}}">{{'Avantages'|trans}}</a>
+            </li>
+        {% endif %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('commande_panier_credit') }}">{{'Dette'|trans}}</a>
+            </li>
+        </ul>
+         <table class="table table-success-light table-bordered table-hover table-striped w-100 my-4" id="liste">
+           <thead>
+                <th>Numero</th>
+                <th>Releve</th>
+            </thead>
+            {# {% set numero = commandes|length *2 %} #}
+          
+
+            {% for releve in releves %}
+                <tr>
+                    <td>{{ releve.numero }}</td>
+                    <td>
+                    <a id="print" target="_blank" href="{{ path('commande_panier_officine_quinzaine_pdf', { 'releve': releve.id}) }}"
+                   class="btn btn-danger me-3">
+                    <i class="fa fa-file-pdf"></i>
+                </a>
+                    {% if releve.quinzaine == 1 %}
+                        <a href="{{ path('commande_panier_officine_quinzaine', { 'releve' : releve.id})}}">RELEVE DES FACTURES - PREMIER QUINZAINE {{releve.periode}}
+                        </a>
+                    {% else %}
+                        <a href="{{ path('commande_panier_officine_quinzaine', { 'releve' : releve.id})}}">RELEVE DES FACTURES - DEUXIEME QUINZAINE  {{releve.periode}}</a>
+                    {% endif %}
+                    </td>
+                </tr>
+              
+            {% else %}
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+{% endblock %}

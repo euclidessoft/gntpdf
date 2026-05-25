@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <title> &nbsp;</title>
+    <style>
+        .titre {
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            font-size: 30px;
+            font-weight: bold;
+            color: #039c4f;
+        }
+
+        .text {
+            font-size: 14px;
+        }
+
+        .badge {
+            background-color: red !important;
+        }
+
+        @media print {
+            .table-success-light {
+                color: #000 !important;
+            }
+
+            .table-bordered {
+                border: 1px solid #000 !important;
+            }
+
+            thead {
+                background-color: #c5fbae !important;
+                color: #000;
+            }
+
+            .tt {
+                display: inline-block;
+                border: none;
+                width: 180px !important;
+            }
+        }
+    </style>
+
+</head>
+<body onload="print()" onafterprint="document.location.href='{{ path('livraison_historique') }}'">
+<div class="container-fluid">
+
+
+    <div class="col-lg-8 offset-lg-2">
+        <div class="row" style="border-bottom: 1px solid #039c4f;padding-bottom: 20px;">
+            <div class="col-2">
+                <img src="{{ asset('images/gntpharma.jpeg') }}" alt="Logo" class="w-100">
+            </div>
+            <div class="col-10 text-center">
+                <div class="row">
+                    <div class="col-12 titre text-center">
+                        GNT PHARMA
+                    </div>
+                    <div class="col-12 text">
+                        BP : 3582 Yaoundé – Cameroun, NGOUSSO
+                        <br>
+                        Montée Éleveur Immeuble Sainte Marie
+                    </div>
+                    <div class="col-12 text">
+                        +237 69 71 49 4 12 / +237 67 52 47 865
+                    </div>
+                    <div class="col-12 text">
+                        info@gntpharma-cameroun.com / www.gnt-pharma.com
+                    </div>
+                    <!-- <div class="col-12 fw-bold">
+
+                    </div> -->
+                </div>
+            </div>
+        </div>
+        <h3 class="text-center fw-bold text-uppercase my-5">
+            {{ 'Bon de livraison'| trans }}
+        </h3>
+        <div class="row justify-content-end">
+            <div class="col-8">
+                <table class="table table-success-light table-bordered">
+                    <thead>
+                    <tr>
+                        <th>{{ 'N° Commande'|trans }}</th>
+                        <th>{{ 'Date Commande'|trans }}</th>
+                        <th>{{ 'Date Paiement'|trans }}</th>
+                        <th>{{ 'Client'|trans }}</th>
+                        {#                    <th>Date prevu pour la livraison Livraison</th>#}
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <td>{{ commandereference.id }}</td>
+                    <td>{{ commandereference.date ? commandereference.date|date('d/m/Y') : '' }}</td>
+                    <td>{{ commandereference.paiement ? commandereference.paiement.date|date('d/m/Y') : '' }}</td>
+                    <td>{{ commandereference.user.nom }}</td>
+                    {#                <td><input type="date" class="form-control" id="datelivraison"/></td>#}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <table class="table table-success-light table-bordered table-hover table-striped w-100" id="liste">
+            <thead>
+            <tr>
+                <th>{{ 'Référence'|trans }}</th>
+                <th>{{ 'désignation'|trans }}</th>
+                <th>{{ 'Quantité Commande'|trans }}</th>
+                <th>{{ 'Quantité déjà livrée'|trans }}</th>
+                <th>{{ 'Quantité à livrer'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for commande in commandes %}
+            <tr>
+                <td>{{ commande.produit.reference }}</td>
+                <td>{{ commande.produit.desigantion }}</td>
+                <td>
+                    {{ commande.quantitecommander }}
+                </td>
+                <td class="text-center">{{ commande.quantitelivrer }}</td>
+
+                <td class="text-center">{{ commande.quantitecommander - commande.quantitelivrer }}</td>
+
+                {% else %}
+                {% endfor %}
+        </table>
+
+    </div>
+</div>
+</body>
+
+</html>

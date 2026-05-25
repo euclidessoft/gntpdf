@@ -1,0 +1,357 @@
+{% extends 'client.html.twig' %}
+{% block title %} {{ "Commande"|trans }} - GNT Pharma {% endblock %}
+{% block commande %}active{% endblock %}
+
+{% block body %}
+    <div class="container-fluid mt-4 fond-7">
+        <h3 class="mt-4 mb-5 fw-bold">
+            <i class="fa fa-shopping-cart me-2"></i>
+            {{ "Votre Panier"|trans }}
+        </h3>
+        {% if panier|length > 0 %}
+            <a id="validorder" onclick="load('validorder')"
+               href="{{ path("commande_panier_choix_paiement", {'commande': 0}) }}"
+               class="btn btn-success float-right mb-3"
+               title="Valider la commande">
+                <i class="fa fa-check"></i>
+                {{ 'Valider la commande'|trans }}
+            </a>
+        {% endif %}
+         {% for message in app.flashes('notice') %}
+            <div role="alert" class="alert alert-success alert-dismissible fade show radius-10 shadow-black">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                {{ message|trans }}
+            </div>
+         {% endfor %}
+        <table class="table table-success-light table-bordered table-hover table-striped w-100">
+            <thead>
+            <tr>
+                <th>{{ 'CIP'|trans }}</th>
+                <th>{{ 'Désignation'|trans }}</th>
+                <th>{{ 'Colisage'|trans }}</th>
+                <th>{{ 'Prix Cession'|trans }}</th>
+                <th>{{ 'Réduction'|trans }}</th>
+                <th>{{ 'TVA'|trans }}</th>
+                <th>{{ 'Prix Public'|trans }}</th>
+                <th>{{ 'Quantité'|trans }}</th>
+                <th>{{ 'Total'|trans }}</th>
+                <th class="text-center">{{ 'Actions'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% set total = 0 %}
+            {% set reduction=0 %}
+            {% set tva=0 %}
+            {% for produit in panier %}
+                {% set reductionproduit = 0 %}
+                <tr>
+                    <td data-label="Référence">{{ produit['produit'].reference }}</td>
+                    <td data-label="Désignation">{{ produit['produit'].desigantion }}</td>
+                    <td data-label="Colisage" class="text-center">
+                    {{ produit['produit'].colisage }}
+                            <div class="form-check">
+                             <input type="checkbox"  {% if produit.colisage %}checked{% endif %} onchange="colisage({{produit['produit'].id}})" class="form-check-input">
+                            <span id="col{{produit['produit'].id}}"> Activer</span>
+                             </div>
+                    </td>
+                    <td data-label="Prix Cession">
+                    {% if produit.colisage %}
+                         {{ (produit.produit.colisage * produit['produit'].prix)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                    {% else %}
+                        {{ produit['produit'].prix|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                    {% endif %}
+                    </td>
+                    <td data-label="Réduction">
+                        {% if produit['produit'].promotion is not null %}
+                            {% if produit['promotion'] != 0 %}
+                                {% if produit.colisage %}
+                                     {% set reductionproduit = produit.produit.colisage * produit['produit'].quantite * produit['produit'].prix * produit['promotion'] /100 %}
+                                {% else %}
+                                    {% set reductionproduit =  produit['produit'].quantite * produit['produit'].prix * produit['promotion'] /100 %}
+                                {% endif %}
+                                
+                                {% set reduction =  reduction + reductionproduit %}
+                                <span class="badge bg-danger">
+                                    -{{ produit['produit'].prix * produit['promotion'] /100 }} F
+                                </span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td data-label="TVA">
+                        {% if produit['produit'].tva == 1 %}
+                        {% set tvaprod = 0 %}
+                            {% if produit.colisage %}
+                                {% set tvaprod = ((produit.produit.colisage * produit['produit'].quantite * produit['produit'].prix) - reductionproduit) * 0.1925 %}
+                            {% else %}
+                                 {% set tvaprod = ((produit['produit'].quantite * produit['produit'].prix) - reductionproduit) * 0.1925 %}
+                             {% endif %}
+                             {% set tva = tva + tvaprod %}
+
+                            {{ tvaprod|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td data-label="Prix Public">{{ produit.produit.prixpublic|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                    
+
+                    <td data-label="Quantité" class="text-center" id="tdprod{{ produit.produit.id }}">
+                        {{ produit['produit'].quantite }}
+                    </td>
+                    <td data-l="Total" class="text-center" id="soustotal{{ produit.produit.id }}">
+                        {% if produit.colisage %}
+                            {{ (produit.produit.colisage * produit['produit'].prix * produit['produit'].quantite)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                            {% set total = total + (produit.produit.colisage * produit.produit.prix * produit['produit'].quantite) %}
+                        {% else %}
+                            {{ (produit['produit'].prix * produit['produit'].quantite)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                            {% set total = total + (produit.produit.prix * produit['produit'].quantite) %}
+                        {% endif %}
+                        
+
+                    </td>
+                    <td class="text-nowrap text-center">
+
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal{{ produit['produit'].id }}" title="{{ 'Modifier quantité'|trans }}">
+                                <i class="fa fa-edit"></i>
+                            </button>
+                            
+                             {{ include('commande/_delete_form.html.twig')}}
+                            <div class="modal fade" id="modal{{ produit['produit'].id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered text-center">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">
+                                            {{ produit['produit'].desigantion }}
+                                            </h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
+                                            </button>
+                                        </div>
+                                        <div class="modal-body px-5">
+
+                                        <input type="number" id="quant{{ produit['produit'].id }}" value="{{ produit['produit'].quantite }}" class="form-control"/>
+
+                                            {# fin paiement#}
+                                        </div>
+                                        <div class="modal-footer justify-content-center px-5 py-4">
+                                            <button type="button" class="btn btn-success-light" data-bs-dismiss="modal"
+                                                    id="annuler"><i class="fa fa-undo"></i>
+                                                {{ 'Annuler'|trans }}
+                                            </button>
+                                            <button type="button" class="btn btn-success ms-3"
+                                                    id="btn{{produit['produit'].id }}" 
+                                                    onclick="modifier({{ produit['produit'].id }}, {{ produit['produit'].mincommande }},{{ produit['produit'].quantite }})">
+                                                <i class="fa fa-check"></i>
+                                                {{ 'Valider'|trans}}
+                                            </button>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+
+                   
+
+                    </td>
+                </tr>
+            {% endfor %}
+            {% if panier|length > 0 %}
+                <tr class="fw-bold">
+                    <td data-label="Total" colspan="8" class="text-end">
+                        {{ "Total"|trans }}
+                    </td>
+                    <td class="text-center">
+                        <span id="total">{{ total|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</span>
+                        <input type="hidden" value="{{ total }}" id="totaltamp"/>
+                    </td>
+                    <td class="text-center" data-label="Vider le panier" rowspan="4">
+
+                       
+                             {{ include('commande/_delete.html.twig')}}
+                   
+
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8" class="text-end">
+                        {{ "Total Réduction"|trans }}
+                    </td>
+                    <td class="text-center">
+                        <span id="total">{{ reduction|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</span>
+                        <input type="hidden" value="{{ reduction }}" id="totaltamp"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8" class="text-end">
+                        {{ "Total TVA"|trans }}
+                    </td>
+                    <td class="text-center">
+                        <span id="total">{{ tva|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</span>
+                        <input type="hidden" value="{{ tva }}" id="totaltamp"/>
+                    </td>
+                </tr>
+                <tr class="fw-bold">
+                    <td colspan="8" class="text-end">
+                        {{ "Net à payer"|trans }}
+                    </td>
+                    <td class="text-center">
+                        <span id="total">{{ (total +tva-reduction)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</span>
+                        <input type="hidden" value="{{ total }}" id="totaltamp"/>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="11" class="text-center py-4">
+                        {{ "Panier vide"|trans }}
+                    </td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+        {% if panier|length > 0 %}
+            <a id="validecommande" onclick="load('validecommande')"
+               href="{{ path("commande_panier_choix_paiement", {'commande': 0}) }}" class="btn btn-success mb-5"
+               title="Valider la commande">
+                <i class="fa fa-check"></i>
+                {{ 'Valider la commande'|trans }}
+            </a>
+        {% endif %}
+
+        <input type="hidden" value="ok" id="tampon"/>
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('produit_new') }}">
+                {{ 'Créer un produit'|trans }}
+            </a>
+        {% endif %}
+    </div>
+    {% block scripts %}
+        <script>
+            function edit(id, quantite, min, prix, st) {// fonction initialisation modification quantite dans panier
+                if ($('#tampon').val() == 'ok') {// verification si auccun autre ligne est entrain d' etre modifier
+                    $('#tdprod' + id).html("<div class=\"input-group align-center\" style=\"width:100px\">\n" +
+                        "                            <input type=\"number\"  value='" + quantite + "'  id=\"text" + id + "\" class=\"form-control\"\n" +
+                        "                                   style=\"padding:0 10px\">\n" +
+                        "                            <div class=\"input-group-append\">\n" +
+                        "                                            <span class=\"input-group-text bg-success text-light\"\n" +
+                        "                                                  onclick=\"editprod(" + id + "," + min + "," + quantite + "," + prix + "," + st + ")\"\n" +
+                        "                                                  id=\"bt" + id + "\">\n" +
+                        "                                                <i class=\"fa fa-save\"></i>\n" +
+                        "                                            </span>\n" +
+                        "                            </div>\n" +
+                        "                        </div>");
+                    $('#btnaction' + id).html("<button onclick=\"cancel(" + id + "," + quantite + "," + min + "," + prix + "," + st + ")\" class=\"btn bg-warning\" title=\"Annuler modification\">\n" +
+                        "                            <i class=\"fa fa-undo\"></i>\n" +
+                        "                        </button>");
+                    $('#tampon').val('no');
+                } else alert('Terminer la première opération' | trans);
+            }
+
+            function editprod(id, mincom, quantite, prix, st) {
+                if (quantite != $('#text' + id).val()) {
+                    var reg = new RegExp("^[0-9]+$");
+                    let newval = $('#text' + id).val();
+                    let totale = $('#totaltamp').val();
+                    if (reg.test(newval) && mincom <= newval) {
+                        if (st >= $('#text' + id).val()) {
+                            // $('#btnaction' + id).html("<button class=\"btn bg-warning\"><i class='fa-solid fa-spinner fa-spin-pulse fa-lg'></i></button>");
+                            $.ajax({
+                                type: "POST",
+                                url: "{{ path('commande_edit') }}",
+                                data: "prod=" + id + "&quantite=" + newval,
+                                success: function (data) {
+                                    if (data['id'] == 'ok') {
+                                        $('#tdprod' + id).html(newval);
+                                        $('#soustotal' + id).html(prix * newval);// changement de la valeur sous total
+                                        if (newval > quantite) {//changement de la valeur total
+                                            $('#total').html(Number(totale) + prix * (newval - quantite));
+                                            $('#totaltamp').val(Number(totale) + prix * (newval - quantite));
+                                        } else {
+                                            $('#total').html(Number(totale) - prix * (quantite - newval));
+                                            $('#totaltamp').val(Number(totale) - prix * (quantite - newval));
+                                        }
+                                        $('#btnaction' + id).html("<button onclick=\"edit(" + id + "," + data['panier'] + "," + mincom + "," + prix + "," + st + ")\" class=\"btn btn-success\" title=\"Modifier quantite\">\n" +
+                                            "                            <i class=\"fa fa-edit\"></i>\n" +
+                                            "                        </button>");
+                                        $('#tampon').val('ok');
+                                    } else {
+                                        alert("{{ 'vérifier la quantité saisie'|trans }}")
+                                    }
+                                },
+                                error: function () {
+                                    alert("{{ 'La requête n’a pas abouti'|trans }}");
+                                }
+                            });
+                        } else {
+                            var mess = "{{ 'Maximum disponible'|trans }}  " + st;
+                            alert(mess);
+                        }
+                    } else {
+                        var mess = "{{ 'Commande minimum'|trans }} " + mincom;
+                        alert(mess);
+                    }
+
+                }
+            }
+
+            function cancel(id, quantite, min, prix, st) {
+                $('#tdprod' + id).html(quantite);
+                $('#btnaction' + id).html("<button onclick=\"edit(" + id + "," + quantite + "," + min + "," + prix + "," + st + ")\" class=\"btn btn-success\" title=\"Modifier quantite\">\n" +
+                    "                            <i class=\"fa fa-edit\"></i>\n" +
+                    "                        </button>");
+                $('#tampon').val('ok');
+            }
+
+             function delprod(id) {
+               if(confirm('Etes-vous sur?')){
+                 $('#del' + id).html("<i class='fa-solid fa-spinner fa-spin-pulse fa-lg'></i>");
+                 $('#form' + id).submit();
+               }
+            }
+
+             function suptous() {
+               if(confirm('Etes-vous sur de vouloir tous supprimer?')){
+                 $('#suptou').html("<i class='fa-solid fa-spinner fa-spin-pulse fa-lg'></i>");
+                 $('#formdeleteall').submit();
+               }
+            }
+            {#function focu(id, quantite, min) {#}
+            {#    $('#tamp').val(id);#}
+            {#}#}
+
+            {#function nofocu(id, quantite, min) {#}
+            {#    $('#tamp').val('');#}
+            {#}#}
+            {#function validchambre() {#}
+            {#    var id = $('#tampon').val();#}
+            {#    if (id != '' && window.event.keyCode == 13) {//validation dela chambre par appui sur bouton entrer#}
+            {#        var reg = new RegExp("^[0-9]+$");#}
+            {#        if (reg.test($('#text' + id).val())) {#}
+            {#            $('#bt' + id).html("<img src='{{ asset('images/ajax-loader.gif')}}' width='20' />");#}
+            {#            $.ajax({#}
+            {#                type: "POST",#}
+            {#                url: "{{ path('') }}",#}
+            {#                data: "elv=" + id + "&numero=" + $('#text' + id).val(),#}
+            {#                success: function(data) {#}
+            {#                    if (data['id'] == 'ok') {#}
+            {#                        $('#tdnumch' + id).html($('#text' + id).val());#}
+            {#                    } else {#}
+            {#                        alert("{{'Une autre chambre du même hôtel possède déjà ce numéro'|trans }}");#}
+            {#                        $('#bt' + id).html("<i class='fa fa-save'></i>");#}
+            {#                    }#}
+            {#                },#}
+            {#                error: function() {#}
+            {#                    alert("{{'La requête n a pas abouti'|trans }}");#}
+            {#                }#}
+            {#            });#}
+            {#        } else alert("{{'invalide'|trans }}");#}
+            {#    }#}
+            {#}#}
+        </script>
+
+    {% endblock %}
+{% endblock %}
+

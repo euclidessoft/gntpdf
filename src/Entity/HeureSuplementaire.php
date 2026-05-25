@@ -1,0 +1,101 @@
+<?php
+
+namespace App\Entity;
+
+use App\Repository\HeureSuplementaireRepository;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass:HeureSuplementaireRepository::class) ]
+class HeureSuplementaire
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\ManyToOne(targetEntity:Employe::class, inversedBy:"heureSuplementaires") ]
+    private $employe;
+
+    #[ORM\Column(type:"float") ]
+    private $duree;
+
+    #[ORM\Column(type:"integer") ]
+    private $tauxHoraire;
+
+    #[ORM\Column(type:"datetime") ]
+    private $createdAt;
+
+    #[ORM\Column]
+    private ?bool $paye = null;
+    
+    public function __construct()
+    {
+        $this->paye = false;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getEmploye(): ?Employe
+    {
+        return $this->employe;
+    }
+
+    public function setEmploye(?Employe $employe): self
+    {
+        $this->employe = $employe;
+
+        return $this;
+    }
+
+    public function getDuree(): ?float
+    {
+        return $this->duree;
+    }
+
+    public function setDuree(float $duree): self
+    {
+        $this->duree = $duree;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getTauxHoraire(): ?int
+    {
+        return $this->tauxHoraire;
+    }
+
+    public function setTauxHoraire(int $tauxHoraire): self
+    {
+        $this->tauxHoraire = $tauxHoraire;
+
+        return $this;
+    }
+
+    public function isPaye(): ?bool
+    {
+        return $this->paye;
+    }
+
+    public function setPaye(bool $paye): static
+    {
+        $this->paye = $paye;
+
+        return $this;
+    }
+
+}

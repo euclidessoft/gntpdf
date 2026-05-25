@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accompte{% endblock %}
+
+{% block body %}
+    <h1>Accompte</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ accompte.id }}</td>
+            </tr>
+            <tr>
+                <th>Montant</th>
+                <td>{{ accompte.montant }}</td>
+            </tr>
+            <tr>
+                <th>Paye</th>
+                <td>{{ accompte.paye ? 'Yes' : 'No' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_accompte_index') }}">back to list</a>
+
+    <a href="{{ path('app_accompte_edit', {'id': accompte.id}) }}">edit</a>
+
+    {{ include('accompte/_delete_form.html.twig') }}
+{% endblock %}

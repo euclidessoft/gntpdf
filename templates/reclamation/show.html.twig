@@ -1,0 +1,202 @@
+{% extends 'client.html.twig' %}
+{% block title %} {{ "Commande-Reclamation"|trans }} - GNT Pharma {% endblock %}
+{% block reclamation %} active{% endblock %}
+{% block my_reclamation %} active{% endblock %}
+
+{% block body %}
+<div class="container mt-4 py-4 fond-7">
+    <h3 class="mt-4 mb-5 fw-bold">
+        <i class="fa fa-rotate me-2"></i>
+        {{ 'Réclamation'|trans }}
+    </h3>
+    <div class="col-md-6 offset-md-3 mt-4 mb-2 pt-3 pb-2 fond-7">
+            <div class="centrer">
+
+              <table class="table table-success-light table-bordered table-hover mn-1">
+        <thead>
+        <tr>
+            <th>{{'N° Commande'|trans}}</th>
+            <th>{{ 'Date commande'|trans }}</th>
+            <th>{{ 'Date Livraison'|trans }}</th>
+        </tr>
+        </thead>
+         <thead>
+        <tr>
+            <td> 
+                <button class="btn btn-success"
+                        data-bs-toggle="modal" data-bs-target="#modal">
+                    {{ reclamation.commande.id }}
+                </a>
+            </td>
+            <td>{{ reclamation.commande.date|date("d/m/Y H:i:s") }}</td>
+            <td>{{ reclamation.commande.dateefectlivraison|date("d/m/Y H:i:s") }}</td>
+        </tr>
+        </thead>
+        </table>
+             </div>
+    </div>
+        
+        {% for reclamation in reclamations %}
+    <table class="table table-success-light table-bordered table-hover table-striped mb-4 w-100">
+         <thead>
+        <tr>
+            <th>{{'CIP'|trans}}</th>
+            <th>{{ 'Désignation'|trans }}</th>
+            <th>{{ 'N Lot'|trans }}</th>
+            <th>{{ 'Peremption'|trans }}</th>
+            <th>{{ 'Quantité Concernée'|trans }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>{{ reclamation.produit.reference }}</td>
+            <td>{{ reclamation.produit.desigantion }}</td>
+            <td>{{ reclamation.lot }}</td>
+            <td>{{ reclamation.peremption|date("d/m/Y") }}</td>
+            <td>{{ reclamation.quantite }}</td>
+        </tr>
+        <tr>
+            <th>{{ 'Motif'|trans }}</th>
+            <td colspan="4">{{ reclamation.motif }}</td>
+        </tr>
+        <tr>
+            <th>{{ 'Commentaire'|trans }}</th>
+            <td colspan="4">{{ reclamation.commentaire }}</td>
+        </tr>
+        </tbody>
+        
+    </table>
+        {% endfor %}
+
+</div>
+
+<div class="container py-4">
+    {% for reponse in reclamation.reponses %}
+        <div class="row mt-4">
+
+            {% if 'ROLE_CLIENT' in reponse.user.roles or 'ROLE_CLIENT_ADMIN' in reponse.user.roles %}
+
+                <div class="col-md-7  py-4 fond-7">
+                    {{ reponse.user.nom  }} | {{ reponse.date|date('d/m/Y H:i:s') }}
+                    <hr class="text-secondaire">
+                    {{ reponse.message }}
+                </div>
+                <div class="col-md-5"> </div>
+
+            {% else %}
+                <div class="col-md-5"> </div>
+                <div class="col-md-7  py-4 fond-7">
+                    {{ reponse.user.nom  }} | {{ reponse.date|date('d/m/Y H:i:s') }}
+                    <hr class="text-secondaire">
+                    {{ reponse.message }}
+                </div>
+            {% endif %}
+        </div>
+    {% else %}
+    {% endfor %}
+</div>
+
+<div class="col-md-6 offset-md-3 mt-4 mb-5 pt-3 pb-2 fond-7">
+            <div class="centrer">
+
+<a target="_blank" id="r{{ reclamation.id }}" onclick="load('r{{ reclamation.id }}')" class="btn btn-danger me-2" href="{{ path('reclamation_show_pdf', {'id': reclamation.id}) }}">
+                            <i class="fa fa-file-pdf"></i>
+                            {{ 'vers Pdf'|trans }}
+                        </a>
+    {% if reclamation.usercloture is null  %}
+
+        
+
+             
+
+                <a id="{{ reclamation.id }}" onclick="load({{ reclamation.id }})" href="{{ path('reponse_new', {'reclamation' : reclamation.id }) }}" class="btn btn-success">
+                    <i class="fa fa-edit"></i>
+                    {{'Répondre'|trans}}
+                </a>
+
+
+        {% else %}
+
+
+                {{ 'Clôturer le'|trans }} {{ reclamation.cloture|date('d/m/Y H:i:s') }}
+
+
+
+
+    {% endif %}
+
+
+            </div>
+        </div>
+
+    <div class="modal fade" id="modal" tabindex="-1" tabindex="-1" aria-labelledby="" aria-hidden="true"
+         aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg text-center">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">
+                        </h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close">
+
+                    </button>
+                </div>
+                <div class="modal-body px-5">
+                    <div class="row justify-content-end">
+                        <div class="col-lg-4">
+                            <table class="table table-success-light table-bordered table-hover table-striped">
+                                <thead>
+                                <tr>
+                                    <th>{{ 'Numéro Commande'|trans }}</th>
+                                    <th>{{ 'Date de commande'|trans }} </th>
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <td>{{ reclamation.commande.id }}</td>
+                                <td>{{ reclamation.commande.date|date('d/m/Y') }}</td>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <table class="table table-success-light table-bordered table-hover table-striped w-100 text-center">
+                        <thead>
+                        <tr>
+                            <th>{{'N° Bordereau'|trans}}</th>
+                            <th>{{ 'Date de Livraison'|trans }}</th>
+                            <th>{{ 'CIP'|trans }}</th>
+                            <th>{{ 'Désignation'|trans }}</th>
+                            <th>{{ 'Quantité Commande'|trans }}</th>
+                            <th>{{'Quantité livrée'|trans}}</th>
+                            <th>{{'Quantité restante'|trans}}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for commande in commandes %}
+                        <tr>
+                            <td>{{ commande.livrer.id }}</td>
+                            <td>{{ commande.date|date('d/m/Y') }}</td>
+                            <td>{{ commande.produit.reference }}</td>
+                            <td>{{ commande.produit.desigantion }}</td>
+                            <td>{{ commande.quantitecommander }}</td>
+                            <td class="text-center">
+                                {{ commande.quantitelivrer }}
+                            </td>
+                            <td class="text-center">
+                                {{ commande.restealivrer }}
+                            </td>
+                            {% else %}
+                            {% endfor %}
+                    </table>
+                </div>
+                <div class="modal-footer px-5 py-4">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        {{ 'Fermer'|trans }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{{ form_start(form, {'attr': {'id': 'form'}}) }}
+
+
+{% for message in app.flashes('notice') %}
+<div role="alert" class="alert alert-success alert-dismissible fade show radius-10 shadow-black">
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    {{ message|trans }}
+</div>
+{% endfor %}
+
+<div class="row">
+    <div class="col-12 mb-4">
+        {{ form_row(form.employe, {'attr': {'placeholder': 'Nom du poste *'}, 'label': false}) }}
+    </div>
+    <div class="col-12 mb-4">
+        {{ form_row(form.dateEvaluation, {'attr': {'placeholder': 'Salaire du poste *'}, 'label': false}) }}
+    </div>
+
+    <h4>Critères d'évaluation</h4>
+    <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+        <thead>
+            <tr>
+                <th>Critère</th>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+                <th>4</th>
+                <th>5</th>
+                <th>Commentaires</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for critere in criteres %}
+            <tr>
+                <td>{{ critere.nom }}</td>
+                <td><input type="radio" name="evaluation[critereEvaluations][{{ critere.id }}]" value="1"></td>
+                <td><input type="radio" name="evaluation[critereEvaluations][{{ critere.id }}]" value="2"></td>
+                <td><input type="radio" name="evaluation[critereEvaluations][{{ critere.id }}]" value="3"></td>
+                <td><input type="radio" name="evaluation[critereEvaluations][{{ critere.id }}]" value="4"></td>
+                <td><input type="radio" name="evaluation[critereEvaluations][{{ critere.id }}]" value="5"></td>
+                <td><input type="text" name="evaluation[commentaires][{{ critere.id }}]" class="form-control" placeholder="Commentaires"></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{{ form_rest(form) }}
+{{ form_end(form) }}
+</div>

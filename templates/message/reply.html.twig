@@ -1,0 +1,56 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block communication %} active {% endblock %}
+{% block messagerie %} active {% endblock %}
+{% block title %}{{ "Nouvelle réponse"|trans }} - GNT Pharma {% endblock %}
+
+{% block body %}
+
+    <div class="container mt-5 mb-5 fond-7">
+        <h3 class="mt-4 mb-5 fw-bold">
+            <i class="fa fa-comments"></i>
+            {{ "Messagerie"|trans }}
+        </h3>
+        <div class="row">
+            {% set recus = '' %}
+            {% set envoyes = '' %}
+            {% set corbeille = '' %}
+            {{ include('message/menu.html.twig') }}
+            <div class="col-9 p-5" style="border-top: 2px solid var(--vert);border-left: 2px solid var(--vert);">
+                <div class="tab-content" id="v-pills-tabContent">
+                    {{ form_start(form) }}
+                    <div class="col-12 mb-4">
+                        {{ form_row(form.content, {'attr': {'placeholder': 'Ecrivez votre réponse ici *', 'rows': '10'}, 'label': false}) }}
+                    </div>
+                    <div class="col-md-3 offset-md-3 mt-4 pt-3 fond-7 d-table">
+                        <div class="centrer">
+                            <button type="submit" class="btn btn-shadow btn-green btn-normal mb-3 me-3" id="send"
+                                    onclick="envoie()">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                {{ 'Envoyer'|trans }}
+                            </button>
+
+                            <a href="{{ path("received") }}" class="btn btn-shadow btn-success-light btn-normal mb-3">
+                                <i class="fa fa-undo"></i>
+                                {{ 'Annuler'|trans }}
+                            </a>
+                        </div>
+                    </div>
+                    {{ form_rest(form) }}
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

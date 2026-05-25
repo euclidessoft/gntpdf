@@ -1,0 +1,72 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Commande"|trans }} - GNT Pharma {% endblock %}
+{% block finance %}active{% endblock %}
+{% block financement %}active{% endblock %}
+{% block financement_index %}active{% endblock %}
+{% block body %}
+<div class="container mt-4 fond-7">
+    <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+        <tbody>
+            <tr>
+                <td data-label="Date">{{ financement.date ? financement.date|date('d/m/Y') }}</td>
+                <td data-label="Provenance">{{ financement.compte }}</td>
+                <td data-label="Taux d'interet">{{ financement.taux }} %</td>
+                <td data-label="Duree">{{ financement.duree }} mois</td>
+                <td data-label="Motif">{{ financement.motif }}</td>
+                <td data-label="Montant">{{ financement.montant|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                <td data-label="Type">{{ financement.Type }}</td>
+                <td data-label="Banque">{{ financement.banque ? financement.banque.compte:'' }}</td>
+                <td data-label="Numero">{{ financement.numero }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="container mt-4 fond-7">
+    <h3 class="mt-4 mb-3 fw-bold">
+        <i class="fa fa-money-bill me-2"></i>
+        {{ "Listes des Remboursements"|trans }}
+    </h3>
+    <a href="{{ path('financement_index') }}" class="btn btn-success mb-4"><i class="fas fa-arrow-left me-2"></i>Retour</a>
+    <table class="table table-success-light table-bordered table-hover table-striped w-100 text-center" id="liste">
+        <thead>
+            <tr>
+                <th class="text-start">Date</th>
+                <th>Compte</th>
+                <th>Montant</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% set somme = 0 %}
+        {% for remboursement in financement.remboursements %}
+            <tr>
+                <td class="text-start">{{ remboursement.date ? remboursement.date|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ remboursement.compte }}</td>
+                <td>{{ remboursement.montant|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}</td>
+                {% set somme = somme + remboursement.montant %}
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="2" class="text-end fw-bold">Total :</td>
+            <td class="fw-bold"> {{somme|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}</td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+    {% endblock %}

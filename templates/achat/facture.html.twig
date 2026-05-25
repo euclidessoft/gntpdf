@@ -1,0 +1,60 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Approvisionnement"|trans }} No  - GNT Pharma {% endblock %}
+{% block stock %}active{% endblock %}
+{% block appro %}active{% endblock %}
+{% block all_appro %}active{% endblock %}
+
+{% block body %}
+    <div class="container mt-4 fond-7">
+        <h3 class="mt-4 mb-5 fw-bold">
+            <i class="fa fa-shop me-2"></i>
+            {{ "Détails Approvisionnement"|trans }}
+        </h3>
+        {% set total=0 %}
+        <table class="table table-success-light table-bordered table-hover table-striped w-100 text-center mt-5">
+            <thead>
+            <tr>
+                <th>{{ 'Code Produit'|trans }}</th>
+                <th class="text-start">{{ 'Désignation'|trans }}</th>
+                <th>{{'PGHT'|trans}}</th>
+                {#            <th>etat stosk</th>#}
+                <th>{{'Quantité'|trans}}</th>
+                <th>{{'Montant'|trans}}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for approvisionnement in approvisionnements %}
+                <tr>
+                    <td> {{ approvisionnement.produit.id }} </td>
+                    <td class="text-start">{{ approvisionnement.produit.desigantion }} </td>
+                    <td>{{ approvisionnement.produit.pght|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }} </td>
+                    <td>{{ approvisionnement.quantite|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                    <td>{{ (approvisionnement.produit.pght * approvisionnement.quantite)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                    {% set total = total + (approvisionnement.produit.pght * approvisionnement.quantite) %}
+
+
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="col-md-2 offset-md-4 mt-5 mb-5 pt-2 pb-2 fond-7">
+            <div class="centrer">
+{#                <a id="{{ approvisionner.id }}" onclick="load({{ approvisionner.id }})" href="{{ path('stock_show_print',{ 'id': approvisionner.id}) }}" class="btn btn-success float-end">#}
+                    <i class="fa fa-print"></i>
+                    {{ "payer"|trans }}
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

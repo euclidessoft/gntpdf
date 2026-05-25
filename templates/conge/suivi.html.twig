@@ -1,0 +1,103 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+
+{% block title %}{{ "Mes demandes des permission"|trans }} {% endblock %}
+{% block discipline %}active{% endblock %}
+{% block conges %}active{% endblock %}
+{% block suivi %}active{% endblock %}
+
+{% block body %}
+
+<div class="container mt-4 fond-7">
+    <h3 class="mt-4 mb-5 fw-bold">
+        <i class="fas fa-calendar-alt me-2"></i>
+        {{ "Mes demandes de permission en cours"|trans }}
+    </h3>
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+            <a class="nav-link active" href="{{ path('conges_employe_suivi') }}">
+                {{ 'Demandes en cours'|trans }}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ path('conges_employe_accepter') }}">
+                {{ 'Demandes acceptées'|trans }}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ path('conges_employe_refuser') }}">
+                {{'Demandes refusée'|trans}}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ path('conges_employe_index') }}">
+                {{'Toutes les demandes'|trans}}
+            </a>
+        </li>
+    </ul>
+    <a href="{{ path('conge_new') }}" class="btn btn-success mb-4"><i class="fas fa-plus"></i>Nouvelle demande</a>
+    <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+        <thead>
+            <tr>
+                <th>Type de Congé</th>
+                <th>Période demande</th>
+                <th>Période accordée</th>
+                <td>Raison</td>
+                <th>Statut</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for conge in conges %}
+            <tr>
+                <td data-label="{{ 'Type de congé'|trans }}">{{ conge.type.nom }}</td>
+                <td data-label="{{ 'Période demandée'|trans }}">{{ conge.dateDebut|date('d/m/Y') }} <small>au</small> {{ conge.dateFin|date('d/m/Y') }}
+                    <br> {{ "Durée"|trans }} : {{ conge.dateFin.diff(conge.dateDebut).days + 1 }} {{ "jours"|trans }}
+                </td>
+                <td data-label="{{ 'Période accordée'|trans }}">
+                    {% if conge.dateDebutAccorder is not null and conge.dateFinAccorder is not null %}
+                        {{ conge.dateDebutAccorder|date('d/m/Y') }} <small>au</small> {{ conge.dateFinAccorder|date('d/m/Y') }}
+                        <br> Durée : {{ conge.dateFinAccorder.diff(conge.dateDebutAccorder).days + 1 }} jours
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td data-label="{{ 'Raison'|trans }}">{{ conge.description }}</td>
+                <td data-label="{{ 'Statut'|trans }}">
+                    {% if conge.status == 0 %}
+                        <span class="badge bg-danger">
+                        {{ "En attente de validation"|trans }}
+                    </span>
+                    {% else %}
+                        <span class="badge bg-success">
+                        {{ "Approuvée"|trans }}
+                    </span>
+                    {% endif %}
+                </td>
+                <td data-label="{{ 'Actions'|trans }}">
+                    {% if conge.datemodifier == true and conge.confirmer is null %}
+                        <a href="{{ path('conge_confirmer', {'id': conge.id }) }}" class="btn btn-success btn-sm">
+                            <i class="fa fa-check"></i> {{ "Confirmer"|trans }}
+                        </a>
+                        <a href="{{ path('conge_decliner', {'id': conge.id }) }}" class="btn btn-success-light btn-sm">
+                            <i class="fas fa-times"></i> {{ "decliner"|trans }}
+                        </a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

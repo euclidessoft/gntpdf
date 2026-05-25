@@ -1,0 +1,219 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+
+{% block paie %}active{% endblock %}
+
+{% block body %}
+{% set employe = paie.employe %}
+    <div class="container fond-7 mb-5">
+        <div class="row" style="border-bottom: 2px solid #039c4f;padding-bottom: 10px;">
+            <div class="col-2 p-0">
+                <img src="{{ asset('images/gnt.png') }}" alt="Logo" class="w-100">
+            </div>
+            <div class="col-10 text-center mt-2">
+                <div class="row">
+                    <div class="col-12 titre text-center text-green">
+                        GNT PHARMA
+                    </div>
+                    <div class="col-12 text">
+                        Montée Éleveur Immeuble Sainte Marie
+                        <br>
+                        BP : 3582 Yaoundé – Cameroun, NGOUSSO
+                    </div>
+                    <div class="col-12 text">
+                        +237 69 71 49 4 12 / +237 67 52 47 865
+                    </div>
+                    <div class="col-12 text">
+                        info@gntpharma-cameroun.com / www.gnt-pharma.com
+                    </div>
+                </div>
+            </div>
+        </div>
+        <h3 class="text-center text-uppercase font-weight-bold mt-5">
+            Bulletin de Paie
+        </h3>
+        <p class="text-center mb-5">
+            {{ mois.nom|trans }} {{ 'now'|date('Y') }}
+{#            Du 01/03/2025 au 21/03/2025#}
+        </p>
+        <p class="mt-5">&nbsp;</p>
+        <div class="row my-5">
+            <div class="col-7">
+                <div class="row">
+                    <div class="col-4 text-end fw-bold">
+                        {{ "Matricule : "|trans }}
+                    </div>
+                    <div class="col-8">
+                        {{ employe.matricule }}
+                    </div>
+                    <div class="col-4 text-end fw-bold">
+                        {{ "Poste : "|trans }}
+                    </div>
+                    <div class="col-8">
+                        {{ employe.poste.nom }}
+                    </div>
+                    <div class="col-4 text-end fw-bold">
+                        {{ "Département : "|trans }}
+                    </div>
+                    <div class="col-8">
+                        {{ employe.poste.departement.nom }}
+                    </div>
+                    <div class="col-4 text-end fw-bold">
+                        {{ "Date d'embauche : "|trans }}
+                    </div>
+                    <div class="col-8">
+                        {{ employe.hireDate|date('d/m/Y') }}
+                    </div>
+                    <div class="col-4 text-end fw-bold">
+                        {{ "Ancienneté : "|trans }}
+                    </div>
+                    <div class="col-8">
+                        {% set yearDiff = 'now'|date('Y') - employe.hireDate|date('Y') %}
+                        {% set monthDiff = 'now'|date('m') - employe.hireDate|date('m') + 1 %}
+                        {% if yearDiff <= 0 %}
+
+                        {% elseif yearDiff > 0  and yearDiff < 2 %}
+                            {{ yearDiff }} {{ "an"|trans }}
+                        {% else %}
+                            {{ yearDiff }} {{ "ans"|trans }}
+                        {% endif %}
+                        {{ monthDiff }} {{ "mois"|trans }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-5 px-5">
+                <div class="col-12 border-green border-2 radius-10 p-4">
+                    <h4 class="fw-bold text-dark">
+                        {{ employe.nom }} {{ employe.prenom }}
+                    </h4>
+                    <p class="">
+                        {{ employe.adresse }}
+                    </p>
+                </div>
+            </div>
+            <div class="col-12 mt-5">
+                <table class="table table-success-light table-bordered w-100 bulletin">
+                    <thead>
+                    <tr class="text-center">
+                        <th class="text-start">ELEMENTS DE PAIE</th>
+                        <th>BASE</th>
+                        <th>TAUX</th>
+                        <th>GAINS</th>
+                        <th>RETENUES</th>
+                        <th>COTISATIONS <br> PATRONALES</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="text-end">
+                        <td class="text-start">SALAIRES DE BASE</td>
+                        <td>{{ employe.poste.salaire|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                        <td></td>
+                        <td>{{ employe.poste.salaire|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr class="text-end">
+                        <td class="text-start">SURSALAIRES</td>
+                        <td>{{ employe.sursalaire|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                        <td></td>
+                        <td>{{ employe.sursalaire|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr class="fw-bold text-end">
+                        <td class="text-start">TOTAL DES GAINS(Brut)</td>
+                        <td></td>
+                        <td></td>
+                        <td>{{ (employe.sursalaire + employe.poste.salaire)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr class="text-end">
+                        <td class="text-start">TOTAL COTISATIONS SOCIALES</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>14 000</td>
+                        <td></td>
+                    </tr>
+                    <tr class="text-end">
+                        <td class="text-start">TOTAL CHARGES PATRIONALES</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>7 000</td>
+                    </tr>
+                    <tr class="fw-bold text-end">
+                        <td class="text-start">TOTAL DES COTISATIONS ET CONTRIBUTIONS</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>14 000</td>
+                        <td>7 000</td>
+                    </tr>
+                    <tr class="fw-bold">
+                        <td colspan="3">
+                            NET IMPOSABLE
+                        </td>
+                        <td class="text-end">{{ (employe.sursalaire + employe.poste.salaire- 14000)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-12 mt-4">
+                <table class="table table-success-light table-bordered w-100 bulletin">
+                    <thead>
+                    <tr class="text-center">
+                        <th colspan="2" class="text-start">Impôt sur le revenu</th>
+                        <th>Base</th>
+                        <th>Taux</th>
+                        <th>Montant</th>
+                        <th>Cumul annuel</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="text-end">
+                        <td colspan="2" class="text-start">Impôt sur le revenu prélevé à la source</td>
+                        <td>{{ (employe.sursalaire + employe.poste.salaire- 14000)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                        <td></td>
+                        <td>8 000</td>
+                        <td>24 000</td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-7">&nbsp;</div>
+            <div class="col-5 p-4">
+                <div class="row bg-success-light p-3">
+                    <div class="col-6">
+                        <h3 class="text-dark fw-bold">
+                            Net à payer
+                        </h3>
+                        <p class="mb-0"> Validé le : {{ paie.date|date('d/m/Y') }}</p>
+                    </div>
+                    <div class="col-6">
+                        <h3 class="text-dark text-end fw-bold">
+                            {{ (employe.sursalaire + employe.poste.salaire- 14000-8000)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                        </h3>
+                        <p class="text-end mb-0"> Payé le :  {{ paie.datepaye|date('d/m/Y') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br><br><br><br><br>
+    </div>
+{% endblock %}

@@ -1,0 +1,118 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Commande"|trans }} - GNT Pharma {% endblock %}
+{% block commande %}active{% endblock %}
+{% block suivi %}active{% endblock %}
+
+{% block body %}
+    <div class="container_paiement  mt-4 fond-7 text-center">
+        <h3 class="mt-4 mb-5 fw-bold">
+            <i class="fa-solid fa-list-check me-2"></i>
+            {{ "Choisissez un moyen de Paiement"|trans }}
+        </h3>
+        <form action="#">
+            <input type="radio" name="payment" id="credit" value="Credit">
+            <input type="radio" name="payment" id="carte" value="cartebancaire">
+            <input type="radio" name="payment" id="virement" value="virementMethod">
+            <input type="radio" name="payment" id="mobil" value="mobileMoney">
+            <input type="radio" name="payment" id="AMEX" value="AMEX">
+
+
+            <div class="category">
+                <label for="carte" class="cartebancaire">
+                    <div class="imgName">
+                        <div class="imgContainer carte_bancaire">
+                            <img src="{{ asset('images/carte_bancaire.png') }}" alt="">
+                        </div>
+                        <span class="name">{{ 'Carte Bancaire'|trans }}</span>
+                    </div>
+                    <span class="check">
+                    <i class="fa-solid fa-circle-check"></i>
+                </span>
+                </label>
+                <label for="credit" class="creditMoney">
+                    <div class="imgName">
+                        <div class="imgContainer credit">
+{#                            <img src="{{ asset('images/carte_bancaire.png') }}" alt="">#}
+                            <i class="fa-solid fa-sack-dollar fa-4x text-green"></i>
+                        </div>
+                        <span class="name">{{'Crédit'|trans}}</span>
+                    </div>
+                    <span class="check">
+                    <i class="fa-solid fa-circle-check"></i>
+                </span>
+                </label>
+
+                <label for="virement" class="virementMethod">
+                    <div class="imgName">
+                        <div class="imgContainer virement">
+                            <img src="{{ asset('images/virement.png') }}" alt="">
+                        </div>
+                        <span class="name">{{ 'Virement'|trans }}</span>
+                    </div>
+                    <span class="check"><i class="fa-solid fa-circle-check"></i></span>
+                </label>
+
+                <label for="mobil" class="mobilMoney">
+                    <div class="imgName">
+                        <div class="imgContainer mobil">
+                            <img src="{{ asset('images/mobilMoney.png') }}" alt="">
+                        </div>
+                        <span class="name">{{ 'Mobile Money'|trans }}</span>
+                    </div>
+                    <span class="check"><i class="fa-solid fa-circle-check"></i></span>
+                </label>
+
+                <label for="AMEX" class="amexMethod">
+                    <div class="imgName">
+                        <div class="imgContainer espece">
+                            <img src="{{ asset('images/cash.png') }}" alt="">
+                        </div>
+                        <span class="name">{{ 'ESPECE'|trans }}</span>
+                    </div>
+                    <span class="check"><i class="fa-solid fa-circle-check"></i></span>
+                </label>
+            </div>
+
+            <button type="button" class="btn btn-success mt-3" onclick="choix()" id="valider">
+                <i class="fa fa-money-bill"></i>
+                Validez
+            </button>
+        </form>
+    </div>
+    {% block scripts %}
+        <script>
+            function choix() {
+                if ($('input[type=radio][name=payment]:checked').val() == 'AMEX') {
+                     $("#valider").addClass("disabled");
+                $("#valider").html("<i class='fa-solid fa-spinner fa-spin-pulse fa-lg'></i>");
+                    var url = $(location).attr("href");
+                    url = url.replace("/Choix_Paiement_extranet_promo/0", "/ConfirmationPaiement_extranet_promo/");
+                    document.location.href = url;
+
+                } else if ($('input[type=radio][name=payment]:checked').val() == 'Credit') {
+                     $("#valider").addClass("disabled");
+                $("#valider").html("<i class='fa-solid fa-spinner fa-spin-pulse fa-lg'></i>");
+                    var url = $(location).attr("href");
+                    url = url.replace("/Choix_Paiement_extranet_promo/0", "/ConfirmationCredit_extranet_promo/");
+                    document.location.href = url;
+
+                } else alert('{{'Bientôt disponible'|trans}}')
+
+            }
+
+
+        </script>
+    {% endblock %}
+
+{% endblock %}

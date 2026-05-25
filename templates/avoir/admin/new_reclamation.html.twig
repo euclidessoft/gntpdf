@@ -1,0 +1,165 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Creation Avoir"|trans }} - GNT Pharma {% endblock %}
+{% block officine %} active {% endblock %}
+{% block new_avoir %} active {% endblock %}
+
+{% block body %}
+    <div class="container-fluid mt-4 p-4 mb-5 fond-7">
+        <h3 class="mb-5 fw-bold">
+            <i class="fa fa-money-bill me-2"></i>
+            {{ "Création avoir"|trans }}
+        </h3>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="p-5 fond-7">
+                    <h4 class="mb-5 fw-bold">
+                        <i class="fa fa-rotate me-2"></i>
+                        {{ 'Réclamation'|trans }}
+                    </h4>
+                    <table class="table table-success-light table-bordered table-hover table-striped mb-4 w-100">
+                        <thead>
+                        <tr>
+                            <th>{{ 'Date'|trans }}</th>
+                            <th>{{ 'Client'|trans }}</th>
+                            <th>{{'N° Commande'|trans}}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>{{ reclamation.creation ? reclamation.creation|date('Y-m-d') : '' }}</td>
+                            <td>{{ reclamation.commande.user.nom }}</td>
+                            <td>
+                                <a type="button"
+                                   data-bs-toggle="modal" data-bs-target="#modal">
+                                    {{ reclamation.commande.id }}
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>{{ 'Message'|trans }}</th>
+                            <td colspan="2">{#{{ reclamation.commentaire }}#}</td>
+                        </tr>
+
+                    </table>
+                    <button type="button"
+                            class="btn btn-success"
+                            data-bs-toggle="modal" data-bs-target="#modal"
+                            id="btn">
+                        <i class="fa fa-list"></i>
+                        {{ 'Détails'|trans }}
+                    </button>
+
+
+                    <div class="modal fade" id="modal" tabindex="-1" tabindex="-1" aria-labelledby="" aria-hidden="true"
+                         aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered text-center modal-lg">
+                            <div class="modal-content ">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">
+                                        {{ 'Réclamation'|trans }}</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close">
+
+                                    </button>
+                                </div>
+                                <div class="modal-body px-5">
+                                    <div class="container py-4">
+                                        {% for reponse in reclamation.reponses %}
+                                            <div class="row mt-4">
+                                                {% if 'ROLE_CLIENT' in reponse.user.roles %}
+
+                                                    <div class="col-md-7  py-4 fond-7">
+                                                        {{ reponse.user.nom }} | {{ reponse.date|date("d/m/Y") }}
+                                                        <hr class="text-secondaire">
+                                                        {{ reponse.message }}
+                                                    </div>
+                                                    <div class="col-md-5"></div>
+
+                                                {% else %}
+                                                    <div class="col-md-5"></div>
+                                                    <div class="col-md-7  py-4 fond-7">
+                                                        {{ reponse.user.nom }} | {{ reponse.date|date("d/m/Y") }}
+                                                        <hr class="text-secondaire">
+                                                        {{ reponse.message }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        {% else %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-5 fond-7">
+                    <h4 class="mb-5 fw-bold">
+                        <i class="fa fa-money-bill me-2"></i>
+                        {{ 'Montant avoir'|trans }}
+                    </h4>
+                    {{ include('avoir/admin/_form.html.twig') }}
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+    {% block script %}
+        <script>
+           function soumission() {
+               if ($('#avoir_Montant').val() != "" || $('#avoir_Montant').val() != 0 ) {
+                   $("#sender").html("<i class='fa-solid fa-spinner fa-spin-pulse fa-lg'></i>");
+                   $('#form').submit();
+
+               }
+               else alert('veuillez renseigner le montant.');
+           }
+            function avoir(commande) {
+                var prod = "0";
+                $("input[type=checkbox]:checked").each(
+                    function () {
+                        if ($(this).attr("id") != 'tous') {
+                            prod = prod + ";" + $(this).attr("id");
+                        }
+                    });
+                if (prod != "0") {
+                    if (confirm("{{ 'Voulez-vous vraiment créer cet avoir ?'|trans }}")) {
+
+                        $("#valider").html("<i class='fa-solid fa-spinner fa-spin-pulse fa-lg'></i>");
+                        $.ajax({
+                            type: "POST",
+                            url: "{{ path('avoir_valider_reste') }}",
+                            data: "commande=" + commande + "&prod=" + prod,
+                            success: function (data) {
+                                if (data['id'] != '') {
+                                    document.location.href = "{{ path('avoir_index') }}";
+                                }
+                            },
+                            error: function () {
+                                alert("{{ 'La requête n\'a pas abouti'|trans }}");
+                            }
+                        });
+                    }
+
+                } else alert("{{ 'Sélectionnez au moins un produit'|trans }}");
+            }
+        </script>
+    {% endblock %}
+{% endblock %}

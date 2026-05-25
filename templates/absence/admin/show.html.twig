@@ -1,0 +1,120 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block discipline %}active{% endblock %}
+{% block body %}
+<div class="col-lg-8 mt-4 fond-7">
+    <h3 class="mt-4 mb-5 fw-bold text-center">
+        <i class="fa fa-user-clock me-2"></i>
+        {{ "Détails de l'absences"|trans }}
+    </h3>
+
+    <div class="card shadow-sm">
+        <div class="card-header text-white">
+            <h5 class="mb-0">Informations sur l'employé</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <th class="w-50">Employé</th>
+                        <td><strong>{{ absences.employe.nom }} {{ absences.employe.prenom }}</strong></td>
+                    </tr>
+                    <tr>
+                        <th>Période d'absences</th>
+                        <td>
+                            <i class="fa fa-calendar-alt"></i>
+                            {{ absences.dateAbsence|date('d/m/Y') }}
+                            {% if absences.dateAbsence != absences.dateFin %}
+                            au {{ absences.dateFin|date('d/m/Y') }}
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Justification (fichiers)</th>
+                        {% if absences.reponseAbsences|length > 0 %}
+                        {% for justificatif in absences.reponseAbsences %}
+                        <td>
+                            <a href="{{ asset('uploads/justificatifs/' ~ justificatif.file) }}" target="_blank" class="btn btn-success btn-sm">
+                               <i class="fas fa-eye"></i> Voir le justificatif
+                            </a>
+                        </td>
+                        {% endfor %}
+                        {% else %}
+                        <td>Aucun justificatif fourni</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <th>Statut</th>
+                        <td>
+                            {% if absences.status == 0 and absences.justifier == 0 %}
+                            <span class="badge bg-warning"><i class="fas fa-exclamation-circle"></i> En attente de justification</span>
+                            {% elseif absences.status == 1 and absences.justifier == 0 %}
+                            <span class="badge bg-info"><i class="fas fa-clock"></i> En attente de validation</span>
+                            {% elseif absences.status == 1 and absences.justifier == 1 %}
+                            <span class="badge bg-success"><i class="fas fa-check-circle"></i> Absence justifiée</span>
+                            {% elseif absences.status == 0 and absences.justifier == 1 %}
+                            <span class="badge bg-danger"><i class="fas fa-times-circle"></i> Non justifiée</span>
+                            {% else %}
+                            <span class="badge bg-secondary"><i class="fas fa-question-circle"></i> Statut inconnu</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Décisions</th>
+                        <td>
+                            {% for decision in absences.decisions %}
+                            <p>{{ decision.type }}</p>
+                            {% else %}
+                            <p>Aucune décision</p>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    {% if (absences.status == 1 and absences.justifier == 1) or (absences.status == 0 and absences.justifier == 1) %}
+                    <tr>
+                        <th>Responsable</th>
+                        <td>{{ absences.responsable.nom ~ ' ' ~ absences.responsable.prenom }}</td>
+                    </tr>
+                    <tr>
+                        <th>Date de confirmation</th>
+                        <td>{{ absences.dateConfirm ? absences.dateConfirm|date('d/m/Y') : '' }}</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        {% if absences.justifier == 0 and absences.status == 1 %}
+                        <th>Action</th>
+                        <td>
+                            <form method="POST" action="{{ path('absence_confirmer', {'id': absences.id }) }}" style="display:inline;">
+                                <input type="hidden" name="_token" value="{{ csrf_token('confirmer' ~ absences.id) }}">
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    <i class="fas fa-check"></i> Accepter
+                                </button>
+                            </form>
+                            <a href="{{ path('absence_refuser', {'id': absences.id }) }}" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Êtes-vous sûr de vouloir refuser cette absence ?');">
+                                <i class="fas fa-times"></i> Refuser
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="text-center py-4">
+        <a href="{{ path('absence_index') }}" class="btn btn-success-light">
+            <i class="fa fa-arrow-left"></i> {{ 'Retour'|trans }}
+        </a>
+    </div>
+</div>
+{% endblock %}

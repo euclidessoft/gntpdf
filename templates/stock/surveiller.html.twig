@@ -1,0 +1,105 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Commande"|trans }} - GNT Pharma {% endblock %}
+{% block stock %}active{% endblock %}
+{% block etat_stock %}active{% endblock %}
+
+{% block body %}
+    <div class="container mt-4 fond-7">
+        <h3 class="mt-4 mb-5 fw-bold">
+            <i class="fa fa-shopping-cart me-2"></i>
+            {{ "Etat stock Produits"|trans }}
+        </h3>
+        <ul class="nav nav-tabs mb-4">
+            {# {% if is_granted('ROLE_STOCK') %} #}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('stock_index') }}">
+                        {{ 'Disponible'|trans }}</a>
+                </li>
+            {# {% endif %} #}
+            <li class="nav-item">
+                <a class="nav-link active" href="#">
+                    {{ 'A surveiller'|trans }}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('stock_rupture') }}">
+                    {{ 'En rupture'|trans }}</a>
+            </li>
+            {# {% if is_granted('ROLE_STOCK') %} #}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('stock_peremption') }}">
+                        {{ 'Péremption Imminente'|trans }}</a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link" href="{{ path('stock_sortie_produit') }}">
+                    {{ 'Historique de sortie Produit'|trans }}
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('stock_mouvement') }}">
+                    {{ 'Mouvement de Stock'|trans }}
+                </a>
+            </li>
+            {# {% endif %} #}
+        </ul>
+
+        <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+            <thead>
+            <tr>
+                <th>{{ 'CIP'|trans }}</th>
+                <th>{{ 'Désignation'|trans }}</th>
+                <th>{{ 'DCI'|trans }}</th>
+                <th>{{ 'Fabricant'|trans }}</th>
+                <th>{{ 'Quantité'|trans }}</th>
+                {% if is_granted('ROLE_STOCK') %}
+                <th>{{ 'Actions'|trans }}</th>
+                {% endif %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for produit in produits %}
+                <tr>
+                    <td>{{ produit.reference }}</td>
+                    <td>{{ produit.desigantion }}</td>
+                    <td>{{ produit.dci }}</td>
+                    <td>{{ produit.fabriquant }}</td>
+                    <td>{{ produit.stock|number_format(0,',' , ' ') }}</td>
+                    {% if is_granted('ROLE_STOCK') %} 
+                    <td>
+                        <a id="{{produit.id }}" onclick="load({{ produit.id }})" class="btn btn-success" href="{{ path('stock_produit_show', {'id': produit.id}) }}">
+                            <i class="fa fa-list"></i>
+                            {{'Détails'|trans}}
+
+                        </a>
+                    </td>
+                    {% endif %}
+
+                </tr>
+
+            {% endfor %}
+            </tbody>
+        </table>
+        <div class="centrer gap-3  m-4 fond-7">
+            <button id="exportExcel" class="btn btn-green">
+                <i class="fa fa-file-excel"></i> Exporter Excel
+            </button>
+            <button id="exportPdf" class="btn btn-danger">
+                <i class="fa fa-file-pdf"></i> Exporter PDF
+            </button>
+            {# <a href="#" class="btn btn-success-light me-2">
+                <i class="fa fa-print"></i> Imprimer
+            </a> #}
+        </div>
+    </div>
+    </div>
+{% endblock %}

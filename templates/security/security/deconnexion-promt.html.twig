@@ -1,0 +1,30 @@
+<div class="modal fade" id="logout" tabindex="-1" tabindex="-1" aria-labelledby="" aria-hidden="true" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered text-center">
+        <div class="modal-content ">
+            <div class="modal-header">
+                <h4 class="modal-title fs-5" id="exampleModalLabel">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    {{'Déconnexion'|trans}}
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close">
+
+                </button>
+            </div>
+            <div class="modal-body px-5 pb-5">
+                <p class="">
+                    <b>
+                        {{'Voulez-vous vraiment vous déconnecter ?'|trans}}
+                    </b>
+                </p>
+                <button type="button" id="oui" onclick="deconnexion()" class="btn btn-danger me-2">
+                    Oui
+                </button>
+                <button type="button" class="btn btn-success-light" data-bs-dismiss="modal" aria-label="Close">
+                    Non
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

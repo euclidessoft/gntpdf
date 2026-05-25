@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Subvention{% endblock %}
+
+{% block body %}
+    <h1>Edit Subvention</h1>
+
+    {{ include('subvention/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_subvention_index') }}">back to list</a>
+
+    {{ include('subvention/_delete_form.html.twig') }}
+{% endblock %}

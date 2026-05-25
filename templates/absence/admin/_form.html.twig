@@ -1,0 +1,24 @@
+{{ form_start(form, {'attr': {'id': 'form', 'class':'w-100'}}) }}
+
+<div class="col fond-7 mb-5 p-5">
+    <h4 class="fw-bold mb-5">
+        <i class="fa fa-user-slash"></i>
+        {{ 'Nouvelle absence'|trans }}
+    </h4>
+
+    {% for message in app.flashes('notice') %}
+    <div role="alert" class="alert alert-success alert-dismissible fade show radius-10 shadow-black">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        {{ message|trans }}
+    </div>
+    {% endfor %}
+
+    <div class="row">
+
+        <div class="col mb-4">
+            {{ form_row(form.employe, {'attr': {'placeholder': 'Sélectionnez un employé *'}, 'label': 'Sélectionnez un employé *'}) }}
+        </div>
+
+        {{ form_rest(form) }}
+    </div>
+</div>

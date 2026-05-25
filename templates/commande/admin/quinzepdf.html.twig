@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            color: #333;
+        }
+
+        /* ── En-tête ── */
+        .header-table {
+            width: 100%;
+            border-bottom: 2px solid #039c4f;
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+        }
+        .header-table td { vertical-align: middle; border: none !important; }
+        .logo { width: 80px; }
+        .company-name {
+            font-size: 22px;
+            font-weight: bold;
+            color: #039c4f;
+            text-align: center;
+        }
+        .company-info {
+            font-size: 10px;
+            text-align: center;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        /* ── Titre facture ── */
+        .titre-facture {
+            text-align: center;
+            font-size: 15px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 16px 0 4px;
+        }
+        .sous-titre {
+            text-align: center;
+            font-size: 11px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        /* ── Tableaux ── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+        }
+        th, td {
+            border: none;
+            padding: 5px 6px;
+            vertical-align: middle;
+        }
+        thead th {
+            background-color: #c5fbae;
+            color: #000;
+            text-align: center;
+            font-size: 10px;
+        }
+        tbody tr:nth-child(even) td {
+            background-color: #f2f2f2;
+        }
+        td { font-size: 10px; }
+
+        /* ── Tableau récap commande ── */
+        .recap-wrapper {
+            width: 75%;
+            margin: 0 0 20px auto;
+        }
+        .recap-wrapper td { text-align: center; border: none; }
+
+        /* ── Badge UG ── */
+        .badge {
+            background-color: #cc0000;
+            color: #fff;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: bold;
+        }
+
+        /* ── Totaux ── */
+        .text-end { text-align: right; }
+        .text-center { text-align: center; }
+        .fw-bold { font-weight: bold; }
+        .text-nowrap { white-space: nowrap; }
+
+        /* ── Montant en lettres ── */
+        .montant-lettres {
+            margin: 20px 0;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        /* ── Pied de page ── */
+        .footer {
+            margin-top: 30px;
+            font-size: 9px;
+            color: #888;
+            text-align: center;
+            border-top: 1px solid #ccc;
+            padding-top: 8px;
+        }
+    </style>
+</head>
+<body>
+
+{# ── En-tête société ── #}
+<table class="header-table">
+    <tr>
+        <td style="width:90px;">
+              {% if logoBase64 %}
+    <img src="{{ logoBase64 }}" alt="Logo" style="width:80px;">
+{% endif %}
+        </td>
+        <td style="text-align:center;vertical-align:middle;">
+            <div class="company-name">GNT PHARMA</div>
+            <div class="company-info">
+                BP : 3582 Yaoundé – Cameroun, NGOUSSO<br>
+                Montée Éleveur Immeuble Sainte Marie<br>
+                +237 69 71 49 412 &nbsp;-&nbsp; +237 67 52 47 865<br>
+                info@gnt-pharma.com &nbsp;-&nbsp; www.gnt-pharma.com<br>
+                RCCM N° : RC/YAE/2023/M/105 &nbsp;-&nbsp; NIU : M122217881373Q
+            </div>
+        </td>
+    </tr>
+</table>
+
+{# ── Titre ── #}
+<div class="titre-facture">{{ 'Releve'|trans }}</div>
+<div class="sous-titre">
+ {{ 'Numero'|trans }} : {{ releve.numero }}</br>
+      <div>      {% if releve.periode != "Precedent" %}
+             {{releve.quinzaine}} {{ "quinzaine"}} {{ releve.periode|date("m/Y")}} 
+            {% else %} 
+             {{ "Releve Factures de la periode precedente à la deuxieme quinzaine d'avril 20226"|trans }} 
+            {% endif %}
+            </div>
+</div>
+
+       
+{# ── Récap commande ── #}
+<div class="recap-wrapper">
+    <table>
+        <thead>
+            <tr>
+              
+                <th>{{ 'Client'|trans }}</th>
+                <th>{{ 'RCCM'|trans }}</th>
+                <th>{{ 'NIU'|trans }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                
+                <td> {{ releve.client.nom }} {{ releve.client.prenom }}</td>
+                <td>{{ releve.client.rccm }}</td>
+                <td>{{ releve.client.niu }}</td>
+               
+            </tr>
+        </tbody>
+    </table>
+</div>
+       
+          <table>
+            <thead>
+            <tr>
+                <th colspan="5">{{ 'factures'|trans }}</th>
+            </tr>
+            <tr>
+                {# <th>{{ 'Date Commande'|trans }}</th> #}
+                <th>{{ 'Date Facturation'|trans }}</th>
+                <th>{{'Numero Facture'|trans}}</th>
+                <th>{{'Mode Paiement'|trans}}</th>
+                <th>{{ 'Montant'|trans }}</th>
+                <th>{{'Date due'|trans}}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% set tva = 0 %}
+            {% set prelevement = 0 %}
+            {% set avoir = 0 %}
+            {% set prelevementavoir = 0 %}
+            {% set montant = 0 %}
+            {% set total = 0 %}
+            {% set avance = 0 %}
+            {% for commande in commandes %}
+                <tr>
+                    {# <td>{{ commande.date }}</td> #}
+                    <td>{{ commande.date }}</td>
+                    <td> {{ commande.numerofacture}}</td>
+                    <td>{{ commande.datedue ? 'CREDIT': 'AVOIR'}}</td>
+                  <td>
+                  {% if commande.datedue != ""%} 
+                    {{ commande.montant|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                 {% else %}
+                     {{ "-"~commande.montant|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                    {% set avoir = avoir + commande.montant %}
+                    {# {% set prelevementavoir = prelevementavoir + commande.prelevement %} #}
+                  {% endif %}
+                  {# {% set montant = montant + (commande.montant - commande.tva - commande.acompte ) %}
+                  {% set avance = avance + commande.versement %}
+                  {% set total = total + commande.montant %}
+                  {% set tva = tva + commande.tva %}
+                  {% set prelevement = prelevement + commande.acompte %} #}
+                  </td>
+                  <td>
+                  {{ commande.datedue }}
+                  </td>
+                </tr>
+            {% else %}
+            {% endfor %}
+            </tbody>
+        </table>
+       
+
+         <table>
+            <thead>
+            <tr>
+                <th>{{ 'TAUX TVA'|trans }}</th>
+                <th>{{'TAUX PRELEVEMENT'|trans}}</th>
+                <th>{{'T.V.A'|trans}}</th>
+                <th>{{ 'TOTAL H.T'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>0,000%</td>
+                    <td>2%</td>
+                    <td>{{ releve ? releve.tva|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}</td>
+                    <td>{{ releve ? (releve.ht - releve.htavoir)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}</td>
+                </tr>
+                <tr>
+                    <td>Prelevement factures initiales</td>
+                    <td>{{ releve ? releve.prelevement|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}</td>
+                    <td>{{ releve ? releve.tva|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}</td>
+                    <td>{{ releve ? releve.ht|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}</td>
+                </tr>
+                {% if avoir != 0 %}
+                    <tr>
+                        <td>Prelevement factures AVOIR</td>
+                        <td>{{ releve ? "-"~releve.prelevementavoir|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '0'}}</td>
+                        <td>{{ releve ? "-"~releve.tvaavoir|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : "0"}}</td>
+                        <td>-{{ releve ? (releve.avoir - releve.prelevementavoir - releve.tvaavoir)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+        {% set  totalavantage = 0 %}
+        {% if avantage|length > 0 %}
+            <table>
+                <thead>
+                <tr>
+                    <th>{{ 'ESCOMPTE'|trans }}</th>
+                    <th>{{'COMMISSION'|trans}}</th>
+                    <th>{{'RISTOURNE'|trans}}</th>
+                    <th>{{ 'TOTAL H.T'|trans }}</th>
+                    <th>{{ 'TVA/COMMISSION'|trans }}</th>
+                    <th>{{ 'TOTAL avantage'|trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ avantage[0].escompte|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                        <td>{{ avantage[0].commission|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                        <td>{{ avantage[0].ristourne|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                        <td>
+                        {% set toatalav = avantage[0].escompte + avantage[0].commission + avantage[0].ristourne %}
+                        {{ toatalav|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                        <td>
+                        {% set tvacom = avantage[0].commission * avantage[0].tva /100 %}
+                        {{ tvacom|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                        <td>
+                        {% set totalavantage = toatalav - tvacom %}
+                        {{ totalavantage|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        {% endif %}
+
+        <table>
+            <thead>
+            <tr>
+                <th>{{'PRELEVEMENT'|trans}} {{ releve ? (releve.prelevement - releve.prelevementavoir)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}</th>
+                <th>{{'TOTAL T.V.A'|trans}} {{ releve ? (releve.tva - releve.tvaavoir)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}</th>
+                <th>{{ 'TOTAL T.T.C'|trans }} {{releve ? (releve.reste - totalavantage)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}</th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td  class="fw-bold" colspan="3"> AVANCE : {{ releve ? releve.avance|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}</td>
+                </tr>
+                 <tr>
+                    <td class="fw-bold" colspan="3"> RESTE : {{ releve ? (releve.reste - totalavantage)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}
+                   <span id="total" class="text-nowrap" style="display:none;">{{ releve ? (releve.reste - totalavantage)|number_format(2, '.' , '') : '' }}</span>
+                    </td>
+                </tr>
+                 <tr>
+                    <td colspan="3">SOIT À VOTRE DEBIT <b>{{ releve ? lettre(releve.reste - totalavantage) }}</b> <b>franc CFA TTC</b></td>
+                </tr>
+            </tbody>
+        </table>
+
+
+   
+</body>
+</html>

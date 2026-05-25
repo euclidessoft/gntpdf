@@ -1,0 +1,48 @@
+{% extends 'client.html.twig' %}
+{% block title %} {{ "Commande"|trans }} - GNT Pharma {% endblock %}
+{% block produit %}active{% endblock %}
+{% block new_produit %}active{% endblock %}
+
+{% block body %}
+<div class="container mt-4 fond-7">
+    <h3 class="mt-4 mb-5 fw-bold">
+        <i class="fa-brands fa-product-hunt me-2"></i>
+        {{ "Détails Produit"|trans }}
+    </h3>
+
+    <table class="table table-success-light table-bordered table-hover table-striped w-100">
+        <tbody>
+
+            <tr>
+                <th>{{ 'CIP'|trans }}</th>
+                <td>{{ produit.reference }}</td>
+            </tr>
+            <tr>
+                <th>{{ 'Désignation'|trans }}</th>
+                <td>{{ produit.desigantion }}</td>
+            </tr>
+            <tr>
+                <th>{{ 'DCI'|trans }}</th>
+                <td>{{ produit.dci }}</td>
+            </tr>
+            <tr>
+                <th>{{ 'Colisage'|trans }}</th>
+                <td>{{ produit.colisage }}</td>
+            </tr>
+            <tr>
+                <th>{{ 'Prix'|trans }}</th>
+                <td>{{ produit.prix|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+            </tr>
+            <tr>
+                <th>{{ 'Commande minimum'|trans }}</th>
+                <td>{{ produit.mincommande }}</td>
+            </tr>
+            <tr>
+                <th>{{ 'Fabricant'|trans }}</th>
+                <td>{{ produit.fabriquant }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}

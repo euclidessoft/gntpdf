@@ -1,0 +1,27 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Nouveau client"|trans }} - GNT Pharma {% endblock %}
+{% block client %}active{% endblock %}
+{% block client_suivi %}active{% endblock %}
+
+{% block body %}
+    <div class="col-lg-5 offset-lg-2 mt-4 fond-7 pb-5 pt-3 px-5 mb-5">
+        <h4 class="mb-5">
+            <i class="fa-solid fa-user-tag"></i><i class="fa fa-plus"></i>
+            {{ 'Nouveau client'|trans }}
+        </h4>
+
+        {{ include('client/_form.html.twig') }}
+    </div>
+
+{% endblock %}
