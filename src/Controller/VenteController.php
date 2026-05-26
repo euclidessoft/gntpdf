@@ -32,7 +32,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\SecurityBundle\Security;
-use Sensiolabs\GotenbergBundle\GotenbergPdfInterface;
+use App\Service\PdfService;
 
 
 #[Route("/{_locale}/Palmares_", name :"vente_") ]
@@ -122,7 +122,7 @@ class VenteController extends AbstractController
     
 
     #[Route("/Article_pdf/{id}", name :"show_pdf", methods : ["GET"]) ]
-    public function produithistorypdf(Produit $produit, CommandeProduitRepository $repository, GotenbergPdfInterface $gotenberg): Response
+    public function produithistorypdf(Produit $produit, CommandeProduitRepository $repository, PdfService $pdfService): Response
     {
         if ($this->security->isGranted('ROLE_STOCK') || $this->security->isGranted('ROLE_FINANCE')) {
             $ventes = $repository->findBy(['produit' => $produit],['date' => "DESC"]);
@@ -137,18 +137,17 @@ class VenteController extends AbstractController
                     $totalug += $vente->getUg();
             }
 
-            return $gotenberg
-        ->html()
-        ->content('vente/vente_showpdf.html.twig', [
+            
+        return $pdfService->streamPdf(
+           'vente/vente_showpdf.html.twig', [
                 'ventes' => $ventes,
                 'produit' => $produit,
                 'quantite' => $quantite,
                 'montant' => $montant,
                 'totalug' => $totalug,
-            ])
-        ->fileName('palmares.pdf')
-        ->generate()
-        ->stream();
+            ],
+            sprintf('palmares-%s.pdf',$commande->getId()."-".$commande->getNumerofacture())
+        );
             
         } else {
             $response = $this->redirectToRoute('security_logout');

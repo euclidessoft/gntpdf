@@ -33,7 +33,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensiolabs\GotenbergBundle\GotenbergPdfInterface;
+use App\Service\PdfService;
 
 #[Route("/{_locale}/Stock" , name :"stock_") ]
 class StockController extends AbstractController
@@ -170,18 +170,17 @@ class StockController extends AbstractController
     }
 
      #[Route("/Inventaire_show_pdf/{date}", name :"inventaire_show_pdf", methods : ["GET"]) ]
-    public function inventaireshowpdf(InventaireRepository $repository, $date, GotenbergPdfInterface $gotenberg): Response
+    public function inventaireshowpdf(InventaireRepository $repository, $date, PdfService $pdfService): Response
     {
         if ($this->security->isGranted('ROLE_STOCK') || $this->security->isGranted('ROLE_FINANCE')) {
 
-            return $gotenberg
-        ->html()
-        ->content('stock/inventaireshowpdf.html.twig', [
+         
+        return $pdfService->streamPdf(
+            'stock/inventaireshowpdf.html.twig', [
                 'inventaires' => $repository->findBy(['date' => new \Datetime($date)]),
-            ])
-        ->fileName('facture.pdf')
-        ->generate()
-        ->stream();
+            ],
+            sprintf('stock-%s.pdf', 1)
+        );
         } else {
             $response = $this->redirectToRoute('security_logout');
             $response->setSharedMaxAge(0);
@@ -496,20 +495,19 @@ class StockController extends AbstractController
 
     
     #[Route("/Retour_history_show_pdf/{id}", name :"retour_history_show_pdf", methods : ["GET"]) ]
-    public function retourhistoryshowpdf(Retour $retour, RetourProduitRepository $repository, GotenbergPdfInterface $gotenberg ): Response
+    public function retourhistoryshowpdf(Retour $retour, RetourProduitRepository $repository, PdfService $pdfService ): Response
     {
 
         if ($this->security->isGranted('ROLE_STOCK')) {
 
-            return $gotenberg
-        ->html()
-        ->content('stock/historyshowpdf.html.twig', [
+         
+         return $pdfService->streamPdf(
+           'stock/historyshowpdf.html.twig', [
                 'retour' => $retour,
                 'retourproduits' => $repository->findBy(['retour' => $retour]),
-            ])
-        ->fileName('retour.pdf')
-        ->generate()
-        ->stream();
+            ],
+            sprintf('retour-%s.pdf', 1)
+        );
            
         } else {
             $response = $this->redirectToRoute('security_logout');
@@ -1136,20 +1134,19 @@ class StockController extends AbstractController
     }
     
     #[Route("/Mouvement_stock_pdf/{date1}/{date2}", name :"mouvement_stock_pdf", methods : ["GET"]) ]
-    public function mouvement_pdf(ProduitRepository $repo, $date1, $date2, GotenbergPdfInterface $gotenberg): Response
+    public function mouvement_pdf(ProduitRepository $repo, $date1, $date2, PdfService $pdfService): Response
     {
         if ($this->security->isGranted('ROLE_STOCK') || $this->security->isGranted('ROLE_FINANCE')) {
            
-        return $gotenberg
-        ->html()
-        ->content('stock/mouvementpdf.html.twig', [
+       
+         return $pdfService->streamPdf(
+           'stock/mouvementpdf.html.twig', [
                 'produits' => $repo->reapprovisionnement(),
                 'day1' => $date1,
                 'day2' => $date2,
-            ])
-        ->fileName('mouvement.pdf')
-        ->generate()
-        ->stream();
+            ],
+            sprintf('retour-%s.pdf', 1)
+         );
            
         } else {
             $response = $this->redirectToRoute('security_logout');

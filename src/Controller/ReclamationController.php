@@ -23,7 +23,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\SecurityBundle\Security;
-use Sensiolabs\GotenbergBundle\GotenbergPdfInterface;
+use App\Service\PdfService;
 
 #[Route("/{_locale}/Commande_Reclamation") ]
 class ReclamationController extends AbstractController
@@ -534,7 +534,7 @@ class ReclamationController extends AbstractController
 
     
     #[Route("_pdf/{id}/", name :"reclamation_show_pdf", methods : ["GET"]) ]
-    public function showpdf(Reclamation $reclamation, ReclamationProduitRepository $repository, LivrerProduitRepository $livrerProduitRepository, GotenbergPdfInterface $gotenberg): Response
+    public function showpdf(Reclamation $reclamation, ReclamationProduitRepository $repository, LivrerProduitRepository $livrerProduitRepository, PdfService $pdfService): Response
     {
         if ($this->security->isGranted('ROLE_BACK')) {
 
@@ -543,31 +543,29 @@ class ReclamationController extends AbstractController
             $commandeproduits = $livrerProduitRepository->findBy(['commande' => $reclamation->getCommande()]);
             $reclamations = $repository->findBy(['commande' => $reclamation->getCommande()]);
            
-             return $gotenberg
-        ->html()
-        ->content('reclamation/admin/showpdf.html.twig', [
+          
+        return $pdfService->streamPdf(
+           'reclamation/admin/showpdf.html.twig', [
                 'reclamation' => $reclamation,
                 'commandes' => $commandeproduits,
                 'reclamations' => $reclamations,
-            ])
-        ->fileName('facture.pdf')
-        ->generate()
-        ->stream();
+            ],
+            sprintf('facture-%s.pdf',1)
+        );
         } else if ($this->security->isGranted('ROLE_CLIENT')) {
            
             $commandeproduits = $livrerProduitRepository->findBy(['commande' => $reclamation->getCommande()]);
             $reclamations = $repository->findBy(['commande' => $reclamation->getCommande()]);
             
-            return $gotenberg
-        ->html()
-        ->content('reclamation/showpdf.html.twig', [
+          
+        return $pdfService->streamPdf(
+           'reclamation/showpdf.html.twig', [
                 'reclamation' => $reclamation,
                 'commandes' => $commandeproduits,
                 'reclamations' => $reclamations,
-            ])
-        ->fileName('facture.pdf')
-        ->generate()
-        ->stream();
+            ],
+            sprintf('facture-%s.pdf',1)
+        );
         } else {
             $response = $this->redirectToRoute('security_login');
             $response->setSharedMaxAge(0);
