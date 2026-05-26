@@ -1,121 +1,54 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+{% extends 'client.html.twig' %}
+{% block title %} {{ "Facture "|trans }} {{ commande.id }}-{{ commande.numerofacture }} - GNT Pharma {% endblock %}
+{% block commande %}active{% endblock %}
+{% block my_commande %}active{% endblock %}
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-
-    <title>&nbsp;</title>
-    <style>
-        .titre {
-            font-family: Verdana, Geneva, Tahoma, sans-serif;
-            font-size: 30px;
-            font-weight: bold;
-            color: #039c4f;
-        }
-
-        .text {
-            font-size: 14px;
-        }
-
-        .badge {
-            background-color: red !important;
-        }
-
-        @media print {
-            .table-success-light {
-                color: #000 !important;
-            }
-
-            .table-bordered {
-                border: 1px solid #000 !important;
-            }
-
-            thead {
-                background-color: #c5fbae !important;
-                color: #000;
-            }
-
-            .tt {
-                display: inline-block;
-                border: none;
-                width: 180px !important;
-            }
-        }
-    </style>
-
-</head>
-<body>
-<div style="width: 100%;padding-right: var(--bs-gutter-x, 0.75rem);padding-left: var(--bs-gutter-x, 0.75rem);margin-right: auto;margin-left: auto;">
-    <div style="flex: 0 0 auto;width: 66.66666667%;margin-left: 16.66666667%;">
-        <div style="border-bottom: 1px solid #039c4f;padding-bottom: 20px;--bs-gutter-x: 1.5rem;--bs-gutter-y: 0;display: flex;flex-wrap: wrap;margin-top: calc(var(--bs-gutter-y) * -1);margin-right: calc(var(--bs-gutter-x) * -.5);margin-left: calc(var(--bs-gutter-x) * -.5);">
-            <div style="flex: 0 0 auto;width: 16.66666667%;">
-                <img src="{{ asset('images/gntpharma.jpeg') }}" alt="Logo" class="w-100">
-            </div>
-            <div style="flex: 0 0 auto;width: 83.33333333%;text-align: center !important;">
-                <div style="--bs-gutter-x: 1.5rem;--bs-gutter-y: 0;display: flex;flex-wrap: wrap;margin-top: calc(var(--bs-gutter-y) * -1);margin-right: calc(var(--bs-gutter-x) * -.5);margin-left: calc(var(--bs-gutter-x) * -.5);">
-                    <div style="flex: 0 0 auto;width: 100%;font-family: Verdana, Geneva, Tahoma, sans-serif;font-size: 30px;font-weight: bold;color: #039c4f;text-align: center !important;">
-                        GNT PHARMA
-                    </div>
-                    <div style="flex: 0 0 auto;width: 100%;font-size: 14px;">
-                        BP : 3582 Yaoundé – Cameroun, NGOUSSO
-                        <br>
-                        Montée Éleveur Immeuble Sainte Marie
-                    </div>
-                    <div style="flex: 0 0 auto;width: 100%;font-size: 14px;">
-                        +237 69 71 49 4 12 / +237 67 52 47 865
-                    </div>
-                    <div style="flex: 0 0 auto;width: 100%;font-size: 14px;">
-                        info@gntpharma-cameroun.com / www.gnt-pharma.com
-                    </div>
-                    <div style="flex: 0 0 auto;width: 100%;font-size: 14px;">
-                        RCCM N° : RC/YAE/2023/M/105 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NIU : M122217881373Q
-                    </div>
-                    {# <div style="flex: 0 0 auto;width: 100%;font-size: 14px;">
-                       SARL au CAPITAL de 100 000 000 F CFA
-                    </div> #}
-                    <!-- <div class="col-12 fw-bold" style="">
-
-                    </div> -->
-                </div>
-            </div>
-        </div>
-        <h3 style="text-align: center !important;font-weight: bold;text-transform: uppercase !important;margin-top: 1.5rem !important;">
-            {{ ' Facture'|trans }}
+{% block body %}
+    <div class="container mt-4 fond-7">
+        <h3 class="mt-4 mb-5 text-bold">
+            <i class="fa fa-shopping-cart me-2"></i>
+            {{ "Détails commande"|trans }}
         </h3>
-        <h6 style="text-align: center !important;font-weight: bold;text-transform: uppercase !important;margin-bottom: 1rem !important;">
+
+        <a href="#" onclick="history.back()" class="btn btn-success-light mb-3">
+            <i class="fa fa-chevron-left"></i> {{ "Retour"|trans }} </a>
+        <h4 class="text-center fw-bold text-uppercase mt-4">
+            {{ ' Facture'|trans }}
+        </h4>
+        <h6 class="text-center text-uppercase">
             {{ 'Numero'|trans }} : {{ commande.id }}-{{ commande.numerofacture }}
         </h6>
-
-        <div style="--bs-gutter-x: 1.5rem;--bs-gutter-y: 0;display: flex;flex-wrap: wrap;margin-top: calc(var(--bs-gutter-y) * -1);margin-right: calc(var(--bs-gutter-x) * -.5);margin-left: calc(var(--bs-gutter-x) * -.5);">
-            <div style="flex: 0 0 auto;width: 100%;">
-                <table style="--bs-table-bg: transparent;--bs-table-accent-bg: transparent;--bs-table-striped-color: #212529;--bs-table-striped-bg: rgba(0, 0, 0, 0.05);--bs-table-active-color: #212529;--bs-table-active-bg: rgba(0, 0, 0, 0.1);--bs-table-hover-color: #212529;--bs-table-hover-bg: rgba(0, 0, 0, 0.075);width: 100%;margin-bottom: 1rem;vertical-align: top;color: #000 !important;text-align: center !important;border: 1px solid #000 !important;">
+        <div class="row">
+            <div class="col-4"></div>
+            <div class="col-8">
+                <table class="table table-success-light table-bordered table-hover table-striped my-5">
                     <thead>
                     <tr>
-                        <th>{{ 'Numero'|trans }} <br>{{ 'Commande'|trans }}</th>
-                        <th>{{ 'Date'|trans }}</th>
-                        <th>{{ 'Client'|trans }}</th>
+                        <th>{{ 'N° Commande'|trans }}</th>
+                        <th>{{ 'Date Commande'|trans }}</th>
+                        <th>{{ 'Date Traitement'|trans }}</th>
                         <th>{{ 'NIU'|trans }}</th>
                         {% if commande.credit == 1 and commande.payer == 0 %}
-                            <th>{{ 'date d\'echeance de paiement'|trans }}</th>
+                            <th>{{ 'Date d\'echeance '|trans }}</th>
                         {% endif %}
-
+                        <th>{{ 'Status Commande'|trans }}</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>{{ commande.id }}</td>
-                        <td>{{ commande.date|date('d/m/Y') }}</td>
-                        <td>{{ commande.user.nom }}</td>
-                        <td>{{ commande.user.niu }}</td>
-                        {% if commande.credit == 1 and commande.payer == 0 %}
-                            <td> {{ commande.echeance ? commande.echeance|date('d/m/Y'): '' }}</td>
+                    <td>{{ commande.id }}</td>
+                    <td>{{ commande.date|date('d/m/Y H:is') }}</td>
+                    <td>{{ commande.traitement|date('d/m/Y H:i:s') }}</td>
+                    <td>{{ commande.user.niu }}</td>
+                    {% if commande.credit == 1 and commande.payer == 0 %}
+                        <td> {{ commande.echeance ? commande.echeance|date('d/m/Y'): '' }}</td>
+                    {% endif %}
+                    <td class="text-bold">
+                        {% if commande.payer == 0 %}
+                            <span class="text-danger">Non payée</span>
+                        {% else %}
+                            <span class="text-success">Payée</span>
                         {% endif %}
-                    </tr>
+                    </td>
                     </tbody>
                 </table>
             </div>
@@ -123,15 +56,15 @@
         {% set total=0 %}
         {% set reduction=0 %}
         {% set tva=0 %}
-        <table style="--bs-table-bg: transparent; --bs-table-accent-bg: transparent; --bs-table-striped-color: #212529; --bs-table-striped-bg: rgba(0, 0, 0, 0.05); --bs-table-active-color: #212529; --bs-table-active-bg: rgba(0, 0, 0, 0.1); --bs-table-hover-color: #212529; --bs-table-hover-bg: rgba(0, 0, 0, 0.075); margin-bottom: 1rem; vertical-align: top;color: #000 !important;text-align: center !important;border: 1px solid #000 !important;margin-top: 3rem !important;width: 100% !important;">
+        <table class="table table-success-light table-bordered table-hover table-striped w-100 my-4">
             <thead>
             <tr>
                 <th>{{ 'CIP'|trans }}</th>
-                <th class="tt">{{ 'Désignation'|trans }}</th>
-                <th>{{ 'Qté cdée'|trans }}</th>
-                <th>{{ 'Qté Lvrée'|trans }}</th>
-                <th>{{ 'Prix Ces.'|trans }}</th>
-                <th>{{ 'Réduc.'|trans }}</th>
+                <th>{{ 'Désignation'|trans }}</th>
+                <th>{{ 'Quantité'|trans }}<br>{{ 'commandée'|trans }}</th>
+                <th>{{ 'Quantite'|trans }}<br>{{ 'livrée'|trans }}</th>
+                <th>{{ 'Prix Cession'|trans }}</th>
+                <th>{{ 'Réduction'|trans }}</th>
                 <th>{{ 'TVA'|trans }}</th>
                 <th>{{ 'Prix Public'|trans }}</th>
                 <th>{{ 'Montant'|trans }}</th>
@@ -139,17 +72,17 @@
             </thead>
             <tbody>
             {% for commandeproduit in commandeproduits %}
-                {% set ug = commandeproduit.ug %}
                 {% set reductionproduit = 0 %}
                 <tr>
                     <td> {{ commandeproduit.produit.reference }} </td>
-                    <td style="display: inline-block;border: none;width: 180px !important;">{{ commandeproduit.produit.desigantion }} </td>
+                    <td>{{ commandeproduit.produit.desigantion }} </td>
                     <td>
-                    {{ commandeproduit.quantitecommande ? commandeproduit.quantitecommande : commandeproduit.quantite }}
-                                 
+                        {{ commandeproduit.quantitecommande ? commandeproduit.quantitecommande : commandeproduit.quantite }}
+                       
+
                     </td>
-                     <td>
-                       {% if commande.suivi %}
+                    <td>
+                        {% if commande.suivi %}
                             {{ commandeproduit.quantite }}
                         {% else %}
                             {% if commandeproduit.produit.stock > commandeproduit.quantite %}
@@ -158,15 +91,14 @@
                                 {{ commandeproduit.produit.stock }}
                             {% endif %}
                         {% endif %}
-                        {% if commandeproduit.ug != 0%}
+                         {% if commandeproduit.ug != 0 %}
                             <span class="badge bg-danger">
-                                        + {{ commandeproduit.ug }} U.G
+                                + {{ commandeproduit.ug }} U.G
                             </span>
                         {% endif %}
-                         
-                                    </td>
-                    <td style="white-space: nowrap !important;">
-                        {{ commandeproduit.produit.prix|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                    </td>
+                    <td class="montant noExport">
+                        {{ commandeproduit.session|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
 
                     </td>
                     <td>
@@ -175,9 +107,9 @@
                                 {% set reductionproduit =  commandeproduit.quantite * commandeproduit.session * commandeproduit.promotion.reduction /100 %}
 
                                 {% set reduction =  reduction + reductionproduit %}
-                                <span style="display: inline-block; padding: 0.35em 0.65em; font-size: 0.75em; font-weight: 700; line-height: 1; color: #fff; text-align: center; white-space: nowrap; vertical-align: baseline; border-radius: 0.25rem;background-color: #dc3545 !important;">
+                                <span class="badge bg-danger">
                                     -{{ commandeproduit.session * commandeproduit.promotion.reduction /100 }} F
-                                </span>
+                            </span>
                             {% else %}
                                 -
                             {% endif %}
@@ -185,8 +117,8 @@
                             -
                         {% endif %}
                     </td>
-                    <td style="white-space: nowrap !important;">
-                        {% if commandeproduit.produit.tva == 1 %}
+                    <td>
+                        {% if commandeproduit.tva != 0 %}
                             {% set tva = tva + (((commandeproduit.quantite * commandeproduit.session) - reductionproduit) * 0.1925) %}
                             {% if commandeproduit.promotion is not null %}
                                 {% if commandeproduit.promotion.reduction is not null %}
@@ -201,96 +133,76 @@
                             -
                         {% endif %}
                     </td>
-                    <td>{{ commandeproduit.produit.prixpublic|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
-                    <td style="white-space: nowrap !important;text-align: right !important;">
-                        {{ (commandeproduit.quantite * commandeproduit.produit.prix)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
-                        {% set total = total + (commandeproduit.quantite * commandeproduit.produit.prix) %}
+                    <td class="montant">{{ commandeproduit.publique|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                    <td class="montant">
+                        {{ (commandeproduit.quantite * commandeproduit.session)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                        {% set total = total + (commandeproduit.quantite * commandeproduit.session) %}
                     </td>
                 </tr>
-
-            {% else %}
-                <tr>
-                    <td colspan="11">{{ 'Aucune commande'|trans }}</td>
-                </tr>
             {% endfor %}
-            <tr>
-                <td colspan="8" style="text-align: right !important;font-weight: bolder !important;white-space: nowrap !important;">
+            <tbody>
+            <tfoot>
+            <tr class="fw-bold">
+                <td colspan="8" class="text-end">
                     {{ "Total HT"|trans }}
                 </td>
-                <td style="text-align: right !important;">
-                    <span id="" style="font-weight: bolder !important;white-space: nowrap !important;">
-                        {{ total|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
-                    </span>
+                <td class="montant">
+                    <span id=""
+                          class="text-nowrap">{{ total|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</span>
                 </td>
             </tr>
             {% if reduction != 0 %}
                 <tr>
-                    <td colspan="8" style="text-align: right !important;font-weight: bolder !important;white-space: nowrap !important;">
+                    <td colspan="8" class="text-end">
                         {{ "Total Réduction"|trans }}
                     </td>
-                    <td>
-                        <span id="" style="font-weight: bolder !important;">
-                            {{ reduction|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
-                        </span>
+                    <td class="montant">
+                        <span id=""
+                              class="text-nowrap">{{ reduction|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</span>
                     </td>
                 </tr>
             {% endif %}
             <tr>
-                <td colspan="8" style="text-align: right !important;font-weight: bolder !important;white-space: nowrap !important;">
+                <td colspan="8" class="text-end">
                     {{ "Total TVA"|trans }}
                 </td>
-                <td style="text-align: right !important;white-space: nowrap !important;">
-                    <span id="">
-                        {{ tva|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
-                    </span>
+                <td class="montant">
+                    <span id=""
+                          class="text-nowrap">{{ tva|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</span>
                 </td>
             </tr>
             <tr>
-                <td colspan="8" style="text-align: right !important;">
+                <td colspan="8" class="text-end">
                     {{ "Prélèvement (2%)"|trans }}
                 </td>
-                <td style="text-align: center !important;">
-                    <span id="">
-                        {{ commande.acompte != 0 ? commande.acompte|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}
-                    </span>
+                <td class="text-center">
+
+                    <span id="">{{ commande.acompte != 0 ? commande.acompte|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}</span>
                     <input type="hidden" value="{{ tva }}" id="totaltamp"/>
                 </td>
             </tr>
 
-            <tr>
-                <td colspan="8" style="text-align: right !important;font-weight: bolder !important;white-space: nowrap !important;">
+            <tr class="fw-bold">
+                <td colspan="8" class="text-end">
                     {{ "Net à payer"|trans }}
                 </td>
-                <td class="fw-bolder text-nowrap" style="">
-                    <span style="white-space: nowrap !important;">
-                        {{ (total + commande.acompte + tva - reduction)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
-                    </span>
-                    <span id="total" style="display:none;white-space: nowrap !important;">
-                        {{ (total + commande.acompte + tva - reduction)|number_format(2, '.' , '') }}
-                    </span>
+                <td class="montant">
+                    <span class="text-nowrap">{{ (total + commande.acompte + tva - reduction)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</span>
+                    <span id="total" class="text-nowrap"
+                          style="display:none;">{{ (total + commande.acompte + tva - reduction)|number_format(2, '.' , '') }}</span>
                 </td>
             </tr>
-            </tbody>
+            </tfoot>
         </table>
+
         {# Conversion prix en lettre #}
-        <div style="margin-top: 3rem !important;">
+        <div class="my-5">
             {{ 'Arrêtée la présente à la somme de '|trans }} <b id="conversion"></b><b id="virgule"></b> <b>franc CFA
                 TTC</b>
         </div>
         {# /***** end*****/ #}
-
-        {{ include('includes/javascript.html.twig') }}
-        <script>
-            {{ include('includes/impression.html.twig') }}
-
-
-            // Quand l'impression est terminée
-            window.onafterprint = function () {
-                document.location.href = '{{ path('commande_panier_Detail',{'commande': commande.id}) }}'
-            };
-        </script>
     </div>
-</div>
-</body>
 
-</html>
+    </div>
+
+{% endblock %}

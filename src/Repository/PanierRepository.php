@@ -16,6 +16,17 @@ class PanierRepository extends ServiceEntityRepository
         parent::__construct($registry, Panier::class);
     }
 
+    public function panier($client)
+    {
+        return $this->createQueryBuilder('p')
+            ->innerJoin('p.produit', 'pr')
+            ->andWhere('p.client = :client')
+            ->setParameter('client', $client)
+            ->orderBy('pr.desigantion', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Panier[] Returns an array of Panier objects
     //     */

@@ -52,8 +52,8 @@ class CommandeController extends AbstractController
             $total = 0;
             $notfound = 0;
              $this->getUser()->getTuteur() === null ?
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getId()]) :
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getTuteur()->getId()]);  
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getId()) :
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getTuteur()->getId());  
              foreach($panier as $commande){
                 $commande->getProduit()->setQuantite($commande->getQuantite());
                 $dataPanier[] = [
@@ -196,8 +196,8 @@ class CommandeController extends AbstractController
              $sheet = $session->get('sheetvalider',[]);
              $panier = [];
               $this->getUser()->getTuteur() === null ?
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getId()]) :
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getTuteur()->getId()]);;
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getId()) :
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getTuteur()->getId());;
            
             if(count($sheet) > 0){// commande par importation
                 foreach($sheet as $commandeimp){
@@ -768,10 +768,10 @@ class CommandeController extends AbstractController
         if ($this->security->isGranted('ROLE_CLIENT')) {
            $panier =[];
             if($this->getUser()->getTuteur() === null){
-                 $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getId()]);
+                 $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getId());
             $commandes = $repository->findBy(['user' => $this->getUser()->getId(), 'suivi' => false]);
             }else{
-                 $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getTuteur()->getId()]);
+                 $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getTuteur()->getId());
             $commandes = $repository->findBy(['user' => $this->getUser()->getTuteur()->getId(), 'suivi' => false]);
              }
             $response = $this->render('commande/suivi.html.twig', [
@@ -900,8 +900,8 @@ class CommandeController extends AbstractController
     {
         if ($this->security->isGranted('ROLE_CLIENT')) {
             $this->getUser()->getTuteur() === null ?
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getId()]) :
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getTuteur()->getId()]);;
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getId()) :
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getTuteur()->getId());;
              $this->getUser()->getTuteur() === null ? 
             $commandes = $repository->findBy(['user' => $this->getUser()->getId()/*, 'extranet' => true*/]) :
             $commandes = $repository->findBy(['user' => $this->getUser()->getTuteur()->getId()/*, 'extranet' => true*/]);
@@ -975,8 +975,8 @@ class CommandeController extends AbstractController
             return $response;
         } else if ($this->security->isGranted('ROLE_CLIENT')) {
             $this->getUser()->getTuteur() === null ?
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getId()]) :
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getTuteur()->getId()]);
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getId()) :
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getTuteur()->getId());
             $this->getUser()->getTuteur() === null ? 
             $commandes = $repository->findBy(['user' => $this->getUser()->getId(), 'suivi' => true, 'payer' =>true]) :
             $commandes = $repository->findBy(['user' => $this->getUser()->getTuteur()->getId(), 'suivi' => true, 'payer' => true]);
@@ -1034,8 +1034,8 @@ class CommandeController extends AbstractController
             return $response;
         } else if ($this->security->isGranted('ROLE_CLIENT')) {
             $this->getUser()->getTuteur() === null ?
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getId()]) :
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getTuteur()->getId()]);;
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getId()) :
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getTuteur()->getId());;
            
             $response = $this->render('officine/credit.html.twig', [
                 'commandes' => $repository->findBy(['user' => $this->getUser()->getId(), 'paiement' => null, 'credit' => true, 'suivi' => true, 'payer' => false]),
@@ -1240,8 +1240,8 @@ class CommandeController extends AbstractController
     {
         if ($this->security->isGranted('ROLE_CLIENT') && $commande->getUser()->getPharmacie() == $this->getUser()->getPharmacie()) {
             $this->getUser()->getTuteur() === null ?
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getId()]) :
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getTuteur()->getId()]);;
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getId()) :
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getTuteur()->getId());;
 
             $response = $this->render('commande/payment.html.twig', [
                 'commandeproduits' => $repository->findBy(['commande' => $commande]),
@@ -1283,8 +1283,8 @@ class CommandeController extends AbstractController
              $dataPanier = [];
             $total = 0;
              $this->getUser()->getTuteur() === null ?
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getId()]) :
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getTuteur()->getId()]);  
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getId()) :
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getTuteur()->getId());  
              foreach($panier as $commande){
                 $commande->getProduit()->setQuantite($commande->getQuantite());
                 $dataPanier[] = [
@@ -1471,8 +1471,8 @@ class CommandeController extends AbstractController
             $total = 0;
             $sheet = $session->get('sheetconfirm',[]);
             $this->getUser()->getTuteur() === null ?
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getId()]) :
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getTuteur()->getId()]);
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getId()) :
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getTuteur()->getId());
            
               foreach($panier as $commande){
                 $commande->getProduit()->setQuantite($commande->getQuantite());
@@ -1659,8 +1659,8 @@ class CommandeController extends AbstractController
         if ($this->security->isGranted('ROLE_CLIENT')) {
          $dataPanier = [];
           $this->getUser()->getTuteur() === null ?
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getId()]) :
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getTuteur()->getId()]);  
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getId()) :
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getTuteur()->getId());  
              foreach($panier as $commande){
                 $commande->getProduit()->setQuantite($commande->getQuantite());
                 $dataPanier[] = [
@@ -2314,8 +2314,8 @@ class CommandeController extends AbstractController
                 }
              }
             $this->getUser()->getTuteur() === null ?
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getId()]) :
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getTuteur()->getId()]);
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getId()) :
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getTuteur()->getId());
 
             $response = $this->render('commande/details.html.twig', [
                 'commandeproduits' => $repository->findBy(['commande' => $commande]),
@@ -2401,8 +2401,8 @@ class CommandeController extends AbstractController
                 }
              }
             $this->getUser()->getTuteur() === null ?
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getId()]) :
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getTuteur()->getId()]);
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getId()) :
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getTuteur()->getId());
 
             $response = $this->render('commande/detailextranet.html.twig', [
                 'commandeproduits' => $repository->findBy(['commande' => $commande]),
@@ -2470,8 +2470,8 @@ class CommandeController extends AbstractController
                 }
              }
             $this->getUser()->getTuteur() === null ?
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getId()]) :
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getTuteur()->getId()]);
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getId()) :
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getTuteur()->getId());
 
             $response = $this->render('commande/bon.html.twig', [
                 'commandeproduits' => $repository->findBy(['commande' => $commande]),
@@ -2590,8 +2590,8 @@ class CommandeController extends AbstractController
     {
         if ($this->security->isGranted('ROLE_CLIENT') && $commande->getUser()->getPharmacie() == $this->getUser()->getPharmacie()) {
             $this->getUser()->getTuteur() === null ?
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getId()]) :
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getTuteur()->getId()]);
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getId()) :
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getTuteur()->getId());
 
             $response = $this->render('commande/details_print.html.twig', [
                 'commandeproduits' => $repository->findBy(['commande' => $commande]),
@@ -2712,8 +2712,8 @@ class CommandeController extends AbstractController
     {
         if ($this->security->isGranted('ROLE_CLIENT') && $commande->getUser()->getPharmacie() == $this->getUser()->getPharmacie()) {
             $this->getUser()->getTuteur() === null ?
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getId()]) :
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getTuteur()->getId()]);
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getId()) :
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getTuteur()->getId());
 
             $response = $this->render('commande/bon_print.html.twig', [
                 'commandeproduits' => $repository->findBy(['commande' => $commande]),
@@ -2812,8 +2812,8 @@ class CommandeController extends AbstractController
 
 
             $this->getUser()->getTuteur() === null ?
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getId()]) :
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getTuteur()->getId()]);
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getId()) :
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getTuteur()->getId());
 
             $response = $this->render('commande/confirm_print.html.twig', [
                 'commandeproduits' => $repository->findBy(['commande' => $commande]),
@@ -3015,7 +3015,7 @@ class CommandeController extends AbstractController
         if ($this->security->isGranted('ROLE_CLIENT_ADMIN')) {
             
             // $commandes = $repository->findBy(['suivi' =>true, 'user' => $this->getUser()->getId()],['date' =>"DESC"]);
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getId()]); 
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getId()); 
             
             //  $date = date('d');
             // if($date <= 15){
@@ -3298,7 +3298,7 @@ class CommandeController extends AbstractController
         if ($this->security->isGranted('ROLE_CLIENT_ADMIN')) {
             
             // $commandes = $repository->deuxiemetranche($this->getUser()->getId(), $mois);
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getId()]); 
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getId()); 
             // $releve = $repository->findOneBy(['client' => $this->getUser()->getId(), 'periode' => $mois, 'quinzaine' => 2]);
             
          if($releve != null){
@@ -3351,7 +3351,7 @@ class CommandeController extends AbstractController
        
             
             // $commandes = $repository->deuxiemetranche($this->getUser()->getId(), $mois);
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getId()]); 
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getId()); 
             // $releve = $repository->findOneBy(['client' => $this->getUser()->getId(), 'periode' => $mois, 'quinzaine' => 2]);
             
          if($releve != null){
@@ -3394,8 +3394,8 @@ class CommandeController extends AbstractController
     {
         if ($this->security->isGranted('ROLE_CLIENT_ADMIN')) {
             $this->getUser()->getTuteur() === null ?
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getId()]) :
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getTuteur()->getId()]);;
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getId()) :
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getTuteur()->getId());;
            
            
             $commandes = $repository->findBy(['pharmaemploye' => $client->getid()]);
