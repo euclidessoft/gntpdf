@@ -41,7 +41,7 @@ class Client extends User implements UserInterface
     #[ORM\Column]
     private ?bool $prelevement = null;
     
-    #[ORM\Column(type:"float") ]
+    #[ORM\Column(type:"float", nullable: true) ]
     private $solde;
 
     /**
@@ -57,6 +57,7 @@ class Client extends User implements UserInterface
         $this->employecommandes = new ArrayCollection();
         $this->prelevement = false;
         $this->releves = new ArrayCollection();
+        $this->solde = 0;
     }
 
     public function getCompte(): ?string
