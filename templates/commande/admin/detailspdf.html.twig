@@ -161,7 +161,7 @@
             <tr>
                 <td>{{ commande.id }}</td>
                 <td>{{ commande.date|date('d/m/Y H:i') }}</td>
-                <td>{{ commande.traitement|date('d/m/Y H:i') }}</td>
+                <td>{{ commande.traitement ? commande.traitement|date('d/m/Y H:i') : '' }}</td>
                 <td>{{ commande.user.nom }} {{ commande.user.prenom }}</td>
                 <td>{{ commande.user.niu }}</td>
                 {% if commande.paiement %}
