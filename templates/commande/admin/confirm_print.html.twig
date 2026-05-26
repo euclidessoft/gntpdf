@@ -145,16 +145,27 @@
                 <tr>
                     <td> {{ commandeproduit.produit.id }} </td>
                     <td class="tt">{{ commandeproduit.produit.desigantion }} </td>
-                <td>{{ commandeproduit.quantitecommande ? commandeproduit.quantitecommande : commandeproduit.quantite }} </td>
-                    <td> 
-                    {{ commandeproduit.quantite }} 
-                     {% if commandeproduit.ug != 0 %}
-                            <br>
+                <td>
+                        {{ commandeproduit.quantitecommande ? commandeproduit.quantitecommande : commandeproduit.quantite }}
+                        {% if commandeproduit.ug != 0 %}
                             <span class="badge bg-danger">
+                                <br>
                                 + {{ commandeproduit.ug }} U.G
                             </span>
                         {% endif %}
-                     
+
+                    </td>
+                    <td>
+                        {% if commande.suivi %}
+                            {{ commandeproduit.quantite }}
+                        {% else %}
+                            {% if commandeproduit.produit.stock > commandeproduit.quantite %}
+                                {{ commandeproduit.quantite }}
+                            {% else %}
+                                {{ commandeproduit.produit.stock }}
+                            {% endif %}
+                        {% endif %}
+                        
                     </td>
                     <td class="text-nowrap">
                         {{ commandeproduit.produit.prix|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
