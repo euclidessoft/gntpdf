@@ -50,8 +50,8 @@ class PdfService
             <tr>
                 <td style="font-size:9px; color:#888; text-align:center;">
                     GNT PHARMA &nbsp;|&nbsp;
-                    RCCM RC/YAE/2023/M/105 &nbsp;|&nbsp;
-                    NIU M122217881373Q &nbsp;|&nbsp;
+                    RCCM : RC/YAE/2023/M/105 &nbsp;|&nbsp;
+                    NIU : M122217881373Q &nbsp;|&nbsp;
                     info@gnt-pharma.com &nbsp;|&nbsp;
                     Page {PAGENO}/{nbpg}
                 </td>
