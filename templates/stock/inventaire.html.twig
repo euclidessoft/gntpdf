@@ -68,7 +68,7 @@
                 {# <td>{{ stock.produit.fabriquant }}</td> #}
                <td>{{ stock.lot }}</td>
                <td>{{ stock.peremption|date('d/m/Y') }}</td>
-                <td class="center">{{ stock.quantite|number_format(0,',' , ' ') }}</td>
+                <td class="center" id="tdq{{ stock.id }}">{{ stock.quantite|number_format(0,',' , ' ') }}</td>
                 {# <td id="tdq{{ stock.id }}"> champ pour quantite
                      <input type="number" id="text{{ stock.id }}" class="form-control"
                                     onfocus="focu({{ stock.id }}, {{ stock.quantite }}, 0)" onblur="nofocu()"
