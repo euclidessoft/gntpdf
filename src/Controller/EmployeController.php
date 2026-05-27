@@ -122,6 +122,7 @@ class EmployeController extends AbstractController
                         }
                     case 'CAISSIERE': {
                             $employe->setRoles(['ROLE_CAISSIER']);
+                            $employe->setFonction("CAISSIER");
                             break;
                         }
                     case 'FINANCE': {

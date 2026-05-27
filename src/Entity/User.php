@@ -46,6 +46,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     const jobsimple = [
 
         'FINANCE' => 'FINANCE' ,
+        'CAISSIERE' => 'CAISSIERE' ,
         'RH' => 'RH' ,
         'STOCK' => 'STOCK' ,
         'LIVREUR' => 'LIVREUR' ,
@@ -131,6 +132,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __construct()
     {
+        $this->fonction = "EMPLOYE";
         $this->enabled = false;
         $this->client = false;
         $this->livreur = false;
