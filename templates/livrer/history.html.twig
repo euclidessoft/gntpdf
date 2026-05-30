@@ -52,8 +52,8 @@
                     <td>{{ livrer.nom }}</td>
                     <td>
                          {% if livrer.signature is not null %}
-                                        {# <img src="{{ asset(liv.signature) }}" alt=""> #}
-                                        <img src="https://gnt-pharma.com{{ livrer.signature }}" alt="">
+                                        <img src="{{ asset(liv.signature) }}" alt="">
+                                        {# <img src="https://gnt-pharma.com{{ livrer.signature }}" alt=""> #}
                         {% endif %}
                     </td>
                     <td>
