@@ -184,6 +184,17 @@ class CommandeProduitRepository extends ServiceEntityRepository
 		return $query->getQuery()->execute();
 	}
 
+     public function panier($commande)
+    {
+        return $this->createQueryBuilder('p')
+            ->innerJoin('p.produit', 'pr')
+            ->andWhere('p.commande = :commande')
+            ->setParameter('commande', $commande)
+            ->orderBy('pr.desigantion', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
 
     // /**
     //  * @return CommandeProduit[] Returns an array of CommandeProduit objects

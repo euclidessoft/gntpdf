@@ -1945,7 +1945,7 @@ class CommandeController extends AbstractController
             $panier = $session->get("panier", []);
 
             $response = $this->render('commande/admin/paiement.html.twig', [
-                'commandeproduits' => $repository->findBy(['commande' => $commande]),
+                'commandeproduits' => $repository->panier($commande->getId()),
                  'livrerproduits' => $livrerRepository->findBy(['commande' => $commande]),
                 'commande' => $commande,
                 'panier' => $panier,
@@ -2181,7 +2181,7 @@ class CommandeController extends AbstractController
             $panier = $session->get("panier", []);
 
             $response = $this->render('commande/admin/paiementcredit.html.twig', [
-                'commandeproduits' => $repository->findBy(['commande' => $commande]),
+                'commandeproduits' => $repository->panier($commande->getId()),
                  'livrerproduits' => $livrerRepository->findBy(['commande' => $commande]),
                 'commande' => $commande,
                 'panier' => $panier,
@@ -2318,7 +2318,7 @@ class CommandeController extends AbstractController
              $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getTuteur()->getId());
 
             $response = $this->render('commande/details.html.twig', [
-                'commandeproduits' => $repository->findBy(['commande' => $commande]),
+                'commandeproduits' => $repository->panier($commande->getId()),
                 'livrerproduits' => $livrerRepository->findBy(['commande' => $commande]),
                 'commande' => $commande,
                 'panier' => $panier,
@@ -2336,7 +2336,7 @@ class CommandeController extends AbstractController
 
 
             $response = $this->render('commande/admin/details.html.twig', [
-                'commandeproduits' => $repository->findBy(['commande' => $commande]),
+                'commandeproduits' => $repository->panier($commande->getId()),
                   'livrerproduits' => $livrerRepository->findBy(['commande' => $commande]),
                 'commande' => $commande,
                 'paiement' => $paiementRepository->findOneBy(['commande' => $commande]),
@@ -2594,7 +2594,7 @@ class CommandeController extends AbstractController
              $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getTuteur()->getId());
 
             $response = $this->render('commande/details_print.html.twig', [
-                'commandeproduits' => $repository->findBy(['commande' => $commande]),
+                'commandeproduits' => $repository->panier($commande->getId()),
                 'commande' => $commande,
                 'panier' => $panier,
             ]);
@@ -2610,7 +2610,7 @@ class CommandeController extends AbstractController
         } elseif ($this->security->isGranted('ROLE_FINANCE')) {
 
             $response = $this->render('commande/admin/details_print.html.twig', [
-                'commandeproduits' => $repository->findBy(['commande' => $commande]),
+                'commandeproduits' => $repository->panier($commande->getId()),
                 'commande' => $commande,
                 'paiement' => $paiementRepository->findOneBy(['commande' => $commande]),
             ]);
@@ -2649,16 +2649,14 @@ class CommandeController extends AbstractController
         if ($this->security->isGranted('ROLE_CLIENT') && $commande->getUser()->getPharmacie() == $this->getUser()->getPharmacie()) {
           
 
-         return $pdfService->streamPdf(
-            'commande/admin/detailspdf.html.twig',
-            [
-               'commandeproduits' => $repository->findBy(['commande' => $commande]),
-                'commande' => $commande,
-                ],
-            sprintf('facture-%s.pdf',$commande->getId()."-".$commande->getNumerofacture())
-        );
-
-        
+            return $pdfService->streamPdf(
+                'commande/admin/detailspdf.html.twig',
+                [
+                'commandeproduits' => $repository->panier($commande->getId()),
+                    'commande' => $commande,
+                    ],
+                sprintf('facture-%s.pdf',$commande->getId()."-".$commande->getNumerofacture())
+            );
             
         } elseif ($this->security->isGranted('ROLE_FINANCE')) {
 
@@ -2667,7 +2665,7 @@ class CommandeController extends AbstractController
          return $pdfService->streamPdf(
             'commande/admin/detailspdf.html.twig',
             [
-                'commandeproduits' => $repository->findBy(['commande' => $commande]),
+                'commandeproduits' => $repository->panier($commande->getId()),
                 'commande' => $commande,
                 'paiement' => $paiementRepository->findOneBy(['commande' => $commande])
                 ],
@@ -2816,7 +2814,7 @@ class CommandeController extends AbstractController
              $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getTuteur()->getId());
 
             $response = $this->render('commande/confirm_print.html.twig', [
-                'commandeproduits' => $repository->findBy(['commande' => $commande]),
+                'commandeproduits' => $repository->panier($commande->getId()),
                 'commande' => $commande,
                 'panier' => $panier,
             ]);

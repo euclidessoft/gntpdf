@@ -37,6 +37,7 @@
                 <th>{{ "Date d'émission"|trans }}</th>
                 <th>{{ "Date de livraison"|trans }}</th>
                 <th>{{ "Recepteur"|trans }}</th>
+                <th>{{ "signature"|trans }}</th>
                 <th>{{ 'Détails'|trans }}</th>
             </tr>
             </thead>
@@ -49,6 +50,12 @@
                     <td>{{ livrer.date|date('d/m/Y') }}</td>
                     <td>{{ livrer.dateefectlivraison ? livrer.dateefectlivraison|date('d/m/Y H:i:s'): '' }}</td>
                     <td>{{ livrer.nom }}</td>
+                    <td>
+                         {% if livrer.signature is not null %}
+                                        {# <img src="{{ asset(liv.signature) }}" alt=""> #}
+                                        <img src="https://gnt-pharma.com{{ livrer.signature }}" alt="">
+                        {% endif %}
+                    </td>
                     <td>
                         <a id="{{ livrer.commande.id }}" onclick="load({{ livrer.commande.id}})" class="btn btn-success" href="{{ path('livraison_historique_show', {'id': livrer.commande.id}) }}"><i class="fa fa-list"></i>
                             {{ 'Afficher'|trans }}
