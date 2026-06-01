@@ -101,7 +101,7 @@ class deuxiemecron extends Command
                  $com[] = [
                     'date' => $commande->getDate()->format('d/m/Y'),
                     'datedue' => "11/".date("m/Y"),
-                    'traitement' => $commande->getTraitement()->format('d/m/Y'),
+                    // 'traitement' => $commande->getTraitement()->format('d/m/Y'),
                     'numerofacture' => $commande->getId()."-".$commande->getNumerofacture(),
                     // 'montant' => $commande->getMontant(),
                     'montant' => $commande->getMontant() - $commande->getTva() - $commande->getAcompte(),
@@ -117,7 +117,7 @@ class deuxiemecron extends Command
                     $com[] = [
                     'date' => $commande->getDate()->format('d/m/Y'),
                     'datedue' => '',
-                    'traitement' => $commande->getDate()->format('d/m/Y'),
+                    // 'traitement' => $commande->getDate()->format('d/m/Y'),
                     'numerofacture' => $commande->getCommande()->getId()."-".$commande->getCommande()->getNumerofacture()."-".$commande->getId(),
                     // 'montant' => $commande->getMontant() - $commande->getPrelevement(),
                     'prelement' => $commande->getPrelevement(),
