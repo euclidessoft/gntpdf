@@ -2474,7 +2474,7 @@ class CommandeController extends AbstractController
              $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getTuteur()->getId());
 
             $response = $this->render('commande/bon.html.twig', [
-                'commandeproduits' => $repository->findBy(['commande' => $commande]),
+                'commandeproduits' => $repository->panier($commande),
                 'commande' => $commande,
                 'panier' => $panier,
             ]);
@@ -2491,7 +2491,7 @@ class CommandeController extends AbstractController
 
 
             $response = $this->render('commande/admin/bon.html.twig', [
-                'commandeproduits' => $repository->findBy(['commande' => $commande]),
+                'commandeproduits' => $repository->panier($commande),
                 'commande' => $commande,
                 'paiement' => $paiementRepository->findOneBy(['commande' => $commande]),
             ]);
@@ -2553,7 +2553,7 @@ class CommandeController extends AbstractController
             
           return $pdfService->streamPdf(
            'commande/bonpdf.html.twig', [
-                'commandeproduits' => $repository->findBy(['commande' => $commande]),
+                'commandeproduits' => $repository->panier($commande),
                 'commande' => $commande,
             ],
             sprintf('bon-%s.pdf',$commande->getId()."-".$commande->getNumerofacture())
@@ -2565,7 +2565,7 @@ class CommandeController extends AbstractController
         
          return $pdfService->streamPdf(
           'commande/admin/bonpdf.html.twig', [
-                'commandeproduits' => $repository->findBy(['commande' => $commande]),
+                'commandeproduits' => $repository->panier($commande),
                 'commande' => $commande,
                 'paiement' => $paiementRepository->findOneBy(['commande' => $commande]),
             ],
@@ -2714,7 +2714,7 @@ class CommandeController extends AbstractController
              $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getTuteur()->getId());
 
             $response = $this->render('commande/bon_print.html.twig', [
-                'commandeproduits' => $repository->findBy(['commande' => $commande]),
+                'commandeproduits' => $repository->panier($commande),
                 'commande' => $commande,
                 'panier' => $panier,
             ]);
@@ -2731,7 +2731,7 @@ class CommandeController extends AbstractController
 
 
             $response = $this->render('commande/admin/bon_print.html.twig', [
-                'commandeproduits' => $repository->findBy(['commande' => $commande]),
+                'commandeproduits' => $repository->panier($commande),
                 'commande' => $commande,
                 'paiement' => $paiementRepository->findOneBy(['commande' => $commande]),
             ]);
