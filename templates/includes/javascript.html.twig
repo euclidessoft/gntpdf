@@ -265,17 +265,36 @@
             alert(mess);
         }
 
+    } 
+    function addinventaire() {// id stock et la quantite quantite actuelle
+        var reg = new RegExp("^[0-9]+$");
+        var ajoutproduit = $('#ajoutproduit').val();
+        var ajoutmotif = $('#ajoutmotif').val();
+        var ajoutquantite = $('#ajoutquantite').val();
+        var ajoutlot = $('#ajoutlot').val();
+        var ajoutperemption = $('#ajoutperemption').val();
+        //  var comment = $("#comment" + id); 
+       
+        if (reg.test(ajoutquantite) && ajoutproduit != "" && ajoutmotif != "" && ajoutlot != ""&& ajoutperemption != "" ) {
+            $('#btnajouter').html("<i class='fa-solid fa-spinner fa-spin-pulse fa-lg'></i>");
+            $('#ajoutform').submit();
+        } else {
+            var mess = "{{ 'Verfier la quantite saisie'|trans}}";
+            alert(mess);
+        }
+
     }
+
      function deleteventaire(id) {// id stock et la quantite quantite actuelle
       
              
-                if($("#motifdel" + id).val() != ""){
-                $("#form" + id).submit();
-                $("#btndel" + id).html("<i class='fa-solid fa-spinner fa-spin-pulse fa-lg'></i>");
-                $("#boutondel" + id).html("<i class='fa-solid fa-spinner fa-spin-pulse fa-lg'></i>");
+        if($("#motifdel" + id).val() != ""){
+        $("#form" + id).submit();
+        $("#btndel" + id).html("<i class='fa-solid fa-spinner fa-spin-pulse fa-lg'></i>");
+        $("#boutondel" + id).html("<i class='fa-solid fa-spinner fa-spin-pulse fa-lg'></i>");
 
-                }
-                else alert("selectionnez le motif")
+        }
+        else alert("selectionnez le motif")
          
     }
 

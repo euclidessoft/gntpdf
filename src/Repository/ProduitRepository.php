@@ -81,6 +81,7 @@ public function reapprovisionnement(): array
 {/** produits avec au moins un fournisseur */
     return $this->createQueryBuilder('p')
         ->where('p.fournisseurs IS NOT EMPTY')
+        ->orderBy("p.desigantion" , "ASC")
         ->getQuery()
         ->getResult();
 }

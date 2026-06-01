@@ -106,12 +106,13 @@ class StockController extends AbstractController
 
     
      #[Route("/Inventaire_new", name :"inventaire_new", methods : ["GET"]) ]
-    public function inventaire(StockRepository $repository): Response
+    public function inventaire(StockRepository $repository, ProduitRepository $repo): Response
     {
         if ($this->security->isGranted('ROLE_ADMIN')) {
 
             $response = $this->render('stock/inventaire.html.twig', [
                 'stock' => $repository->findAll(),
+                'produits' => $repo->reapprovisionnement(),
             ]);
             $response->setSharedMaxAge(0);
             $response->headers->addCacheControlDirective('no-cache', true);
@@ -1374,6 +1375,44 @@ class StockController extends AbstractController
             $response->setContent($re);
             return $response;
         }
+
+    }
+    
+    #[Route("/addinventaire/", name :"addinventaire", methods : "POST") ]
+    public function addinventaire(Request $request, StockRepository $Repository, ProduitRepository $produitRepository, SessionInterface $session)
+    {
+        // On récupère le panier actuel
+        // $panier = $session->get("panier", []);
+        // dd($request);
+            $id = $request->request->get('ajoutproduit');// recuperation de id produit
+            $quant = $request->request->get('ajoutquantite');// ancienne quantite
+            $motif = $request->request->get('ajoutmotif');// motif
+            $lot = $request->request->get('ajoutlot');// motif
+            $peremption = $request->request->get('ajoutperemption');// motif
+            
+            $produit = $produitRepository->find($id); // recuperation de id produit dans la db
+           
+            $produit->setStock($produit->getStock() + $quant);
+             $this->entityManager->persist($produit);
+
+            $stock = new Stock($produit, $lot, $peremption, $quant);
+            $this->entityManager->persist($stock);
+
+            $inventaire = new Inventaire($produit, $this->getUser(),$motif,0,$quant);
+            $inventaire->setLot($stock->getLot());
+            $inventaire->setPeremption($stock->getPeremption());
+            $this->entityManager->persist($inventaire);
+           
+            $this->entityManager->flush();
+
+            // log
+             $heure = date("d/m/Y H:i:s");
+            file_put_contents(__DIR__ . '/inventaitre.log', $heure." ".$this->getUser()->getId()." ".$this->getUser()->getNom()." ".$this->getUser()->getPrenom()." ".$produit->getDesigantion()." Qauntite anterieure: 0 nouvelle quantite:".$quant."\n", FILE_APPEND);
+
+             $this->addFlash('notice', 'Produit Ajouté');
+            return $this->redirectToRoute('stock_inventaire_new', [], Response::HTTP_SEE_OTHER);
+        // }
+    
 
     }
 
