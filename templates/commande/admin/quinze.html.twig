@@ -184,7 +184,7 @@
             <tr>
                 <th>{{'PRELEVEMENT'|trans}} {{ releve ? (releve.prelevement - releve.prelevementavoir)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}</th>
                 <th>{{'TOTAL T.V.A'|trans}} {{ releve ? (releve.tva - releve.tvaavoir)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}</th>
-                <th>{{ 'TOTAL T.T.C'|trans }} {{releve ? (releve.reste - totalavantage)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}</th>
+                <th>{{ 'TOTAL T.T.C'|trans }} {{releve ? ((releve.reste - totalavantage)+(releve.prelevement - releve.prelevementavoir))|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}</th>
             </tr>
             </thead>
             <tbody>
@@ -192,8 +192,8 @@
                     <td  class="fw-bold" colspan="3"> AVANCE : {{ releve ? releve.avance|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}</td>
                 </tr>
                  <tr>
-                    <td class="fw-bold" colspan="3"> RESTE : {{ releve ? (releve.reste - totalavantage)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}
-                   <span id="total" class="text-nowrap" style="display:none;">{{ releve ? (releve.reste - totalavantage)|number_format(2, '.' , '') : '' }}</span>
+                    <td class="fw-bold" colspan="3"> RESTE : {{ releve ? ((releve.reste - totalavantage)+(releve.prelevement - releve.prelevementavoir))|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}
+                   <span id="total" class="text-nowrap" style="display:none;">{{ releve ? ((releve.reste - totalavantage)+(releve.prelevement - releve.prelevementavoir))|number_format(2, '.' , '') : '' }}</span>
                     </td>
                 </tr>
                  <tr>
