@@ -3166,6 +3166,54 @@ class CommandeController extends AbstractController
     }
 
     
+     #[Route("/Releve_Quinzaine_print/{releve}", name :"releve_quinzaine_print") ]
+    public function relevequinzaineprint(Releve $releve)
+    {
+        if ($this->security->isGranted('ROLE_CAISSIER')) {
+
+        // $client = $this->entityManager->getRepository(Client::class)->find($client);
+        // $releve = $repo->find($releve);
+        
+         if($releve != null){
+
+          $commandes = json_decode($releve->getCommandes(), true) ;
+         $avantage = json_decode($releve->getAvantage(), true);
+         }else{
+            $commandes = [];
+            $avantage = [];
+         }            
+           
+             
+            $response = $this->render('commande/admin/quinze_print.html.twig', [
+                'releve' => $releve,
+                'user' => $releve->getClient(),
+                'commandes' => $commandes,
+                'avantage' => $avantage,
+            ]);
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+    }
+
+    
     
      #[Route("/Releve_Quinzaine_pdf/{releve}", name :"releve_quinzaine_pdf") ]
     public function relevequinzainepdf(Releve $releve, PdfService $pdfService)    {
@@ -3311,6 +3359,55 @@ class CommandeController extends AbstractController
              
              
             $response = $this->render('officine/quinze.html.twig', [
+                // 'commandes' => $commandes,
+                'releve' => $releve,
+                'panier' => $panier,
+                'commandes' => $commandes,
+                'avantage' => $avantage,
+            ]);
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+    }
+    #[Route("/Officine_Quinzaine_print/{releve}", name :"officine_quinzaine_print") ]
+    public function officinequinzaineprint(Releve $releve)
+    {
+        if ($this->security->isGranted('ROLE_CLIENT_ADMIN')) {
+            
+            // $commandes = $repository->deuxiemetranche($this->getUser()->getId(), $mois);
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getId()); 
+            // $releve = $repository->findOneBy(['client' => $this->getUser()->getId(), 'periode' => $mois, 'quinzaine' => 2]);
+            
+         if($releve != null){
+
+          $commandes = json_decode($releve->getCommandes(), true) ;
+         $avantage = json_decode($releve->getAvantage(), true);
+         }else{
+            $commandes = [];
+            $avantage = [];
+         }            
+           
+             
+             
+            $response = $this->render('officine/quinze_print.html.twig', [
                 // 'commandes' => $commandes,
                 'releve' => $releve,
                 'panier' => $panier,

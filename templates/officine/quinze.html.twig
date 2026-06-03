@@ -189,7 +189,12 @@
                     {{ "Imprimer"|trans }}
                 </a> #}
 
-                 <a id="print" target="_blank" href="{{ path('commande_panier_officine_quinzaine_pdf', { 'releve': releve.id}) }}"
+                 <a id="print" target="_blank" href="{{ path('commande_panier_officine_quinzaine_print', { 'releve': releve.id}) }}"
+                   class="btn btn-success-light me-3">
+                    <i class="fa fa-print"></i>
+                    {{ "Vers Pdf"|trans }}
+                </a>
+                <a id="pdf" target="_blank" href="{{ path('commande_panier_officine_quinzaine_pdf', { 'releve': releve.id}) }}"
                    class="btn btn-danger me-3">
                     <i class="fa fa-file-pdf"></i>
                     {{ "Vers Pdf"|trans }}
