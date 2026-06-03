@@ -93,20 +93,24 @@
 
                     </td>
                      <td>
-                          {% if commande.suivi %}
+                        {% if commande.suivi %}
                             {{ commandeproduit.quantite }}
+                            {% set quantite = commandeproduit.quantite %}
                         {% else %}
                             {% if commandeproduit.produit.stock > commandeproduit.quantite %}
                                 {{ commandeproduit.quantite }}
+                                 {% set quantite = commandeproduit.quantite %}
                             {% else %}
                                 {{ commandeproduit.produit.stock }}
+                                 {% set quantite = commandeproduit.produit.stock %}
                             {% endif %}
                         {% endif %}
-                         {% if commandeproduit.ug != 0 %}
+                        {% if commandeproduit.ug != 0 %}
                             <span class="badge bg-danger">
                                 + {{ commandeproduit.ug }} U.G
                             </span>
                         {% endif %}
+                    </td>
                 <td>
                     {{ commandeproduit.session|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
 
@@ -114,7 +118,7 @@
                 <td>
                     {% if commandeproduit.promotion is not null %}
                         {% if commandeproduit.promotion.reduction is not null %}
-                            {% set reductionproduit =  commandeproduit.quantite * commandeproduit.session * commandeproduit.promotion.reduction /100 %}
+                            {% set reductionproduit =  quantite * commandeproduit.session * commandeproduit.promotion.reduction /100 %}
 
                             {% set reduction =  reduction + reductionproduit %}
                             <span class="badge bg-danger">
@@ -128,8 +132,8 @@
                     {% endif %}
                 </td>
                 <td>
-                    {# {% if commandeproduit.tva != 0 %}
-                        {% set tva = tva + ((( {% set tva = tva .quantite * commandeproduit.session) - reductionproduit) * 0.1925) %}
+                    {% if commandeproduit.tva != 0 %}
+                         {% set tva = tva + (((quantite * commandeproduit.session) - reductionproduit) * 0.1925) %}
                         {% if commandeproduit.promotion is not null %}
                             {% if commandeproduit.promotion.reduction is not null %}
                                 {{ (commandeproduit.session - (commandeproduit.session * commandeproduit.promotion.reduction /100)) * 0.1925 }}
@@ -141,15 +145,15 @@
                         {% endif %}
                     {% else %}
                         -
-                    {% endif %} #}
-                     {% set tva = tva + commandeproduit.tva %}
-                     {{ commandeproduit.tva|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                    {% endif %}
+                     {# {% set tva = tva + commandeproduit.tva %}
+                     {{ commandeproduit.tva|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }} #}
 
                 </td>
                 <td>{{ commandeproduit.publique|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
                 <td class="text-nowrap">
-                    {{ (commandeproduit.quantite * commandeproduit.session)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
-                    {% set total = total + (commandeproduit.quantite * commandeproduit.session) %}
+                    {{ (quantite * commandeproduit.session)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                    {% set total = total + (quantite * commandeproduit.session) %}
                 </td>
             </tr>
         {% endfor %}

@@ -110,7 +110,7 @@
                     <td>
                         {% if commandeproduit.promotion is not null %}
                             {% if commandeproduit.promotion.reduction is not null %}
-                                {% set reductionproduit =  commandeproduit.quantite * commandeproduit.session * commandeproduit.promotion.reduction /100 %}
+                                {% set reductionproduit =  quantite * commandeproduit.session * commandeproduit.promotion.reduction /100 %}
 
                                 {% set reduction =  reduction + reductionproduit %}
                                 <span class="badge bg-danger">
@@ -125,7 +125,7 @@
                     </td>
                     <td>
                         {% if commandeproduit.tva != 0 %}
-                            {% set tva = tva + (((commandeproduit.quantite * commandeproduit.session) - reductionproduit) * 0.1925) %}
+                            {% set tva = tva + (((quantite * commandeproduit.session) - reductionproduit) * 0.1925) %}
                             {% if commandeproduit.promotion is not null %}
                                 {% if commandeproduit.promotion.reduction is not null %}
                                     {{ (commandeproduit.session - (commandeproduit.session * commandeproduit.promotion.reduction /100)) * 0.1925 }}
