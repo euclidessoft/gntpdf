@@ -509,13 +509,16 @@ class AvoirController extends AbstractController
     public function officine(AvoirRepository $avoirRepository, SessionInterface $session): Response
     {
         if ($this->security->isGranted('ROLE_CLIENT')) {
-             $this->getUser()->getTuteur() === null ?
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getId()]) :
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getTuteur()->getId()]);;
+            if($this->getUser()->getTuteur() === null){
+                $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getId()]);
+                $avoirs = $avoirRepository->findby(['client' => $this->getUser()]);
+            }else{
+                $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getTuteur()->getId()]);
+                $avoirs = $avoirRepository->findby(['client' => $this->getUser()->getTuteur()]);
+            }
            
-            
             $response = $this->render('officine/avoir.html.twig', [
-                'avoirs' => $avoirRepository->findby(['client' => $this->getUser()]),
+                'avoirs' => $avoirs,
                 'panier' => $panier,
             ]);
             $response->setSharedMaxAge(0);

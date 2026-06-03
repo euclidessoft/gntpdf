@@ -146,7 +146,7 @@ class VenteController extends AbstractController
                 'montant' => $montant,
                 'totalug' => $totalug,
             ],
-            sprintf('palmares-%s.pdf',$commande->getId()."-".$commande->getNumerofacture())
+            sprintf('palmares-%s.pdf',1)
         );
             
         } else {

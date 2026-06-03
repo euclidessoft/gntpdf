@@ -96,15 +96,35 @@
         </tbody>
     </table>
     <div class="centrer gap-3  m-4 fond-7">
-            <button id="exportExcel" class="btn btn-green">
-                <i class="fa fa-file-excel"></i> Exporter Excel
-            </button>
-            <button id="exportPdf" class="btn btn-danger">
-                <i class="fa fa-file-pdf"></i> Exporter PDF
-            </button>
-            {# <a href="#" class="btn btn-success-light me-2">
-                <i class="fa fa-print"></i> Imprimer
-            </a> #}
+            <table class="table table-success-light table-bordered table-hover table-striped my-3" id="facture" style="display:none">
+        <thead>
+        <tr>
+            <th>{{ 'CIP'|trans }}</th>
+            <th>{{ 'Désignation'|trans }}</th>
+            <th>{{ 'DCI'|trans }}</th>
+            <th>{{ 'Fabricant'|trans }}</th>
+{#            <th>N° Lot</th>#}
+{#            <th>Peremptio</th>#}
+            <th>{{ 'Quantité'|trans }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for produit in stock %}
+            <tr>
+                <td>{{ produit.produit.reference }}</td>
+                <td>{{ produit.produit.desigantion }}</td>
+                <td>{{ produit.produit.dci }}</td>
+                <td>{{ produit.produit.fabriquant }}</td>
+{#                <td>{{ produit.lot }}</td>#}
+{#                <td>{{ produit.peremption|date('d/m/Y') }}</td>#}
+                <td>{{ produit.produit.stock|number_format(0,',' , ' ') }}</td>
+                
+
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <span id="exportexcel" class=""></span>
         </div>
     </div>
 </div>

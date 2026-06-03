@@ -217,14 +217,17 @@
                     <td>
                         {% if commande.suivi %}
                             {{ commandeproduit.quantite }}
+                            {% set quantite = commandeproduit.quantite %}
                         {% else %}
                             {% if commandeproduit.produit.stock > commandeproduit.quantite %}
                                 {{ commandeproduit.quantite }}
+                                 {% set quantite = commandeproduit.quantite %}
                             {% else %}
                                 {{ commandeproduit.produit.stock }}
+                                 {% set quantite = commandeproduit.produit.stock %}
                             {% endif %}
                         {% endif %}
-                         {% if commandeproduit.ug != 0 %}
+                        {% if commandeproduit.ug != 0 %}
                             <span class="badge bg-danger">
                                 + {{ commandeproduit.ug }} U.G
                             </span>
@@ -258,8 +261,8 @@
                     {{ commandeproduit.publique|number_format(2, ',', ' ') }}
                 </td>
                 <td class="text-end text-nowrap">
-                    {% set total = total + (commandeproduit.quantite * commandeproduit.session) %}
-                    {{ (commandeproduit.quantite * commandeproduit.session)|number_format(2, ',', ' ') }}
+                    {% set total = total + (quantite * commandeproduit.session) %}
+                    {{ (quantite * commandeproduit.session)|number_format(2, ',', ' ') }}
                 </td>
             </tr>
         {% endfor %}

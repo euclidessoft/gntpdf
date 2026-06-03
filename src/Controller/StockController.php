@@ -326,7 +326,7 @@ class StockController extends AbstractController
     #[Route("/Retour/", name :"retour", methods : ["GET"]) ]
     public function retour(CommandeRepository $repository, SessionInterface $session): Response
     {
-        if ($this->security->isGranted('ROLE_STOCK')) {
+        if ($this->security->isGranted('ROLE_STOCK') || $this->security->isGranted('ROLE_FINANCE')) {
             $session->remove('retour');
 
             $response = $this->render('stock/retour.html.twig', [
@@ -359,7 +359,7 @@ class StockController extends AbstractController
     #[Route("/Retour_index/", name :"retour_index", methods : ["GET"]) ]
     public function retourindex(RetourRepository $repository, SessionInterface $session): Response
     {
-        if ($this->security->isGranted('ROLE_STOCK')) {
+         if ($this->security->isGranted('ROLE_STOCK') || $this->security->isGranted('ROLE_FINANCE')) {
             $session->remove('retour');
 
             $response = $this->render('stock/retour_index.html.twig', [
@@ -393,7 +393,7 @@ class StockController extends AbstractController
     {
         $session->remove('retour');
 
-        if ($this->security->isGranted('ROLE_STOCK')) {
+         if ($this->security->isGranted('ROLE_STOCK') || $this->security->isGranted('ROLE_FINANCE')) {
 
             $response = $this->render('stock/retour_show.html.twig', [
                 'commande' => $commande,
@@ -428,7 +428,7 @@ class StockController extends AbstractController
     public function retourhistoryshow(Retour $retour, RetourProduitRepository $repository, SessionInterface $session): Response
     {
 
-        if ($this->security->isGranted('ROLE_STOCK')) {
+         if ($this->security->isGranted('ROLE_STOCK') || $this->security->isGranted('ROLE_FINANCE')) {
 
             $response = $this->render('stock/history_show.html.twig', [
                 'retour' => $retour,
@@ -463,7 +463,7 @@ class StockController extends AbstractController
     public function retourhistoryshowprint(Retour $retour, RetourProduitRepository $repository, SessionInterface $session): Response
     {
 
-        if ($this->security->isGranted('ROLE_STOCK')) {
+         if ($this->security->isGranted('ROLE_STOCK') || $this->security->isGranted('ROLE_FINANCE')) {
 
             $response = $this->render('stock/history_show_print.html.twig', [
                 'retour' => $retour,
@@ -499,7 +499,7 @@ class StockController extends AbstractController
     public function retourhistoryshowpdf(Retour $retour, RetourProduitRepository $repository, PdfService $pdfService ): Response
     {
 
-        if ($this->security->isGranted('ROLE_STOCK')) {
+         if ($this->security->isGranted('ROLE_STOCK') || $this->security->isGranted('ROLE_FINANCE')) {
 
          
          return $pdfService->streamPdf(
@@ -528,7 +528,7 @@ class StockController extends AbstractController
     public function retour_valider(Request $request, SessionInterface $session): Response
     {
 
-        if ($this->security->isGranted('ROLE_STOCK')) {
+         if ($this->security->isGranted('ROLE_STOCK') || $this->security->isGranted('ROLE_FINANCE')) {
 
             $com = $request->get('commande');
             $em = $this->entityManager;
@@ -661,7 +661,7 @@ class StockController extends AbstractController
     public function retour_simple(Request $request, SessionInterface $session): Response
     {
 
-        if ($this->security->isGranted('ROLE_STOCK')) {
+         if ($this->security->isGranted('ROLE_STOCK') || $this->security->isGranted('ROLE_FINANCE')) {
             
             $com = $request->get('commande');
             $em = $this->entityManager;
@@ -785,7 +785,7 @@ class StockController extends AbstractController
     public function retour_valider_avoir(Request $request, SessionInterface $session): Response
     {// retour avec avoir
 
-        if ($this->security->isGranted('ROLE_STOCK')) {
+         if ($this->security->isGranted('ROLE_STOCK') || $this->security->isGranted('ROLE_FINANCE')) {
 
             $com = $request->get('commande');
             $em = $this->entityManager;

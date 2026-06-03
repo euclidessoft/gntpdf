@@ -104,11 +104,14 @@
                     <td>
                         {% if commande.suivi %}
                             {{ commandeproduit.quantite }}
+                            {% set quantite = commandeproduit.quantite %}
                         {% else %}
                             {% if commandeproduit.produit.stock > commandeproduit.quantite %}
                                 {{ commandeproduit.quantite }}
+                                 {% set quantite = commandeproduit.quantite %}
                             {% else %}
                                 {{ commandeproduit.produit.stock }}
+                                 {% set quantite = commandeproduit.produit.stock %}
                             {% endif %}
                         {% endif %}
                         {% if commandeproduit.ug != 0 %}
@@ -155,8 +158,8 @@
                     </td>
                     <td>{{ commandeproduit.publique|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
                     <td>
-                        {{ (commandeproduit.quantite * commandeproduit.session)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
-                        {% set total = total + (commandeproduit.quantite * commandeproduit.session) %}
+                        {{ (quantite * commandeproduit.session)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                        {% set total = total + (quantite * commandeproduit.session) %}
                     </td>
                 </tr>
             {% endfor %}

@@ -1033,12 +1033,16 @@ class CommandeController extends AbstractController
             ]);
             return $response;
         } else if ($this->security->isGranted('ROLE_CLIENT')) {
-            $this->getUser()->getTuteur() === null ?
-             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getId()) :
-             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getTuteur()->getId());;
+            if($this->getUser()->getTuteur() === null){
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getId());
+             $commandes = $repository->findBy(['user' => $this->getUser()->getId(), 'paiement' => null, 'credit' => true, 'suivi' => true, 'payer' => false]);
+            }else{
+             $panier = $this->entityManager->getRepository(Panier::class)->panier($this->getUser()->getTuteur()->getId());
+             $commandes = $repository->findBy(['user' => $this->getUser()->getTuteur()->getId(), 'paiement' => null, 'credit' => true, 'suivi' => true, 'payer' => false]);
+            }
            
             $response = $this->render('officine/credit.html.twig', [
-                'commandes' => $repository->findBy(['user' => $this->getUser()->getId(), 'paiement' => null, 'credit' => true, 'suivi' => true, 'payer' => false]),
+                'commandes' => $commandes,
                 'panier' => $panier,
             ]);
             $response->setSharedMaxAge(0);
