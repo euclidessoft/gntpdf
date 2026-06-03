@@ -89,7 +89,7 @@
                 {% set totalcession = totalcession + inventaire.cession %}
                 {{ inventaire.cession|number_format(2,',' , ' ') }}</td>
                 <td class"center">
-                    {% set totalprod = ecart * inventaire.cession %}
+                    {% set totalprod = ecart * inventaire.pght %}
                     {% set total = total + totalprod %}
                     {{ totalprod|number_format(2,',' , ' ') }}
                 </td>
