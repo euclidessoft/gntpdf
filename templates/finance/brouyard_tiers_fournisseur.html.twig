@@ -53,21 +53,78 @@
             </tr>
        </thead>
         <tbody>
+        {% set debitmouvement = 0 %}
+        {% set debitsolde = 0 %}
+        {% set creditmouvement = 0 %}
+        {% set creditsolde = 0 %}
             {% for commande in commandes %} 
         
                 <tr>
                     <td>{{commande['compte'] }}</td>
                     <td><a href="{{ path('finance_days_tiers_history', {'client' : commande['id'],'date1': day1|date('Y-m-d'),'date2': day2|date('Y-m-d')}) }}">{{commande['nom'] }}</a></td>
-                    <td>{{commande['ca']|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
-                    <td>{{commande['achat']|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                    <td>
+                    {{commande['ca']|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                    {% set debitmouvement = debitmouvement + commande['ca'] %}
+                    <td>
+                    {{commande['achat']|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
                     {% set solde = commande['ca'] - commande['achat'] %}
-                    <td> {% if solde > 0 %} {{ solde|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }} {% endif %}</td>
-                    <td> {% if solde < 0 %} {{ (-1 *solde) |number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }} {% endif %}</td>
-                   
+                    {% set creditmouvement = creditmouvement + commande['achat'] %}
+                    <td>
+                        {% if solde > 0 %} 
+                            {{ solde|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }} 
+                            {% set debitsolde = debitsolde + solde %}
+                        {% endif %}
+                    </td>
+                    <td> 
+                        {% if solde < 0 %} 
+                            {{ (-1 *solde) |number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }} 
+                            {% set creditsolde = creditsolde + solde %}
+                        {% endif %}
+                    </td>
                 </tr>
             {% else %}
             {% endfor %}
         </tbody>
+         <tfooter>
+            <tr>
+                <th colspan="2" class="text-end"> Total General</th>
+                <th>
+                {{ debitmouvement|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                </th>
+              
+                <th>
+                {{ creditmouvement|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                </th>
+                {% set solde = debitmouvement - creditmouvement %}
+                <th> {{ debitsolde|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                </th>
+                <th> {{ (-1 * creditsolde) |number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                </th>
+                
+            </tr>
+            <tr>
+                <th colspan="2" class="text-end"> solde de la balance</th>
+                <th>
+                </th>
+              
+                <th>
+              </th>
+               
+               <th>
+                        {% if solde > 0 %} 
+                            {{ solde|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }} 
+                           
+                        {% endif %}
+                    </th>
+                    <th> 
+                        {% if solde < 0 %} 
+                            {{ (-1 *solde) |number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }} 
+                         
+                        {% endif %}
+                    </th>
+                
+            </tr>
+        </tfooter>
        </table> 
         </div>
     </div>
