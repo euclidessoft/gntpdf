@@ -41,7 +41,7 @@
                 {{ message|trans }}
             </div>
         {% endfor %}
-{% if is_granted("ROLE_ADMIN")%}
+{% if is_granted("ROLE_STOCK") or is_granted("ROLE_FINANCE") %}
  <a href="{{ path('stock_retour') }}" class="btn btn-green my-4">
             <i class="fa fa-plus"></i>
             {{ "Nouveau"|trans }}

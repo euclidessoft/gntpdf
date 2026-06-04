@@ -36,7 +36,7 @@
                     </thead>
                     <tbody>
                     <td>{{ commande.id }}</td>
-                    <td>{{ commande.date|date('d/m/Y H:is') }}</td>
+                    <td>{{ commande.date|date('d/m/Y H:i:s') }}</td>
                     <td>{{ commande.traitement|date('d/m/Y H:i:s') }}</td>
                     <td>{{ commande.user.niu }}</td>
                     {% if commande.credit == 1 and commande.payer == 0 %}

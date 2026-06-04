@@ -124,6 +124,12 @@
         {% endfor %}
         </tbody>
     </table>
+     <a id="print" onclick="load('print')"
+               href="{{ path('stock_index_pdf') }}"
+               class="btn btn-danger">
+                <i class="fa fa-file-pdf"></i>
+                {{ "vers pdf"|trans }}
+            </a>
     <span id="exportexcel" class=""></span>
         </div>
     </div>

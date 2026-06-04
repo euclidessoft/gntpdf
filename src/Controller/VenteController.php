@@ -73,6 +73,32 @@ class VenteController extends AbstractController
         }
     }
 
+    #[Route("Articles_pdf/", name :"article_pdf") ]
+    public function sortiepdf(ProduitRepository $repository, PdfService $pdfService): Response
+    {
+        if ($this->security->isGranted('ROLE_BACK')) {
+
+           
+             return $pdfService->streamPdf(
+           'vente/articlespdf.html.twig', [
+                'produits' => $repository->vente_article(),
+            ],
+            sprintf('palmares-%s.pdf',1)
+        );
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+    }
+
     
 
     #[Route("/Article/{id}", name :"show", methods : ["GET"]) ]

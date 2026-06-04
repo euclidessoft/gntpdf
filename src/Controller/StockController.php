@@ -72,6 +72,30 @@ class StockController extends AbstractController
             return $response;
         }
     }
+    #[Route("/_pdf", name :"index_pdf", methods : ["GET"]) ]
+    public function stockpdf(StockRepository $repository, PdfService $pdfService): Response
+    {
+        if ($this->security->isGranted('ROLE_STOCK') || $this->security->isGranted('ROLE_FINANCE')) {
+
+            return $pdfService->streamPdf(
+            'stock/stockpdf.html.twig', [
+                'stock' => $repository->stock(),
+            ],
+            sprintf('stock-%s.pdf', 1)
+        );
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+    }
 
      #[Route("/Inventaire", name :"inventaire", methods : ["GET"]) ]
     public function inventaire_index(InventaireRepository $repository): Response

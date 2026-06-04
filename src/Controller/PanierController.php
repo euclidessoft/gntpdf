@@ -58,9 +58,13 @@ class PanierController extends AbstractController
         }
         else if ($this->security->isGranted('ROLE_CLIENT')) {
 
-            $this->getUser()->getTuteur() === null ?
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getId()]) :
-             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getTuteur()->getId()]);   
+            if($this->getUser()->getTuteur() === null){
+             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getId()]);
+             $id = $this->getUser()->getId();
+            }else{
+             $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getTuteur()->getId()]); 
+             $id = $this->getUser()->getTuteur()->getId();
+            }  
             $dataPanier = [];
 
               foreach($panier as $commande){
@@ -74,8 +78,8 @@ class PanierController extends AbstractController
             $vente = $repository->achatmensuel($this->getUser()->getId());
             $promotion = $promotionRepository->Courante();
             $nouveaute = $produitRepository->nouveaute();
-            $avoir = $avoirRepository->findby(['client' => $this->getUser()]);
-            $dette = $commandeRepository->findBy(['payer' => false, 'user' => $this->getUser()]);
+            $avoir = $avoirRepository->findby(['client' => $id]);
+            $dette = $commandeRepository->findBy(['payer' => false, 'user' => $id]);
             $reclamation = $reclamationRepository->findBy(['pharmacie' => $this->getUser()->getPharmacie(), 'cloture' => null]);
 
 

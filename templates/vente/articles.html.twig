@@ -22,7 +22,7 @@
     </h3>
     
 
-    <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+    <table class="table table-success-light table-bordered table-hover table-striped my-3" id="facture">
         <thead>
         <tr>
             <th>{{ 'CIP'|trans }}</th>
@@ -50,15 +50,13 @@
         </tbody>
     </table>
     <div class="centrer gap-3  m-4 fond-7">
-            <button id="exportExcel" class="btn btn-green">
-                <i class="fa fa-file-excel"></i> Exporter Excel
-            </button>
-            <button id="exportPdf" class="btn btn-danger">
-                <i class="fa fa-file-pdf"></i> Exporter PDF
-            </button>
-            {# <a href="#" class="btn btn-success-light me-2">
-                <i class="fa fa-print"></i> Imprimer
-            </a> #}
+            <a id="print" onclick="load('print')"
+               href="{{ path('vente_article_pdf') }}"
+               class="btn btn-danger">
+                <i class="fa fa-file-pdf"></i>
+                {{ "vers pdf"|trans }}
+            </a>
+            <span id="exportexcel" class=""></span>
         </div>
     </div>
 </div>
