@@ -1,57 +1,15 @@
 {% extends
-    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
-    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
-    is_granted('ROLE_RH') ? 'rh.html.twig' :
-    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
-    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
-    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
-    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
-    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
-    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
-    'layout.html.twig'
+    'print.html.twig'
 %}
 {% block title %} {{ "Commande"|trans }} - GNT Pharma {% endblock %}
-{% block client_suivi %} active{% endblock %}
-{% block palamares %}active{% endblock %}
 
-{% block body %}
-    <div class="container mt-4 fond-7">
+{% block contenu %}
+    <div class="container-fluid mt-4 fond-7">
         <h3 class="mt-4 mb-5 fw-bold">
         <i class="fas fa-chart-line me-2"></i>
         {{ "Analyse Client"|trans }} | {{ user.nom ~ " " ~ user.prenom}} 
     </h3>
-         <ul class="nav nav-tabs mb-4">
-        <li class="nav-item">
-            <a class="nav-link" href="{{ path('vente_chiffre_client', {'client': user.id})}}">
-                {{ "Chiffre d'Affaire"|trans }}
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ path('vente_client_article',{'client' :user.id}) }}">
-                {{'Articles'|trans}}
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ path('commande_panier_palmares_credit',{'client' :user.id}) }}">
-                {{'Factures Impayées'|trans}}
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ path('commande_panier_palmares_payer',{'client' :user.id}) }}">
-                {{'Factures Payees'|trans}}
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ path('finance_avantage_client_palmares',{'client' :user.id}) }}">
-                {{'Avantages'|trans}}
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link active" href="">
-                {{'Compte'|trans}}
-            </a>
-        </li>
-    </ul>
+        
       <table class="table table-success-light table-bordered table-hover table-striped">
                     <thead>
                     <tr>
@@ -113,20 +71,5 @@
                         </tr>
                     </tfooter>
                 </table>
-                 <div class="centrer gap-3  m-4 fond-7">
-            <a id="pdf" onclick="load('pdf')"
-               href="{{ path('finance_journal_client_pdf', {'client' : user.id}) }}"
-               class="btn btn-danger">
-                <i class="fa fa-file-pdf"></i>
-                {{ "vers pdf"|trans }}
-            </a>
-            <a id="print" onclick="load('print')"
-               href="{{ path('finance_journal_client_print', {'client' : user.id}) }}"
-               class="btn btn-success-light">
-                <i class="fa fa-print"></i>
-                {{ "imprimer"|trans }}
-            </a>
-            <span id="exportexcel" class=""></span>
-        </div>
     </div>
 {% endblock %}

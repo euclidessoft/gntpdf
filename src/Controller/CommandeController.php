@@ -1199,6 +1199,82 @@ class CommandeController extends AbstractController
 
     }
 
+    #[Route("/Palmares_Credit_pdf/{client}", name :"palmares_credit_pdf") ]
+    public function creditclientpdf(Client $client, SessionInterface $session, CommandeRepository $repository, PdfService $pdfService)
+    {
+        if ($this->security->isGranted('ROLE_FINANCE')) {
+            
+            $commandes = $repository->findBy(['user' => $client->getId(), 'paiement' => null, 'credit' => true, 'suivi' => true, 'payer' => false]);
+            $montant = 0;
+            foreach($commandes as $commande){
+                $montant += $commande->getMontant();
+            }
+          
+            return $pdfService->streamPdf(
+           'vente/credit.html.twig', [
+                'commandes' => $commandes,
+                'user' => $client,
+                'montant' => $montant,
+             
+            ],
+            sprintf('facture-%s.pdf',1)
+        );
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+
+    }
+    
+
+    #[Route("/Palmares_Credit_print/{client}", name :"palmares_credit_print") ]
+    public function creditclient_print(Client $client, SessionInterface $session, CommandeRepository $repository)
+    {
+        if ($this->security->isGranted('ROLE_FINANCE')) {
+            
+            $commandes = $repository->findBy(['user' => $client->getId(), 'paiement' => null, 'credit' => true, 'suivi' => true, 'payer' => false]);
+            $montant = 0;
+            foreach($commandes as $commande){
+                $montant += $commande->getMontant();
+            }
+            $response = $this->render('vente/credit_print.html.twig', [
+                'commandes' => $commandes,
+                'user' => $client,
+                'montant' => $montant,
+             
+            ]);
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+
+    }
+
     #[Route("/Palmares_Paye/{client}", name :"palmares_payer") ]
     public function payeclient(Client $client, SessionInterface $session, CommandeRepository $repository)
     {

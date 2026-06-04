@@ -563,6 +563,103 @@ class FinanceController extends AbstractController
             return $response;
         }
     }
+    #[Route("/Palmares_compte_print/{client}", name :"journal_client_print") ]
+    public function journalCompteclientprint(Client $client, PaiementRepository $paierepo, VersementRepository $versementrepo): Response
+    {
+        if ($this->security->isGranted('ROLE_FINANCE')) {
+
+              $commandes = $this->entityManager->getRepository(Commande::class)->historiquecompteclient($client->getId());
+              $avoirs = $this->entityManager->getRepository(Avoir::class)->findBy(['client' => $client->getId()]);
+             $paiements = $paierepo->balancecompte($client->getId());
+                $versements = $versementrepo->balancecompte($client->getId());
+               
+                $result = [];
+                foreach ([$commandes, $avoirs, $paiements, $versements] as $tableau) {
+                    foreach ($tableau as $row) {
+                        $date = $row->getDate()->format('Y-m-d');
+                        // dd($date);
+                        // On regroupe les lignes par date
+                        $result[$date][] = $row;
+                    }
+                }
+                ksort($result);
+                // dd($result);
+                $flat = [];
+
+                foreach ($result as $date => $rows) {
+                    foreach ($rows as $row) {
+                        $flat[] = $row;
+                    }
+                } 
+
+            return $this->render('vente/compte_print.html.twig', [
+               'commandes' => $flat,
+                'user' => $client,
+            ]);
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+    }
+
+    #[Route("/Palmares_compte_pdf/{client}", name :"journal_client_pdf") ]
+    public function journalCompteclientpdf(Client $client, PaiementRepository $paierepo, VersementRepository $versementrepo, PdfService $pdfService): Response
+    {
+        if ($this->security->isGranted('ROLE_FINANCE')) {
+
+              $commandes = $this->entityManager->getRepository(Commande::class)->historiquecompteclient($client->getId());
+              $avoirs = $this->entityManager->getRepository(Avoir::class)->findBy(['client' => $client->getId()]);
+             $paiements = $paierepo->balancecompte($client->getId());
+                $versements = $versementrepo->balancecompte($client->getId());
+               
+                $result = [];
+                foreach ([$commandes, $avoirs, $paiements, $versements] as $tableau) {
+                    foreach ($tableau as $row) {
+                        $date = $row->getDate()->format('Y-m-d');
+                        // dd($date);
+                        // On regroupe les lignes par date
+                        $result[$date][] = $row;
+                    }
+                }
+                ksort($result);
+                // dd($result);
+                $flat = [];
+
+                foreach ($result as $date => $rows) {
+                    foreach ($rows as $row) {
+                        $flat[] = $row;
+                    }
+                } 
+
+           
+            return $pdfService->streamPdf(
+           'vente/comptepdf.html.twig', [
+               'commandes' => $flat,
+                'user' => $client,
+            ],
+            sprintf('balance-%s.pdf', 1)
+        );
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+    }
 
     
 

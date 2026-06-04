@@ -1,21 +1,10 @@
 {% extends
-    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
-    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
-    is_granted('ROLE_RH') ? 'rh.html.twig' :
-    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
-    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
-    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
-    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
-    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
-    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
-    'layout.html.twig'
+   
+    'print.html.twig'
 %}
-{% block title %} {{ "Commande"|trans }} - GNT Pharma {% endblock %}
-{% block stock %}active{% endblock %}
-{% block etat_stock %}active{% endblock %}
 
-{% block body %}
-<div class="container mt-4 fond-7">
+{% block contenu %}
+<div class="container-fluid mt-4 fond-7">
     <h3 class="mt-4 fw-bold">
         <i class="fa fa-shopping-cart me-2"></i>
         {{ "Etat stock produits"|trans }}
@@ -25,53 +14,7 @@
                     {{ 'Mouvement de stock du '|trans }} {{ day1|date('d/m/Y') }}
                     {{ 'au '|trans }} {{ day2|date('d/m/Y') }}
                 </h5>
-    <ul class="nav nav-tabs mb-4">
-        {# {% if is_granted('ROLE_STOCK') %} #}
-        <li class="nav-item">
-            <a class="nav-link" href="{{ path('stock_index') }}">
-                {{ 'Disponible'|trans }}
-            </a>
-        </li>
-        {# {% endif %} #}
-        <li class="nav-item">
-            <a class="nav-link" href="{{ path('stock_surveiller') }}">
-                {{'à surveiller'|trans}}
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ path('stock_rupture') }}">
-                {{ 'En rupture'|trans }}
-            </a>
-        </li>
-        {# {% if is_granted('ROLE_STOCK') %} #}
-            <li class="nav-item">
-                <a class="nav-link" href="{{ path('stock_peremption') }}">
-                    {{ 'Péremption Imminente'|trans }}
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ path('stock_sortie_produit') }}">
-                    {{ 'Historique de sortie Produit'|trans }}
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active" href="">
-                    {{ 'Mouvement de Stock'|trans }}
-                </a>
-            </li>
-        {# {% endif %} #}
-    </ul>
-            <div class="centrer gap-3  m-4 fond-7">
-                 <a target="_blank" href="{{ path('stock_mouvement_stock_print', {'date1': day1|date('Y-m-d'),'date2': day2|date('Y-m-d')}) }}" class="btn btn-success-light ms-3">
-                    <i class="fa fa-print"></i>
-                    {{ 'Imprimer'|trans }}
-                    </a>
-
-                 <a target="_blank" href="{{ path('stock_mouvement_stock_pdf', {'date1': day1|date('Y-m-d'),'date2': day2|date('Y-m-d')}) }}" class="btn btn-danger ms-3">
-                    <i class="fa fa-file-pdf"></i>
-                    {{ 'vers Pdf'|trans }}
-                </a>
-            </div>
+   
     <table class="table table-success-light table-bordered table-hover table-striped my-3">
         <tr>
             <th rowspan="2">Date</th>
@@ -196,16 +139,5 @@
             </tr>
     </table>
 
-    <div class="centrer gap-3  m-4 fond-7">
-         
-                 <a target="_blank" href="{{ path('stock_mouvement_stock_print', {'date1': day1|date('Y-m-d'),'date2': day2|date('Y-m-d')}) }}" class="btn btn-success-light ms-3">
-                    <i class="fa fa-print"></i>
-                    {{ 'Imprimer'|trans }}
-                    </a>    
-      <a target="_blank" href="{{ path('stock_mouvement_stock_pdf', {'date1': day1|date('Y-m-d'),'date2': day2|date('Y-m-d')}) }}" class="btn btn-danger ms-3">
-                    <i class="fa fa-file-pdf"></i>
-                    {{ 'vers Pdf'|trans }}
-                </a>
-    </div>
 </div>
 {% endblock %}

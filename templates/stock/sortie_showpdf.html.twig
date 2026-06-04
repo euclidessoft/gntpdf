@@ -49,11 +49,6 @@
                     {{ 'Historique de sortie Produit'|trans }}
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ path('stock_mouvement') }}">
-                    {{ 'Mouvement de Stock'|trans }}
-                </a>
-            </li>
         {# {% endif %} #}
     </ul>
 
@@ -244,13 +239,6 @@
             </tr>
         </tfooter>
     </table>
-     <a id="print" onclick="load('print')"
-               href="{{ path('stock_history_produit_show_print', {'id' : produit.id}) }}"
-               class="btn btn-success-light">
-                <i class="fa fa-print"></i>
-                {{ "imprimer"|trans }}
-            </a>
-
       <span id="exportexcel" class=""></span>
         </div>
     </div>

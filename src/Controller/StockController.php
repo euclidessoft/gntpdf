@@ -1157,6 +1157,39 @@ class StockController extends AbstractController
             return $response;
         }
     }
+  
+    #[Route("/Mouvement_stock_print/{date1}/{date2}", name :"mouvement_stock_print", methods : ["GET"]) ]
+    public function mouvement_print(ProduitRepository $repo, $date1, $date2): Response
+    {
+        if ($this->security->isGranted('ROLE_STOCK') || $this->security->isGranted('ROLE_FINANCE')) {
+           
+            $response = $this->render('stock/mouvement_print.html.twig', [
+                'produits' => $repo->reapprovisionnement(),
+                'day1' => $date1,
+                'day2' => $date2,
+            ]);
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+    }
     
     #[Route("/Mouvement_stock_pdf/{date1}/{date2}", name :"mouvement_stock_pdf", methods : ["GET"]) ]
     public function mouvement_pdf(ProduitRepository $repo, $date1, $date2, PdfService $pdfService): Response
@@ -1252,6 +1285,59 @@ class StockController extends AbstractController
                 } 
                 // dd($flat);
             $response = $this->render('stock/sortie_show.html.twig', [
+                'stocks' => $flat,
+                'produit' => $produit,
+            ]);
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+    }
+    
+
+    #[Route("/History_Produit_print/{id}", name :"history_produit_show_print", methods : ["GET"]) ]
+    public function produithistory_print(Produit $produit, LivrerProduitRepository $repository, ApprovisionnementRepository $repo): Response
+    {
+        if ($this->security->isGranted('ROLE_STOCK') || $this->security->isGranted('ROLE_FINANCE')) {
+            $livraison = $repository->findBy(['produit' => $produit]);
+            $reappro = $repo->findBy(['produit' => $produit]);
+             $result = [];
+                foreach ([$reappro,$livraison] as $tableau) {
+                    foreach ($tableau as $row) {
+                        $date = $row->getDate()->format('Y-m-d');
+                        // dd($date);
+                        // On regroupe les lignes par date
+                        $result[$date][] = $row;
+                    }
+                }
+                ksort($result);
+                // dd($result);
+                $flat = [];
+
+                foreach ($result as $date => $rows) {
+                    foreach ($rows as $row) {
+                        $flat[] = $row;
+                    }
+                } 
+                // dd($flat);
+            $response = $this->render('stock/sortie_show_print.html.twig', [
                 'stocks' => $flat,
                 'produit' => $produit,
             ]);
