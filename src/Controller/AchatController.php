@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\SecurityBundle\Security;
+use App\Service\PdfService;
 
 #[Route("/{_locale}/achat") ]
 class AchatController extends AbstractController
@@ -85,6 +86,39 @@ class AchatController extends AbstractController
         return $response;
     }
     
+    #[Route("/Palmares_Fournisseur_impaye_print/{fournisseur}", name :"facture_impaye_print", methods : ["GET"]) ]
+    public function listfactureimpaye_print(Fournisseur $fournisseur, FactureRepository $repository): Response
+    {
+
+        $response = $this->render('achat/factureimpaye_print.html.twig', [
+            'approvisionnements' => $repository->findBy(['fournisseur' => $fournisseur, 'payer' => false]),
+            'fournisseur' => $fournisseur,
+        ]);
+        $response->setSharedMaxAge(0);
+        $response->headers->addCacheControlDirective('no-cache', true);
+        $response->headers->addCacheControlDirective('no-store', true);
+        $response->headers->addCacheControlDirective('must-revalidate', true);
+        $response->setCache([
+            'max_age' => 0,
+            'private' => true,
+        ]);
+        return $response;
+    }
+    
+    #[Route("/Palmares_Fournisseur_impaye_pdf/{fournisseur}", name :"facture_impaye_pdf", methods : ["GET"]) ]
+    public function listfactureimpaye_pdf(Fournisseur $fournisseur, FactureRepository $repository, PdfService $pdfService): Response
+    {
+
+      
+        return $pdfService->streamPdf(
+           'achat/factureimpayepdf.html.twig', [
+            'approvisionnements' => $repository->findBy(['fournisseur' => $fournisseur, 'payer' => false]),
+            'fournisseur' => $fournisseur,
+        ],
+            sprintf('facture-%s.pdf',1)
+        );
+    }
+    
     #[Route("/Palmares_Fournisseur_paye/{fournisseur}", name :"facture_paye", methods : ["GET"]) ]
     public function listfacturepaye(Fournisseur $fournisseur, FactureRepository $repository): Response
     {
@@ -102,6 +136,36 @@ class AchatController extends AbstractController
             'private' => true,
         ]);
         return $response;
+    }
+    #[Route("/Palmares_Fournisseur_paye_print/{fournisseur}", name :"facture_paye_print", methods : ["GET"]) ]
+    public function listfacturepaye_print(Fournisseur $fournisseur, FactureRepository $repository): Response
+    {
+
+        $response = $this->render('achat/facturepaye_print.html.twig', [
+            'approvisionnements' => $repository->findBy(['fournisseur' => $fournisseur, 'payer' => true]),
+            'fournisseur' => $fournisseur,
+        ]);
+        $response->setSharedMaxAge(0);
+        $response->headers->addCacheControlDirective('no-cache', true);
+        $response->headers->addCacheControlDirective('no-store', true);
+        $response->headers->addCacheControlDirective('must-revalidate', true);
+        $response->setCache([
+            'max_age' => 0,
+            'private' => true,
+        ]);
+        return $response;
+    }
+    #[Route("/Palmares_Fournisseur_paye_pdf/{fournisseur}", name :"facture_paye_pdf", methods : ["GET"]) ]
+    public function listfacturepayepdf(Fournisseur $fournisseur, FactureRepository $repository, PdfService $pdfService): Response
+    {
+
+        return $pdfService->streamPdf(
+           'achat/facturepayepdf.html.twig', [
+            'approvisionnements' => $repository->findBy(['fournisseur' => $fournisseur, 'payer' => true]),
+            'fournisseur' => $fournisseur,
+        ],
+            sprintf('facture-%s.pdf',1)
+        );
     }
 
     #[Route("/new/{facture}", name :"achat_new", methods : ["GET","POST"]) ]

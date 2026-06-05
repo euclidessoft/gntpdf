@@ -767,6 +767,102 @@ class FinanceController extends AbstractController
             return $response;
         }
     }
+    #[Route("/Analyse_compte_print/{fournisseur}", name :"journal_fournisseur_print") ]
+    public function journalComptefournisseur_print(Fournisseur $fournisseur): Response
+    {
+        if ($this->security->isGranted('ROLE_FINANCE')) {
+
+              $factures = $this->entityManager->getRepository(Facture::class)->findBy(['fournisseur' => $fournisseur]);
+              $achats = $this->entityManager->getRepository(Achat::class)->findBy(['fournisseur' => $fournisseur]);
+            
+             
+               
+                $result = [];
+                foreach ([$factures, $achats] as $tableau) {
+                    foreach ($tableau as $row) {
+                        $date = $row->getDate()->format('Y-m-d');
+                        // dd($date);
+                        // On regroupe les lignes par date
+                        $result[$date][] = $row;
+                    }
+                }
+                ksort($result);
+                // dd($result);
+                $flat = [];
+
+                foreach ($result as $date => $rows) {
+                    foreach ($rows as $row) {
+                        $flat[] = $row;
+                    }
+                } 
+
+            return $this->render('vente/comptefournisseur_print.html.twig', [
+               'commandes' => $flat,
+                'fournisseur' => $fournisseur,
+            ]);
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+    }
+
+    #[Route("/Analyse_compte_pdf/{fournisseur}", name :"journal_fournisseur_pdf") ]
+    public function journalComptefournisseur_pdf(Fournisseur $fournisseur, PdfService $pdfService): Response
+    {
+        if ($this->security->isGranted('ROLE_FINANCE')) {
+
+              $factures = $this->entityManager->getRepository(Facture::class)->findBy(['fournisseur' => $fournisseur]);
+              $achats = $this->entityManager->getRepository(Achat::class)->findBy(['fournisseur' => $fournisseur]);
+            
+             
+               
+                $result = [];
+                foreach ([$factures, $achats] as $tableau) {
+                    foreach ($tableau as $row) {
+                        $date = $row->getDate()->format('Y-m-d');
+                        // dd($date);
+                        // On regroupe les lignes par date
+                        $result[$date][] = $row;
+                    }
+                }
+                ksort($result);
+                // dd($result);
+                $flat = [];
+
+                foreach ($result as $date => $rows) {
+                    foreach ($rows as $row) {
+                        $flat[] = $row;
+                    }
+                } 
+
+             return $pdfService->streamPdf(
+            'vente/comptefournisseurpdf.html.twig', [
+               'commandes' => $flat,
+                'fournisseur' => $fournisseur,
+            ],
+            sprintf('compte-%s.pdf', 1)
+        );
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+    }
 
     #[Route("/Brouillard", name :"brouyard") ]
     public function brouyard(EcritureRepository $repository): Response

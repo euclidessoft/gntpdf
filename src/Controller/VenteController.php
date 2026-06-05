@@ -642,6 +642,65 @@ class VenteController extends AbstractController
         }
     }
 
+     #[Route("Fournisseur_Articles_print/{fournisseur}", name :"fournisseur_article_print") ]
+    public function fournisseurachat_print(Fournisseur $fournisseur): Response
+    {
+        if ($this->security->isGranted('ROLE_BACK')) {
+
+            $response = $this->render('vente/fournisseur_articles_print.html.twig', [
+                'produits' => $fournisseur->getProduits(),
+                'user' => $fournisseur,
+            ]);
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+    }
+
+     #[Route("Fournisseur_Articles_pdf/{fournisseur}", name :"fournisseur_article_pdf") ]
+    public function fournisseurachatpdf(Fournisseur $fournisseur, PdfService $pdfService): Response
+    {
+        if ($this->security->isGranted('ROLE_BACK')) {
+
+           
+             return $pdfService->streamPdf(
+           'vente/fournisseur_articlespdf.html.twig', [
+                'produits' => $fournisseur->getProduits(),
+                'user' => $fournisseur,
+            ],
+            sprintf('palmares-%s.pdf',1)
+        );
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+    }
+
     
     
     #[Route("Chiffre_fournisseur/{fournisseur}", name :"chiffre_fourniseur") ]

@@ -108,8 +108,16 @@
         {% endfor %}
         </tbody>
     </table>
-     <span id="exportexcel" class=""></span>
-        </div>
+            <a href="{{ path('vente_fournisseur_article_print', {'fournisseur':user.id}) }}" class="btn btn-success-light">
+                <i class="fa fa-print"></i>
+                {{ "Imprimer"|trans }}
+            </a>
+            <a href="{{ path('vente_fournisseur_article_pdf', {'fournisseur':user.id}) }}" class="btn btn-danger">
+                <i class="fa fa-file-pdf"></i>
+                {{ "Vers PDF"|trans }}
+            </a>
+            <span id="exportexcel" class=""></span>
+   
     </div>
 </div>
 {% endblock %}

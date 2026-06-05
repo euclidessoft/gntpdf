@@ -1,0 +1,40 @@
+{% extends
+    'print.html.twig'
+%}
+
+{% block contenu %}
+    <div class="container-fluid mt-4">
+    <h3 class="mt-4 mb-2 text-bold">
+        <i class="fas fa-chart-line me-2"></i>
+        {{ "Analyse Fournisseur"|trans }} | {{ fournisseur.designation}} 
+    </h3>
+        <h3 class="mb-5 text-bold">
+            <i class="fa fa-money-bill me-2"></i>
+            {{ "Liste des factures payées"|trans }}
+        </h3>
+       
+
+        <table class="table table-success-light table-bordered table-hover table-striped w-100 text-center" id="liste">
+            <thead>
+            <tr>
+                <th>{{ 'No Appr'|trans }}</th>
+                <th>{{ 'Date'|trans }}</th>
+                <th class="text-start">{{ 'Fournisseur'|trans }}</th>
+                <th class="text-center">{{ 'Montant'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for approv in approvisionnements %}
+                <tr>
+                    <td>{{ approv.approvisionner.id }}</td>
+                    <td>{{ approv.approvisionner.date|date('d/m/Y') }}</td>
+                    <td class="text-start">{{ approv.fournisseur ? approv.fournisseur.designation : '' }}</td>
+                    <td class="text-start">{{ approv.montant|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                    
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        
+    </div>
+{% endblock %}
