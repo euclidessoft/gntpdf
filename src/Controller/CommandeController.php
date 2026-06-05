@@ -1216,11 +1216,10 @@ class CommandeController extends AbstractController
             }
           
             return $pdfService->streamPdf(
-           'vente/credit.html.twig', [
+           'vente/creditpdf.html.twig', [
                 'commandes' => $commandes,
                 'user' => $client,
-                'montant' => $montant,
-             
+                'montant' => $montant, 
             ],
             sprintf('facture-%s.pdf',1)
         );
@@ -1305,6 +1304,80 @@ class CommandeController extends AbstractController
                 'private' => true,
             ]);
             return $response;
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+
+    }
+    #[Route("/Palmares_Paye_print/{client}", name :"palmares_payer_print") ]
+    public function payeclientprint(Client $client, SessionInterface $session, CommandeRepository $repository)
+    {
+        if ($this->security->isGranted('ROLE_FINANCE')) {
+            
+             $commandes = $repository->findBy(['user' => $client->getId(), 'suivi' => true, 'payer' => true]);
+            $montant = 0;
+            foreach($commandes as $commande){
+                $montant += $commande->getMontant();
+            }
+            $response = $this->render('vente/payer_print.html.twig', [
+                'commandes' => $commandes,
+                'user' => $client,
+                'montant' => $montant,
+             
+            ]);
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+
+    }
+    #[Route("/Palmares_Paye_pdf/{client}", name :"palmares_payer_pdf") ]
+    public function payeclientpdf(Client $client, SessionInterface $session, CommandeRepository $repository, PdfService $pdfService)
+    {
+        if ($this->security->isGranted('ROLE_FINANCE')) {
+            
+             $commandes = $repository->findBy(['user' => $client->getId(), 'suivi' => true, 'payer' => true]);
+            $montant = 0;
+            foreach($commandes as $commande){
+                $montant += $commande->getMontant();
+            }
+            
+            return $pdfService->streamPdf(
+           'vente/payerpdf.html.twig', [
+                'commandes' => $commandes,
+                'user' => $client,
+                'montant' => $montant,
+             
+            ],
+            sprintf('bon-%s.pdf',$commande->getId()."-".$commande->getNumerofacture())
+        );
+        
         } else {
             $response = $this->redirectToRoute('security_logout');
             $response->setSharedMaxAge(0);

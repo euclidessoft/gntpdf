@@ -1,0 +1,57 @@
+{% extends
+    'print.html.twig'
+%}
+{% block contenu %}
+    <div class="container-fluid">
+        <h3 class="mt-4 mb-5 fw-bold">
+        <i class="fas fa-chart-line me-2"></i>
+        {{ "Analyse Client"|trans }} | {{ user.nom ~ " " ~ user.prenom}} 
+    </h3>
+       
+<table class="table table-success-light table-bordered table-hover table-striped mb-3">
+        <thead>
+        
+      
+         <tr>
+            <th  class="text-center"><b>{{ montant|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')  }}</b></th>
+        </tr>
+        </thead>
+        
+    </table>
+        <table class="table table-success-light table-bordered table-hover table-striped w-100 mt-4" id="liste">
+            <thead>
+            <tr>
+                <th>{{ 'Numero Commande'|trans }}</th>
+                <th>{{ 'Date Commande'|trans }}</th>
+                <th>{{ 'Date traitement'|trans }}</th>
+                <th>{{ 'Montant Commande'|trans }}</th>
+                <th>{{ 'Montant Restant'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for commande in commandes %}
+                <tr>
+                    <td data-label="Numero Commande">{{ commande.id }}</td>
+                    <td data-label="Date commande">{{ commande.date|date('d/m/Y H:i:s') }}</td>
+                    <td data-label="Date  traitement">{{ commande.date|date('d/m/Y H:i:s') }}</td>
+                    <td data-label="Montant Commande">{{ commande.montant|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                    <td data-label="Montant Restant">{{ (commande.montant - commande.versement)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                    
+                </tr>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <table class="table table-success-light table-bordered table-hover table-striped mb-3">
+        <thead>
+        
+      
+         <tr>
+            <th  class="text-center"><b>{{ montant|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')  }}</b></th>
+        </tr>
+        </thead>
+        
+    </table>
+    </div>
+
+{% endblock %}

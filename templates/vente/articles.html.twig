@@ -22,7 +22,7 @@
     </h3>
     
 
-    <table class="table table-success-light table-bordered table-hover table-striped my-3" id="facture">
+    <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
         <thead>
         <tr>
             <th>{{ 'CIP'|trans }}</th>
@@ -50,6 +50,33 @@
         </tbody>
     </table>
     <div class="centrer gap-3  m-4 fond-7">
+     <table class="table table-success-light d-none table-bordered table-hover table-striped my-3" id="facture">
+        <thead>
+        <tr>
+            <th>{{ 'CIP'|trans }}</th>
+            <th>{{ 'Désignation'|trans }}</th>
+            <th>{{ 'DCI'|trans }}</th>
+            <th>{{ 'Fabricant'|trans }}</th>
+            <th>{{ 'Actions'|trans }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for produit in produits %}
+            <tr>
+                <td>{{ produit.reference }}</td>
+                <td>{{ produit.desigantion }}</td>
+                <td>{{ produit.dci }}</td>
+                <td>{{ produit.fabriquant }}</td>
+                <td>
+                    <a id="{{ produit.id }}" onclick="load({{ produit.id }})" class="btn btn-success" href="{{ path('vente_show', {'id': produit.id}) }}">
+                        <i class="fa fa-eye"></i>
+                    </a>
+                </td>
+
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
             <a id="print" onclick="load('print')"
                href="{{ path('vente_article_pdf') }}"
                class="btn btn-danger">
