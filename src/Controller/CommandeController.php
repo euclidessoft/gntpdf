@@ -244,33 +244,38 @@ class CommandeController extends AbstractController
                 $tva = 0;
                 foreach ($panier as $product) {
                     $reductionproduit = 0;
+                    $quantite = $product->getQuantite();
                     $ug = 0;
                     $produit = $produitRepository->find($product->getProduit()->getId());
+                    if($produit->getStock() < $quantite){
+                        $quantite = $produit->getStock();
+                    }
                     if($product->isColisage()){
-                        $product->setQuantite($product->getQuantite() * $produit->getColisage());
+                        $product->setQuantite($quantite * $produit->getColisage());
                     }
                     if (!empty($produit->getPromotion())) {//traitement de la promotion avec reduction
                         if (!empty($produit->getPromotion()->getReduction())) {
-                            $reductionproduit = $product->getQuantite() * $produit->getPrix() * $produit->getPromotion()->getReduction() / 100;
+                            $reductionproduit = $quantite * $produit->getPrix() * $produit->getPromotion()->getReduction() / 100;
 
                             $reduction = $reduction + $reductionproduit;
                         }
                         if ($produit->getPromotion()->getPremier() !== null) {
-                            $ug = $promo->ug($produit, $product->getQuantite());
+                            $ug = $promo->ug($produit, $quantite);
                         }
                     }
 
-                    $montant = $montant + $product->getQuantite() * $produit->getPrix();
+                    $montant = $montant + $quantite * $produit->getPrix();
 
-                    $commandeproduit = new CommandeProduit($produit, $commande, $produit->getPrix(), $produit->getPrixpublic(), $product->getQuantite());
+                    $commandeproduit = new CommandeProduit($produit, $commande, $produit->getPrix(), $produit->getPrixpublic(), $quantite);
                     $commandeproduit->setUg($ug);
                     if($product->getQuantite() > $produit->getStock()){
+                        $commandeproduit->setQuantitecommande($product->getQuantite());
                         $commandeproduit->setExtranet(true);
                         $commande->setExtranet(true);
 
                     }
                     if($produit->getTva()){
-                        $tvaproduit = (($product->getQuantite() * $produit->getPrix()) - $reductionproduit) * 0.1925;
+                        $tvaproduit = (($quantite * $produit->getPrix()) - $reductionproduit) * 0.1925;
                          $tva = $tva + $tvaproduit;
                         $commandeproduit->setTva($tvaproduit);  
                     }
