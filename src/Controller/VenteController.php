@@ -680,6 +680,75 @@ class VenteController extends AbstractController
             return $response;
         }
     }
+    
+    #[Route("Chiffre_fournisseur_print/{fournisseur}", name :"chiffre_fourniseur_print") ]
+    public function chiffrefournisseur_print(Fournisseur $fournisseur,FactureRepository $repository): Response
+    {
+        if ($this->security->isGranted('ROLE_BACK')) {
+             $factures = $repository->findBy(['fournisseur' => $fournisseur->getId()]);
+            $montant = 0;
+            foreach($factures as $facture){
+                $montant += $facture->getMontant();
+            }
+            $response = $this->render('vente/fournisseur_print.html.twig', [
+                'factures' => $factures,
+                'fournisseur' => $fournisseur,
+                'montant' => $montant,
+            ]);
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+    }
+    
+    #[Route("Chiffre_fournisseur_pdf/{fournisseur}", name :"chiffre_fourniseur_pdf") ]
+    public function chiffrefournisseurpdf(Fournisseur $fournisseur,FactureRepository $repository, PdfService $pdfService): Response
+    {
+        if ($this->security->isGranted('ROLE_BACK')) {
+             $factures = $repository->findBy(['fournisseur' => $fournisseur->getId()]);
+            $montant = 0;
+            foreach($factures as $facture){
+                $montant += $facture->getMontant();
+            }
+           
+              return $pdfService->streamPdf(
+           'vente/fournisseurpdf.html.twig', [
+                'factures' => $factures,
+                'fournisseur' => $fournisseur,
+                'montant' => $montant,
+            ],
+            sprintf('palmares-%s.pdf',1)
+        );
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+    }
 
  
 
