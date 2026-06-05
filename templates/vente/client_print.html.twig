@@ -1,0 +1,55 @@
+{% extends 'layout.html.twig' %}
+{% block contenu %}
+    <div class="container-fluid">
+        <h3 class="mt-4 mb-5 fw-bold">
+            <i class="fas fa-chart-line me-2"></i>
+            {{ "Analyse Client"|trans }} | {{ user.nom ~ " " ~ user.prenom }}
+        </h3>
+
+        <table class="table table-success-light table-bordered table-hover table-striped mb-3">
+            <thead>
+
+
+            <tr>
+                <th class="text-center"><b>{{ "Chiffre d'affaire"|trans }}
+                        : {{ montant|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</b>
+                </th>
+            </tr>
+            </thead>
+
+        </table>
+        <table class="table table-success-light table-bordered table-hover table-striped my-3 text-center">
+            <thead>
+            <tr>
+                <th>{{ 'Date'|trans }}</th>
+                <th>{{ 'Commande'|trans }}</th>
+                <th>{{ 'Montant'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for commande in commandes %}
+                <tr>
+                    <td>{{ commande.date|date("d/m/Y H:i:s") }}</td>
+                    <td>
+                        {% if commande.reste is defined %}
+                            <a id="b{{ commande.id }}" onclick="load('b{{ commande.id }}')"
+                               href="{{ path('avoir_show', {'id' : commande.id}) }}" class="btn btn-success">
+                                {{ commande.id }}
+                            </a>
+                        {% else %}
+                            <a id="a{{ commande.id }}" onclick="load('a{{ commande.id }}')"
+                               href="{{ path('commande_panier_Detail', {'commande' : commande.id}) }}"
+                               class="btn btn-success">
+                                {{ commande.id }}
+                            </a>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">{% if commande.reste is defined %} - {% endif %}{{ commande.montant|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
