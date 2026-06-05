@@ -48,11 +48,7 @@
                 <tr>
                     <td>{{ produit.commande.date|date("d/m/Y") }}</td>
                     <td>
-                        <a id="b{{ produit.commande.id }}" onclick="load('b{{ produit.commande.id }}')"
-                           href="{{ path('commande_panier_bon', {'commande' : produit.commande.id}) }}"
-                           class="btn btn-success">
-                            {{ produit.commande.id }}
-                        </a>
+                        {{ produit.commande.id }}
                     </td>
                     <td>{{ produit.quantite|number_format(0,',' , ' ') }}</td>
 
@@ -64,6 +60,6 @@
                     : {{ quantite|number_format(0, '', ' ') }}</th>
                 <th class="text-center">{{ "Chiffre d'affaire"|trans }}: {{ montant|number_format(0, '', ' ') }}</th>
             </tr>
-        </table>s
+        </table>
     </div>
 {% endblock %}

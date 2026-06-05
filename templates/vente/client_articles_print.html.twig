@@ -1,0 +1,34 @@
+{% extends 'print.html.twig' %}
+{% block contenu %}
+    <div class="container-fluid mt-4 fond-7">
+        <h3 class="mt-4 text-center fw-bold">
+            <i class="fas fa-chart-line me-2"></i>
+            {{ "Analyse Client"|trans }} | {{ user.nom ~ " " ~ user.prenom }}
+        </h3>
+        <h5 class="mt-4 mb-5 text-center fw-bold">
+            <i class="fa fa-shopping-cart me-2"></i>
+            {{ "Palmares des ventes Articles"|trans }}
+        </h5>
+
+        <table class="table table-success-light table-bordered table-hover table-striped my-3" id="liste">
+            <thead>
+            <tr>
+                <th>{{ 'CIP'|trans }}</th>
+                <th>{{ 'Désignation'|trans }}</th>
+                <th>{{ 'DCI'|trans }}</th>
+                <th>{{ 'Fabricant'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for produit in produits %}
+                <tr>
+                    <td>{{ produit.reference }}</td>
+                    <td>{{ produit.desigantion }}</td>
+                    <td>{{ produit.dci }}</td>
+                    <td>{{ produit.fabriquant }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
