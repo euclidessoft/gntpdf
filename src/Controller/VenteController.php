@@ -229,6 +229,81 @@ class VenteController extends AbstractController
             return $response;
         }
     }
+    #[Route("/Article_print/{client}/{id}", name :"client_show_print", methods : ["GET"]) ]
+    public function produitclienthistory_print(Client $client, Produit $produit, CommandeProduitRepository $repository): Response
+    {
+        if ($this->security->isGranted('ROLE_STOCK') || $this->security->isGranted('ROLE_FINANCE')) {
+            $ventes = $repository->article_client_show($client->getid(),$produit->getId());
+            $quantite = 0;
+            $montant = 0;
+            foreach($ventes as $vente){
+                $quantite += $vente->getQuantite();
+                $montant += $vente->getSession() * $vente->getQuantite();
+            }
+            $response = $this->render('vente/vente_client_show_print.html.twig', [
+                'ventes' => $ventes,
+                'produit' => $produit,
+                'quantite' => $quantite,
+                'montant' => $montant,
+                'user' => $client,
+            ]);
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+    }
+    #[Route("/Article_pdf/{client}/{id}", name :"client_show_pdf", methods : ["GET"]) ]
+    public function produitclienthistorypdf(Client $client, Produit $produit, CommandeProduitRepository $repository, PdfService $pdfService): Response
+    {
+        if ($this->security->isGranted('ROLE_STOCK') || $this->security->isGranted('ROLE_FINANCE')) {
+            $ventes = $repository->article_client_show($client->getid(),$produit->getId());
+            $quantite = 0;
+            $montant = 0;
+            foreach($ventes as $vente){
+                $quantite += $vente->getQuantite();
+                $montant += $vente->getSession() * $vente->getQuantite();
+            }
+           
+            return $pdfService->streamPdf(
+                'vente/vente_client_showpdf.html.twig', [
+                'ventes' => $ventes,
+                'produit' => $produit,
+                'quantite' => $quantite,
+                'montant' => $montant,
+                'user' => $client,
+            ],
+                    sprintf('palmares-%s.pdf',1)
+                );
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+    }
     
     #[Route("/Fournisseur_Article/{fournisseur}/{produit}", name :"fournisseur_show", methods : ["GET"]) ]
     public function produitfournisseurhistory(Fournisseur $fournisseur, Produit $produit, ApprovisionnementRepository $repository): Response
