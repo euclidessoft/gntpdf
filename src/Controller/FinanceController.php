@@ -285,7 +285,7 @@ class FinanceController extends AbstractController
     }
     
     #[Route("/Palmares_AvantageClient/{client}", name :"avantage_client_palmares") ]
-    public function palamaresavantageclient(Client $client, AvantageRepository $repo): Response
+    public function palmaresavantageclient(Client $client, AvantageRepository $repo): Response
     {
         if ($this->security->isGranted('ROLE_FINANCE')) {
          
@@ -302,6 +302,64 @@ class FinanceController extends AbstractController
                 'private' => true,
             ]);
             return $response;
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+    }
+    
+    #[Route("/Palmares_AvantageClient_print/{client}", name :"avantage_client_palmares_print") ]
+    public function palmaresavantageclient_print(Client $client, AvantageRepository $repo): Response
+    {
+        if ($this->security->isGranted('ROLE_FINANCE')) {
+         
+            $response = $this->render('vente/avantage_print.html.twig', [
+                "avantages" => $repo->findBy(['client' => $client] ),
+                "user" => $client,
+            ]);
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+    }
+
+    #[Route("/Palmares_AvantageClient_pdf/{client}", name :"avantage_client_palmares_pdf") ]
+    public function palmaresavantageclientpdf(Client $client, AvantageRepository $repo, PdfService $pdfService): Response
+    {
+        if ($this->security->isGranted('ROLE_FINANCE')) {
+         
+            return $pdfService->streamPdf(
+            'vente/avantagepdf.html.twig', [
+                "avantages" => $repo->findBy(['client' => $client] ),
+                "user" => $client,
+            ],
+            sprintf('avantage-%s.pdf', 1)
+        );
         } else {
             $response = $this->redirectToRoute('security_logout');
             $response->setSharedMaxAge(0);
