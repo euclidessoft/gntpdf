@@ -131,16 +131,15 @@
             </tbody>
         </table>
         <div class="centrer gap-3  my-4 fond-5">
-            <a href="{{ path('vente_chiffre_client_print') }}" class="btn btn-success-light">
+            <a href="{{ path('vente_chiffre_client_print', {'client':user.id}) }}" class="btn btn-success-light">
                 <i class="fa fa-print"></i>
                 {{ "Imprimer"|trans }}
             </a>
-            <a href="{{ path('vente_chiffre_client_pdf') }}" class="btn btn-danger">
+            <a href="{{ path('vente_chiffre_client_pdf', {'client':user.id}) }}" class="btn btn-danger">
                 <i class="fa fa-file-pdf"></i>
                 {{ "Vers PDF"|trans }}
             </a>
             <span id="exportexcel" class=""></span>
         </div>
-    </div>
     </div>
 {% endblock %}
