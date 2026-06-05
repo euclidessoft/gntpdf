@@ -329,6 +329,118 @@ class VenteController extends AbstractController
             return $response;
         }
     }
+    
+    #[Route("Chiffre_client_print/{client}", name :"chiffre_client_print") ]
+    public function chiffreclientprint(Client $client,CommandeRepository $repository): Response
+    {
+        if ($this->security->isGranted('ROLE_BACK')) {
+             $commandes = $repository->vente_client($client->getId());
+             $avoirs = $this->entityManager->getRepository(Avoir::class)->findBy([ 'client' => $client->getId()]);
+            //  dd($avoirs);
+                $result = [];
+                foreach ([$commandes, $avoirs] as $tableau) {
+                    foreach ($tableau as $row) {
+                        $date = $row->getDate()->format('Y-m-d');
+                        // dd($date);
+                        // On regroupe les lignes par date
+                        $result[$date][] = $row;
+                    }
+                }
+                ksort($result);
+                // dd($result);
+                $flat = [];
+
+                foreach ($result as $date => $rows) {
+                    foreach ($rows as $row) {
+                        $flat[] = $row;
+                    }
+                } 
+
+            $montant = 0;
+            foreach($flat as $commande){
+                if($commande instanceof Avoir) $montant -= $commande->getMontant();
+                else $montant += $commande->getMontant();
+            }
+            $response = $this->render('vente/client_print.html.twig', [
+                'commandes' => $flat,
+                'user' => $client,
+                'montant' => $montant,
+            ]);
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+    }
+    
+    #[Route("Chiffre_client_pdf/{client}", name :"chiffre_client_pdf") ]
+    public function chiffreclientpdf(Client $client,CommandeRepository $repository, PdfService $pdfService): Response
+    {
+        if ($this->security->isGranted('ROLE_BACK')) {
+             $commandes = $repository->vente_client($client->getId());
+             $avoirs = $this->entityManager->getRepository(Avoir::class)->findBy([ 'client' => $client->getId()]);
+            //  dd($avoirs);
+                $result = [];
+                foreach ([$commandes, $avoirs] as $tableau) {
+                    foreach ($tableau as $row) {
+                        $date = $row->getDate()->format('Y-m-d');
+                        // dd($date);
+                        // On regroupe les lignes par date
+                        $result[$date][] = $row;
+                    }
+                }
+                ksort($result);
+                // dd($result);
+                $flat = [];
+
+                foreach ($result as $date => $rows) {
+                    foreach ($rows as $row) {
+                        $flat[] = $row;
+                    }
+                } 
+
+            $montant = 0;
+            foreach($flat as $commande){
+                if($commande instanceof Avoir) $montant -= $commande->getMontant();
+                else $montant += $commande->getMontant();
+            }
+                return $pdfService->streamPdf(
+                'vente/clientpdf.html.twig', [
+                        'commandes' => $flat,
+                        'user' => $client,
+                        'montant' => $montant,
+                    ],
+                    sprintf('palmares-%s.pdf',1)
+                );
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+    }
 
      #[Route("Client_Articles/{client}", name :"client_article") ]
     public function clientsortie(Client $client, ProduitRepository $repository): Response
