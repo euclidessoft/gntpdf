@@ -1,0 +1,37 @@
+{% extends 'print.html.twig' %}
+{% block contenu %}
+    <div class="container mt-4 fond-7">
+        <h3 class="mt-4 mb-5 text-center fw-bold">
+            <i class="fas fa-chart-line me-2"></i>
+            {{ "Analyse Client"|trans }} | {{ user.nom ~ " " ~ user.prenom }}
+        </h3>
+        <table class="table table-success-light table-bordered table-hover table-striped mt-3">
+            <thead>
+            <tr>
+                <th>{{ "Période"|trans }}</th>
+                <th>{{ "C.A."|trans }}</th>
+                <th>{{ "Achat Comptant"|trans }}</th>
+                <th>{{ "Commission"|trans }}</th>
+                <th>{{ "Ristourne"|trans }}</th>
+                <th>{{ "Escompte"|trans }}</th>
+                <th>{{ "total"|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for avantage in avantages %}
+
+                <tr>
+                    <td>{{ avantage.AveCom.debut|date("d/m/Y") }} - {{ avantage.AveCom.fin|date("d/m/Y") }}</td>
+                    <td>{{ avantage.ca|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                    <td>{{ avantage.achat|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                    <td>{{ avantage.commission|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                    <td>{{ avantage.ristourne|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                    <td>{{ avantage.escompte|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                    <td>{{ (avantage.commission + avantage.ristourne + avantage.escompte)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                </tr>
+            {% else %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
