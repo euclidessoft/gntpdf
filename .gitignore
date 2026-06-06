@@ -5,6 +5,7 @@
 .env.local
 .env.local.php
 .env.*.local
+src/Controller/NotificationController.php
 *.log
 /config/secrets/prod/prod.de/fr/Promotions/Activer/crypt.private.php
 /public/bundles/
