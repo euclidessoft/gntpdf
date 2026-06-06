@@ -61,6 +61,12 @@
             </li>
         {# {% endif %} #}
     </ul>
+      {% for message in app.flashes('notice') %}
+            <div role="alert" class="alert alert-danger alert-dismissible fade show radius-10 shadow-black">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                {{ message|trans }}
+            </div>
+        {% endfor %}
             <div class="centrer gap-3  m-4 fond-7">
                  <a target="_blank" href="{{ path('stock_mouvement_stock_print', {'date1': day1|date('Y-m-d'),'date2': day2|date('Y-m-d')}) }}" class="btn btn-success-light ms-3">
                     <i class="fa fa-print"></i>
@@ -72,12 +78,7 @@
                     {{ 'vers Pdf'|trans }}
                 </a>
             </div>
-              {% for message in app.flashes('notice') %}
-            <div role="alert" class="alert alert-danger alert-dismissible fade show radius-10 shadow-black">
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                {{ message|trans }}
-            </div>
-        {% endfor %}
+            
     <table class="table table-success-light table-bordered table-hover table-striped my-3">
         <tr>
             <th rowspan="2">Date</th>
