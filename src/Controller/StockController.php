@@ -1196,7 +1196,7 @@ class StockController extends AbstractController
     {
         if ($this->security->isGranted('ROLE_STOCK') || $this->security->isGranted('ROLE_FINANCE')) {
            
-       
+       try{
          return $pdfService->streamPdf(
            'stock/mouvementpdf.html.twig', [
                 'produits' => $repo->reapprovisionnement(),
@@ -1205,6 +1205,11 @@ class StockController extends AbstractController
             ],
             sprintf('retour-%s.pdf', 1)
          );
+         } catch (\Exception $exception){
+            $this->addFlash('notice', 'Fichier trop lourd, veuillez utiliser le bouton imprimer puis convertir en pdf avec le navigateur');
+            return $this->redirectToRoute('stock_mouvement_stock', ['date1' => $date1, 'date2' => $date2], Response::HTTP_SEE_OTHER);
+
+        }
            
         } else {
             $response = $this->redirectToRoute('security_logout');
