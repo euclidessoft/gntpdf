@@ -17,7 +17,7 @@ class Inventaire
     #[ORM\ManyToOne(inversedBy: 'inventaires')]
     private ?Produit $produit = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(length: 255)]
     private ?string $motif = null;
 
     #[ORM\Column]

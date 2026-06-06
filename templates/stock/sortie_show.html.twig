@@ -106,7 +106,7 @@
                     {% elseif  stock.livrer is defined %}
                         {{ stock.commande.user.nom }}
                     {% else %}
-
+                        {{stock.motif }}
                     {% endif %}
                 </td>
                 <td>
@@ -119,7 +119,7 @@
                  {% if  stock.anciennequantite is defined %}
                  {% set ecart = stock.nouvellequantite - stock.anciennequantite %}
                         {{ ecart|number_format(0,',' , ' ') }}
-                        {% set entree = entree + ecart %}
+                        {# {% set entree = entree + ecart %} #}
                         {% set solde = solde + ecart %}
                    
                 {% endif %}
@@ -211,7 +211,7 @@
                     {% elseif  stock.livrer is defined %}
                         {{ stock.commande.user.nom }}
                     {% else %}
-
+                        {{ stock.motif }}
                     {% endif %}
                 </td>
                 <td>
