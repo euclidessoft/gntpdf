@@ -88,6 +88,7 @@
                      {% elseif  stock.anciennequantite is defined %}
                          {% set ecart = stock.nouvellequantite - stock.anciennequantite %}
                         {{ ecart|number_format(0,',' , ' ') }}
+                        {% set quantite = ecart %}
                         {# {% set entree = entree + ecart %} #}
                         {% set solde = solde + ecart %}
                     {% else %}
@@ -102,7 +103,7 @@
                     {{ solde|number_format(0,',' , ' ') }} 
                 </td>
                 <td>
-                    {% if  stock.fournisseur is defined %}
+                    {% if  stock.fournisseur is defined or stock.anciennequantite is defined %}
                         
                      {{ stock.pght|number_format(2,',' , ' ')}} 
                     {% else %}
