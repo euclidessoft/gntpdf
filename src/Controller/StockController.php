@@ -1260,13 +1260,14 @@ class StockController extends AbstractController
     
 
     #[Route("/History_Produit/{id}", name :"history_produit_show", methods : ["GET"]) ]
-    public function produithistory(Produit $produit, LivrerProduitRepository $repository, ApprovisionnementRepository $repo): Response
+    public function produithistory(Produit $produit, LivrerProduitRepository $repository, InventaireRepository $repoinv, ApprovisionnementRepository $repo): Response
     {
         if ($this->security->isGranted('ROLE_STOCK') || $this->security->isGranted('ROLE_FINANCE')) {
             $livraison = $repository->findBy(['produit' => $produit]);
             $reappro = $repo->findBy(['produit' => $produit]);
+            $inventaire = $repoinv->findBy(['produit' => $produit]);
              $result = [];
-                foreach ([$reappro,$livraison] as $tableau) {
+                foreach ([$reappro,$livraison, $inventaire] as $tableau) {
                     foreach ($tableau as $row) {
                         $date = $row->getDate()->format('Y-m-d');
                         // dd($date);
@@ -1313,13 +1314,14 @@ class StockController extends AbstractController
     
 
     #[Route("/History_Produit_print/{id}", name :"history_produit_show_print", methods : ["GET"]) ]
-    public function produithistory_print(Produit $produit, LivrerProduitRepository $repository, ApprovisionnementRepository $repo): Response
+    public function produithistory_print(Produit $produit, LivrerProduitRepository $repository, ApprovisionnementRepository $repo, InventaireRepository $repoinv): Response
     {
         if ($this->security->isGranted('ROLE_STOCK') || $this->security->isGranted('ROLE_FINANCE')) {
             $livraison = $repository->findBy(['produit' => $produit]);
             $reappro = $repo->findBy(['produit' => $produit]);
+              $inventaire = $repoinv->findBy(['produit' => $produit]);
              $result = [];
-                foreach ([$reappro,$livraison] as $tableau) {
+                foreach ([$reappro,$livraison, $inventaire] as $tableau) {
                     foreach ($tableau as $row) {
                         $date = $row->getDate()->format('Y-m-d');
                         // dd($date);
@@ -1350,6 +1352,54 @@ class StockController extends AbstractController
                 'private' => true,
             ]);
             return $response;
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+    }
+    
+    #[Route("/History_Produit_pdf/{id}", name :"history_produit_show_pdf", methods : ["GET"]) ]
+    public function produithistory_pdf(Produit $produit, LivrerProduitRepository $repository, ApprovisionnementRepository $repo, InventaireRepository $repoinv, PdfService $pdfService): Response
+    {
+        if ($this->security->isGranted('ROLE_STOCK') || $this->security->isGranted('ROLE_FINANCE')) {
+            $livraison = $repository->findBy(['produit' => $produit]);
+            $reappro = $repo->findBy(['produit' => $produit]);
+              $inventaire = $repoinv->findBy(['produit' => $produit]);
+             $result = [];
+                foreach ([$reappro,$livraison, $inventaire] as $tableau) {
+                    foreach ($tableau as $row) {
+                        $date = $row->getDate()->format('Y-m-d');
+                        // dd($date);
+                        // On regroupe les lignes par date
+                        $result[$date][] = $row;
+                    }
+                }
+                ksort($result);
+                // dd($result);
+                $flat = [];
+
+                foreach ($result as $date => $rows) {
+                    foreach ($rows as $row) {
+                        $flat[] = $row;
+                    }
+                } 
+                // dd($flat);
+            
+            return $pdfService->streamPdf(
+            'stock/sortie_showpdf.html.twig', [
+                'stocks' => $flat,
+                'produit' => $produit,
+            ],
+            sprintf('stock-%s.pdf', 1)
+        );
         } else {
             $response = $this->redirectToRoute('security_logout');
             $response->setSharedMaxAge(0);

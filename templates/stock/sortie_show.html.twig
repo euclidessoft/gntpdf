@@ -85,22 +85,28 @@
                 <td>
                      {% if  stock.fournisseur is defined %}
                         appro.
+                    {% elseif  stock.livrer is defined %}
+                        liv.
                     {% else %}
-                       liv.
+                       Inventaire
                     {% endif %}
                 </td>
                 <td>
                      {% if  stock.fournisseur is defined %}
                         {{ stock.approvisionner.id }}
-                    {% else %}
+                    {% elseif  stock.livrer is defined %}
                         {{ stock.livrer.id }}
+                    {% else %}
+                        
                     {% endif %}
                 </td>
                 <td>
                     {% if  stock.fournisseur is defined %}
                         {{ stock.fournisseur ? stock.fournisseur.designation : stock.approvisionner.retour.commande.user.nom }}
-                    {% else %}
+                    {% elseif  stock.livrer is defined %}
                         {{ stock.commande.user.nom }}
+                    {% else %}
+
                     {% endif %}
                 </td>
                 <td>
@@ -108,6 +114,13 @@
                         {{ stock.quantite|number_format(0,',' , ' ') }}
                         {% set entree = entree + stock.quantite %}
                         {% set solde = solde + stock.quantite %}
+                   
+                {% endif %}
+                 {% if  stock.anciennequantite is defined %}
+                 {% set ecart = stock.nouvellequantite - stock.anciennequantite %}
+                        {{ ecart|number_format(0,',' , ' ') }}
+                        {% set entree = entree + ecart %}
+                        {% set solde = solde + ecart %}
                    
                 {% endif %}
                 </td>
@@ -149,14 +162,12 @@
         </tfooter>
     </table>
     <div class="centrer gap-3  m-4 fond-7">
-             <table class="table table-success-light table-bordered table-hover table-striped my-3" id="facture" style="display:none;">
-         <thead>
+          <table class="table table-success-light table-bordered table-hover d-none table-striped my-3" id="facture">
+        <thead>
         <tr>
-        <th></th>
             <th colspan="8" class="text-center">{{ produit.reference~ " -  "~ produit.desigantion }}</th>
         </tr>
         <tr>
-            <th></th>
             <th>{{ 'Date'|trans }}</th>
             <th>{{ 'Type'|trans }}</th>
             <th>{{ 'Piece'|trans }}</th>
@@ -168,7 +179,6 @@
         </tr>
         </thead>
         <tbody>
-        {% set ord = 1%}
         {% set solde = 0%}
         {% set entree = 0%}
         {% set commande = 0%}
@@ -176,41 +186,53 @@
         {% set tableau = [] %}
         {% for stock in stocks %}
             <tr>
-                <td>{{ ord }}{% set ord = ord + 1 %}</td>
                 <td>{{ stock.date|date("d/m/Y") }}</td>
                 <td>
                      {% if  stock.fournisseur is defined %}
                         appro.
+                    {% elseif  stock.livrer is defined %}
+                        liv.
                     {% else %}
-                       liv.
+                       Inventaire
                     {% endif %}
                 </td>
                 <td>
                      {% if  stock.fournisseur is defined %}
                         {{ stock.approvisionner.id }}
-                    {% else %}
+                    {% elseif  stock.livrer is defined %}
                         {{ stock.livrer.id }}
+                    {% else %}
+                        
                     {% endif %}
                 </td>
                 <td>
                     {% if  stock.fournisseur is defined %}
-                        {{ stock.fournisseur ? stock.fournisseur.designation : 'Retour Produit' }}
-                    {% else %}
+                        {{ stock.fournisseur ? stock.fournisseur.designation : stock.approvisionner.retour.commande.user.nom }}
+                    {% elseif  stock.livrer is defined %}
                         {{ stock.commande.user.nom }}
+                    {% else %}
+
                     {% endif %}
                 </td>
                 <td>
                  {% if  stock.fournisseur is defined %}
-                        {{ stock.quantite }}
+                        {{ stock.quantite|number_format(0,',' , ' ') }}
                         {% set entree = entree + stock.quantite %}
                         {% set solde = solde + stock.quantite %}
+                   
+                {% endif %}
+                 {% if  stock.anciennequantite is defined %}
+                 {% set ecart = stock.nouvellequantite - stock.anciennequantite %}
+                        {{ ecart|number_format(0,',' , ' ') }}
+                        {% set entree = entree + ecart %}
+                        {% set solde = solde + ecart %}
                    
                 {% endif %}
                 </td>
                 <td>
                     {% if  stock.quantitecommander is defined %}
-                        {{ stock.quantitecommander }}
-                         {% if stock.commande.id not in tableau %}
+                        {{ stock.quantitecommander|number_format(0,',' , ' ') }}
+                        {% if stock.commande.id not in tableau %}
                             {% set tableau = tableau|merge([stock.commande.id]) %}
                             {% set commande = commande + stock.quantitecommander %}
                         {% endif %}
@@ -220,13 +242,13 @@
                 <td>
                      {% if  stock.quantitelivrer is defined %}
 
-                        {{ stock.quantitelivrer }}
+                        {{ stock.quantitelivrer|number_format(0,',' , ' ') }}
                         {% set livre = livre + stock.quantitelivrer %}
                         {% set solde = solde - stock.quantitelivrer %}
                     {% endif %}
                 </td>
                 <td>
-                    {{ solde }} 
+                    {{ solde|number_format(0,',' , ' ') }} 
                 </td>
 
             </tr>
@@ -234,12 +256,12 @@
         </tbody>
         <tfooter>
             <tr>
-                <th colspan="5"> Totaux </th>
-                <th> {{ entree }} </th>
-                <th> {{ commande }} </th>
-                <th> {{ livre }} </th>
+                <th colspan="4"> Totaux </th>
+                <th> {{ entree|number_format(0,',' , ' ') }} </th>
+                <th> {{ commande|number_format(0,',' , ' ') }} </th>
+                <th> {{ livre|number_format(0,',' , ' ') }} </th>
                 <th>
-                     {{ solde }}
+                     {{ solde|number_format(0,',' , ' ') }}
                  </th>
             </tr>
         </tfooter>
@@ -249,6 +271,12 @@
                class="btn btn-success-light">
                 <i class="fa fa-print"></i>
                 {{ "imprimer"|trans }}
+            </a>
+             <a id="pdf" onclick="load('pdf')"
+               href="{{ path('stock_history_produit_show_pdf', {'id' : produit.id}) }}"
+               class="btn btn-danger">
+                <i class="fa fa-file-pdf"></i>
+                {{ "vers pdf"|trans }}
             </a>
 
       <span id="exportexcel" class=""></span>

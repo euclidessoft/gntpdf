@@ -40,7 +40,7 @@
                     {{'Designation'|trans }}
                 </th>
                 <td>{{ produit.desigantion }}</td>
-                <td rowspan="7" class="text-center fw-bolder w-25">{{ produit.stock|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                <td rowspan="8" class="text-center fw-bolder w-25">{{ produit.stock|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
             </tr>
             <tr>
                 <th>
@@ -51,6 +51,10 @@
             <tr>
                 <th>{{ 'PGHT'|trans }}</th>
                 <td>{{ produit.pght|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+            </tr>
+            <tr>
+                <th>{{ 'Prix de REVIENT'|trans }}</th>
+                <td>{{ produit.revient|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
             </tr>
             <tr>
                 <th>{{ 'Prix cession'|trans }}</th>
@@ -96,8 +100,7 @@
             </tbody>
         </table>
 
-        <div class="col-md-4 offset-md-3 mt-4 p-3 fond-7">
-            <div class="centrer gap-3">
+        <div class="centrer gap-3  m-4 fond-5">
 
                 <a id="retour" onclick="load('retour')" class="btn btn-success-light btn-normal" href="{{ path('stock_index') }}">
                     <i class="fa fa-undo"></i>
@@ -109,7 +112,6 @@
                     {{ 'Imprimer'|trans }}
                 </a>
             </div>
-        </div>
 
 
     </div>

@@ -6,6 +6,7 @@ use Twig\TwigFunction;
 use App\Entity\LivrerProduit;
 use App\Entity\Approvisionnement;
 use App\Entity\Produit;
+use App\Entity\Inventaire;
 
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -25,8 +26,9 @@ class mouvement extends AbstractExtension
     {
         $livraison = $this->entityManager->getRepository(LivrerProduit::class)->mouvement($produit, $date1, $date2);
         $reappro = $this->entityManager->getRepository(Approvisionnement::class)->mouvement($produit, $date1, $date2);
+        $inventaire = $this->entityManager->getRepository(Inventaire::class)->mouvement($produit, $date1, $date2);
             $result = [];
-            foreach ([$reappro,$livraison] as $tableau) {
+            foreach ([$reappro,$livraison, $inventaire] as $tableau) {
                 foreach ($tableau as $row) {
                     $date = $row->getDate()->format('Y-m-d');
                     // dd($date);

@@ -34,27 +34,33 @@
         {% set livre = 0%}
         {% set tableau = [] %}
         {% for stock in stocks %}
-            <tr>
+           <tr>
                 <td>{{ stock.date|date("d/m/Y") }}</td>
                 <td>
                      {% if  stock.fournisseur is defined %}
                         appro.
+                    {% elseif  stock.livrer is defined %}
+                        liv.
                     {% else %}
-                       liv.
+                       Inventaire
                     {% endif %}
                 </td>
                 <td>
                      {% if  stock.fournisseur is defined %}
                         {{ stock.approvisionner.id }}
-                    {% else %}
+                    {% elseif  stock.livrer is defined %}
                         {{ stock.livrer.id }}
+                    {% else %}
+                        
                     {% endif %}
                 </td>
                 <td>
                     {% if  stock.fournisseur is defined %}
                         {{ stock.fournisseur ? stock.fournisseur.designation : stock.approvisionner.retour.commande.user.nom }}
-                    {% else %}
+                    {% elseif  stock.livrer is defined %}
                         {{ stock.commande.user.nom }}
+                    {% else %}
+
                     {% endif %}
                 </td>
                 <td>
@@ -62,6 +68,13 @@
                         {{ stock.quantite|number_format(0,',' , ' ') }}
                         {% set entree = entree + stock.quantite %}
                         {% set solde = solde + stock.quantite %}
+                   
+                {% endif %}
+                 {% if  stock.anciennequantite is defined %}
+                 {% set ecart = stock.nouvellequantite - stock.anciennequantite %}
+                        {{ ecart|number_format(0,',' , ' ') }}
+                        {% set entree = entree + ecart %}
+                        {% set solde = solde + ecart %}
                    
                 {% endif %}
                 </td>
