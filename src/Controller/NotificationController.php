@@ -141,7 +141,7 @@ public function test(ParameterBagInterface $params)
 
         $commandeproduit = $this->entityManager->getRepository(CommandeProduit::Class)->findOneBy(['commande' => $livrer->getCommande(), 'produit' => $livrer->getProduit()]);
         $livrer->setPght($commandeproduit->getPght());
-        $livrer->setCession($commandeproduit->getsession());
+        $livrer->setCession($commandeproduit->getSession());
         $livrer->setRevient($commandeproduit->getRevient());
         $this->entityManager->persist($livrer);
                 // if(!empty($livrer->getPromotion())){
