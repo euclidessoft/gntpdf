@@ -95,7 +95,7 @@ class LivrerProduitRepository extends ServiceEntityRepository
     public function liv(): array
     {
         return $this->createQueryBuilder('c')
-            ->andWhere('c.id BETWEEN 3000 AND 5000')
+            ->andWhere('c.id BETWEEN 0 AND 3000')
             ->getQuery()
             ->getResult();
     }
