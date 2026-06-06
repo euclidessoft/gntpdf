@@ -97,6 +97,9 @@ class Produit
     #[ORM\Column(type:"float") ]
     private $pght;
 
+    #[ORM\Column(type:"float") ]
+    private $revient;
+
     #[ORM\ManyToMany(targetEntity:"App\Entity\Promotion", mappedBy:"produits") ]
     private $promotions;
 
@@ -549,6 +552,18 @@ class Produit
                 $inventaire->setProduit(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getRevient(): ?float
+    {
+        return $this->revient;
+    }
+
+    public function setRevient(?float $revient): static
+    {
+        $this->revient = $revient;
 
         return $this;
     }

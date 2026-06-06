@@ -331,6 +331,7 @@ class ApprovisionnementController extends AbstractController
                     $approvisionnenment = new Approvisionnement($produit, $approvisionner, $quantite, $fournisseur);
                     $approvisionnenment->setLot($lot);
                     $approvisionnenment->setPght($produit->getPght());
+                    $approvisionnenment->setRevient($produit->getRevient());
                     $approvisionnenment->setCession($produit->getPrix());
                     $approvisionnenment->setPeremption(new \DateTime($peremption));
                     $$i = new Stock($produit, $lot, $peremption, $quantite);
@@ -391,7 +392,7 @@ class ApprovisionnementController extends AbstractController
                 'approvisionner' => $approvisionner,
                 'approvisionnements' => $repository->findBy(['approvisionner' => $approvisionner]),
             ],
-            sprintf('facture-%s.pdf',$approvisionner->getCommande()->getId())
+            sprintf('facture-%s.pdf',$approvisionner->getId())
         );
            
         } else {

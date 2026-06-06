@@ -48,6 +48,10 @@
                 <td class="text-start" data-label="Prix grossiste hors taxe">{{ produit.pght|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
             </tr>
             <tr>
+                <th class="text-end">{{ 'Prix de Revient'|trans }}</th>
+                <td class="text-start" data-label="Prix de Revient">{{ produit.revient|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+            </tr>
+            <tr>
                 <th class="text-end">{{ 'Prix Cession'|trans }}</th>
                 <td class="text-start" data-label="Prix Cession">{{ produit.prix|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
             </tr>

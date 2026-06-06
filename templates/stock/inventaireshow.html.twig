@@ -56,6 +56,7 @@
             <th>{{ 'Qtée Fnale'|trans }}</th>
             <th>{{ 'Ecart'|trans }}</th>
             <th>{{ 'Pght'|trans }}</th>
+            <th>{{ 'P. Revient'|trans }}</th>
             <th>{{ 'Cession'|trans }}</th>
             <th>{{ 'Total'|trans }}</th>
         </tr>
@@ -64,6 +65,7 @@
         {% set total = 0 %}
         {% set totalecart = 0 %}
         {% set totalpght = 0 %}
+        {% set totalrevient = 0 %}
         {% set totalcession = 0 %}
         {% for inventaire in inventaires %}
             {% set totalprod = 0 %}
@@ -86,10 +88,18 @@
                 {{ inventaire.pght|number_format(2,',' , ' ') }}
                 </td>
                 <td class"center">
+                {% set totalrevient = totalrevient + inventaire.revient %}
+                {{ inventaire.revient|number_format(2,',' , ' ') }}
+                </td>
+                <td class"center">
                 {% set totalcession = totalcession + inventaire.cession %}
                 {{ inventaire.cession|number_format(2,',' , ' ') }}</td>
                 <td class"center">
-                    {% set totalprod = ecart * inventaire.pght %}
+                    {% if inventaire.revient == 0 %}
+                        {% set totalprod = ecart * inventaire.pght %}
+                    {% else %}
+                        {% set totalprod = ecart * inventaire.revient %}
+                    {% endif %}
                     {% set total = total + totalprod %}
                     {{ totalprod|number_format(2,',' , ' ') }}
                 </td>
@@ -103,6 +113,7 @@
                 <th colspan="6" class="text-end"> Totaux</th>
                 <th>{{ totalecart|number_format(0,',' , ' ') }}</th>
                 <th>{{ totalpght|number_format(2,',' , ' ') }}</th>
+                <th>{{ totalrevient|number_format(2,',' , ' ') }}</th>
                 <th>{{ totalcession|number_format(2,',' , ' ') }}</th>
                 <th>{{ total|number_format(2,',' , ' ') }}</th>
             </tr>

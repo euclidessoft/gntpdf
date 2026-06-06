@@ -46,6 +46,10 @@ class Approvisionnement
     #[ORM\Column(nullable : true)]
     private ?float $cession = null;
 
+    
+    #[ORM\Column(type:"float") ]
+    private $revient;
+
     /**
      * Constructor
      */
@@ -181,6 +185,18 @@ class Approvisionnement
     public function setCession(?float $cession): static
     {
         $this->cession = $cession;
+
+        return $this;
+    }
+
+    public function getRevient(): ?float
+    {
+        return $this->revient;
+    }
+
+    public function setRevient(?float $revient): static
+    {
+        $this->revient = $revient;
 
         return $this;
     }

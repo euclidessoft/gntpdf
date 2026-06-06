@@ -32,6 +32,10 @@ class Inventaire
     #[ORM\Column]
     private ?float $cession = null;
 
+    
+    #[ORM\Column(type:"float") ]
+    private $revient;
+
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $date = null;
 
@@ -57,6 +61,7 @@ class Inventaire
         $this->nouvellequantite = $nouvellequantite;
         $this->pght = $produit->getPght();
         $this->cession = $produit->getPrix();
+        $this->revient = $produit->getRevient();
     }
 
     public function getId(): ?int
@@ -180,6 +185,18 @@ class Inventaire
     public function setPeremption(\DateTime $peremption): static
     {
         $this->peremption = $peremption;
+
+        return $this;
+    }
+
+    public function getRevient(): ?float
+    {
+        return $this->revient;
+    }
+
+    public function setRevient(?float $revient): static
+    {
+        $this->revient = $revient;
 
         return $this;
     }

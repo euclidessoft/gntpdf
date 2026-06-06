@@ -29,6 +29,7 @@ class ProduitType extends AbstractType
             ->add('description')
             ->add('tva')
             ->add('pght')
+            ->add('revient')
             ->add('fournisseurs', EntityType::class, [
                 'class' => Fournisseur::class,
                 'choice_label' => 'designation',

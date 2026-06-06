@@ -537,6 +537,7 @@ class ProduitController extends AbstractController
                 $form->remove('prix');
                 $form->remove('prixpublic');
                 $form->remove('pght');
+                $form->remove('revient');
             }
             $form->handleRequest($request);
 
