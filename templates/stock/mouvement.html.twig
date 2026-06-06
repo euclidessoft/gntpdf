@@ -171,7 +171,7 @@
                         
                      {{ stock.pght|number_format(2,',' , ' ')}} 
                     {% else %}
-                     {{ stock.produit.prix|number_format(2,',' , ' ')}} 
+                     {{ stock.cession|number_format(2,',' , ' ')}} 
                     {% endif %}
                   
                 </td>
@@ -180,7 +180,7 @@
                         
                      {{ (stock.pght * quantite)|number_format(2,',' , ' ') }}
                     {% else %}
-                        {{ (stock.produit.prix * quantite)|number_format(2,',' , ' ') }}
+                        {{ (stock.cession * quantite)|number_format(2,',' , ' ') }}
                     {% endif %}
                     
                 </td>

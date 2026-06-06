@@ -48,6 +48,9 @@ class CommandeProduit
 
     #[ORM\Column]
     private ?float $pght = null;
+
+    #[ORM\Column]
+    private ?float $revient = null;
     
     #[ORM\Column(type:"boolean", nullable: true) ]
     private $extranet;
@@ -64,6 +67,7 @@ class CommandeProduit
         $this->publique = $publique;
         $this->quantite = $quantite;
         $this->ug = 0;
+        $this->revient = $produit->getRevient();
     }
 
 
@@ -218,6 +222,18 @@ class CommandeProduit
     public function setUg(?int $ug): static
     {
         $this->ug = $ug;
+
+        return $this;
+    }
+
+    public function getRevient(): ?float
+    {
+        return $this->revient;
+    }
+
+    public function setRevient(float $revient): static
+    {
+        $this->revient = $revient;
 
         return $this;
     }

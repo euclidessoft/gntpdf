@@ -15,11 +15,11 @@ class LivrerProduit
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity:"App\Entity\Retour") ]
-#[ORM\JoinColumn(nullable:true) ]
+    #[ORM\JoinColumn(nullable:true) ]
     private $retour;
 
     #[ORM\ManyToOne(targetEntity:"App\Entity\Promotion") ]
-#[ORM\JoinColumn(nullable:true) ]
+    #[ORM\JoinColumn(nullable:true) ]
     private $promotion;
 
 
@@ -59,6 +59,16 @@ class LivrerProduit
 
     #[ORM\Column(type:"integer") ]
     private $quantitelivrer;
+
+    #[ORM\Column(type:"float") ]
+    private $pght;
+
+    #[ORM\Column(type:"float") ]
+    private $cession;
+
+    #[ORM\Column(type:"float") ]
+    private $revient;
+    
     #[ORM\Column(type:"integer") ]
     private $restealivrer;
 
@@ -85,6 +95,9 @@ class LivrerProduit
         $this->peremption = $peremption;
         $this->reste = false;
         $this->restealivrer = 0;
+        $this->cession = $produit->getPrix();
+        $this->pght = $produit->getPght();
+        $this->revient = $produit->getRevient();
     }
 
     public function getDate(): ?\DateTimeInterface
@@ -274,6 +287,42 @@ class LivrerProduit
     public function setUg(?int $ug): static
     {
         $this->ug = $ug;
+
+        return $this;
+    }
+
+    public function getPght(): ?float
+    {
+        return $this->pght;
+    }
+
+    public function setPght(float $pght): static
+    {
+        $this->pght = $pght;
+
+        return $this;
+    }
+
+    public function getCession(): ?float
+    {
+        return $this->cession;
+    }
+
+    public function setCession(float $cession): static
+    {
+        $this->cession = $cession;
+
+        return $this;
+    }
+
+    public function getRevient(): ?float
+    {
+        return $this->revient;
+    }
+
+    public function setRevient(float $revient): static
+    {
+        $this->revient = $revient;
 
         return $this;
     }

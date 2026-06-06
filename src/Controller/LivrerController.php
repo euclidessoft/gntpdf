@@ -927,6 +927,9 @@ class LivrerController extends AbstractController
                             $numerolot = $lot[1];
                             $quantite = $lot[2];
                             $livrerProduit = new LivrerProduit($livrer, $produit, $commandeproduit->getQuantite(), null, null, $commande, null, null);
+                            $livrerProduit->setPght($commandeproduit->getPght());// redefinition pour evite un changement de prix
+                            $livrerProduit->setCession($commandeproduit->getSession());// redefinition pour evite un changement de prix
+                            $livrerProduit->setRevient($commandeproduit->getRevient());// redefinition pour evite un changement de prix
 
                             $stock = $em->getRepository(Stock::class)->findOneBy(['produit' => $id, 'lot' => $numerolot]);
 
