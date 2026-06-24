@@ -222,7 +222,7 @@ class CommandeController extends AbstractController
             }
            //$dataPanier = [];
 //            $em = $this->getDoctrine()->getManager();
-            $commande = new Commande()
+            $commande = new Commande();
             $commande->setNumerofacture(count($this->getUser()->getCommandes()) + 1);
             
             if (count($panier) >= 1) {
@@ -2025,7 +2025,7 @@ class CommandeController extends AbstractController
 
             }
 
-            $paiement = new Paiement();
+            $paiement = new Paiemen();
             $credit = new Credit();
             $ecriture = new Ecriture();
             $form = $this->createForm(PaiementFormType::class, $paiement);
@@ -2252,7 +2252,7 @@ class CommandeController extends AbstractController
     {
         if ($this->security->isGranted('ROLE_FINANCE')) {
 
-            $versement = new Versement();
+            $versement = new Versemen();
             $credit = new Credit();
             $ecriture = new Ecriture();
             $form = $this->createForm(VersementType::class, $versement);
