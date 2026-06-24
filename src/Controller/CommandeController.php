@@ -222,7 +222,7 @@ class CommandeController extends AbstractController
             }
            //$dataPanier = [];
 //            $em = $this->getDoctrine()->getManager();
-            $commande = new Commande();
+            $commande = new Commande()
             $commande->setNumerofacture(count($this->getUser()->getCommandes()) + 1);
             
             if (count($panier) >= 1) {
