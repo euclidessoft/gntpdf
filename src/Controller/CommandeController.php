@@ -2025,7 +2025,7 @@ class CommandeController extends AbstractController
 
             }
 
-            $paiement = new Paiemen();
+            $paiement = new Paiement();
             $credit = new Credit();
             $ecriture = new Ecriture();
             $form = $this->createForm(PaiementFormType::class, $paiement);
@@ -2252,7 +2252,7 @@ class CommandeController extends AbstractController
     {
         if ($this->security->isGranted('ROLE_FINANCE')) {
 
-            $versement = new Versemen();
+            $versement = new Versement();
             $credit = new Credit();
             $ecriture = new Ecriture();
             $form = $this->createForm(VersementType::class, $versement);
