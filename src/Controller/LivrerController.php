@@ -46,7 +46,7 @@ class LivrerController extends AbstractController
     {
         if ($this->security->isGranted('ROLE_STOCK')) {
 
-            $response = $this->render('livrer/inde.html.twig', [
+            $response = $this->render('livrer/index.html.twig', [
                 'retours' => $retourProduitRepository->findBy(['rembourser' => false, 'avoir' => false, 'valider' => true]),
                 'livrers' => $livrerRepository->findBy(['reste' => true]),
                 'commandes' => $repository->findBy(['suivi' => true, 'livraison' => false]),
