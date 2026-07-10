@@ -811,7 +811,7 @@ class CommandeController extends AbstractController
         } else if ($this->security->isGranted('ROLE_CAISSIER')) {
 //            $panier = $session->get("panier", []);
 
-            $response = $this->render('commande/admin/suivi.html.twig', [
+            $response = $this->render('comman/admin/suivi.html.twig', [
                 'commandes' => $repository->findBy(['suivi' => false]),
 //                'panier' => $panier,
             ]);
