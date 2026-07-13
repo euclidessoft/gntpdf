@@ -106,7 +106,7 @@ class PanierController extends AbstractController
             ]);
             return $response;
         }
-        else if ($this->security->isGranted('ROLE_ADMIN') || $this->security->isGranted('ROLE_SUPERVISEUR')) {
+    /*    else if ($this->security->isGranted('ROLE_ADMIN') || $this->security->isGranted('ROLE_SUPERVISEUR')) {
 
             $response = $this->render('commande/admin/dashbord.html.twig', [
                 'commande' => $commandeRepository->findBy(['suivi' => false]),
@@ -261,7 +261,7 @@ class PanierController extends AbstractController
                 'private' => true,
             ]);
             return $response;
-        }
+        }*/
 
 
     }
