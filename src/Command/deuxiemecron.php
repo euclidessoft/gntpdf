@@ -100,7 +100,7 @@ class deuxiemecron extends Command
                  if($commande instanceof Commande){
                  $com[] = [
                     'date' => $commande->getDate()->format('d/m/Y'),
-                    'datedue' => "11/".date("m/Y"),
+                    'datedue' => "10/".date("m/Y"),
                     // 'traitement' => $commande->getTraitement()->format('d/m/Y'),
                     'numerofacture' => $commande->getId()."-".$commande->getNumerofacture(),
                     // 'montant' => $commande->getMontant(),

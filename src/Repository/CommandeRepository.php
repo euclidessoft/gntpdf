@@ -252,9 +252,9 @@ class CommandeRepository extends ServiceEntityRepository
 
       public function commandedeuxiemetranche( $mois)
     {
-         $date = $mois."-15  00:00:00";
+         $date = $mois."-16  00:00:00";
          $startDate = new \DateTime($date);
-         $date = $mois."-15";
+         $date = $mois."-16";
         $endDate = new \DateTime($date);
         $dernierjour = $endDate->format('t');
         $date = $mois."-".$dernierjour."  23:59:59";
