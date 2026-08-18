@@ -45,16 +45,7 @@
                 </table>
             </div>
         </div>
-        {% for liv in livrer %}
-            {% set entete = 0 %}
-            {% set produit = 0 %}
-            {% set quantite = 0 %}
-            {% for  commande in liv.livraison %}
-                {% set ug = commande.ug %}
-
-
-
-                {% if commande.livrer.id != entete %}
+      
                     <div class="row mt-5">
                         <div class="col-lg-4">
                             <table class="table table-success-light table-bordered table-hover table-striped">
@@ -69,95 +60,58 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td>{{ commande.livrer.id }}</td>
-                                    <td>{{ commande.date|date('d/m/Y') }}</td>
-                                    <td>{{ commande.livrer.dateefectlivraison ? commande.livrer.dateefectlivraison|date('d/m/Y H:i:s'): '' }}</td>
+                                    <td>{{ livrer.id }}</td>
+                                    <td>{{ livrer.date|date('d/m/Y') }}</td>
+                                    <td>{{ livrer.dateefectlivraison ? livrer.dateefectlivraison|date('d/m/Y H:i:s'): '' }}</td>
                                 </tr>
-                                <tr>
-                                    {% if commande.retour is not null %}
-                                        <td colspan="3"><b>{{ "Remboursement retour Produit"|trans }}</b></td>
-                                    {% endif %}
-                                </tr>
+                               
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                    <table class="table table-success-light table-bordered table-hover table-striped w-100 text-center">
-                {% endif %}
-
-                {% if commande.produit.id != produit %}
-                    {% if not loop.first %}
-                        <tr>
-                            <th colspan="2"> {{ "Quantité Totale Livrée"|trans }}</th>
-                            <th> {{ quantite }}</th>
-                        </tr>
-                        <tr>
-                            <td colspan="3"></td>
-                        </tr>
-                        {% set quantite = 0 %}
-                    {% endif %}
-                    <thead>
-                    <tr>
-                        <th colspan="2">{{ commande.produit.reference }} : {{ commande.produit.desigantion }}</th>
-                        <th>{{ "Quantité Commande"|trans }}:
-                            {{ commande.quantitecommander }}
-                             {% if commande.ug != 0%}
-                        <span class="badge bg-danger">
-                                    + {{ commande.ug }} U.G
-                        </span>
-                    {% endif %}
-                        </th>
-                    </tr>
-                    <tr>
-                        <th>{{ "N° Lot"|trans }}</th>
-                        <th>{{ "Péremption"|trans }}</th>
-                        <th>{{ "Quantité livrée"|trans }}</th>
-                    </tr>
-                    </thead>
-                {% endif %}
-                <tbody>
+    <table class="table table-success-light table-bordered table-hover table-striped w-100 text-center">
+                <thead>
+                <tr>
+                <th>N°</th>
+                <th>CIP</th>
+                <th>Desigantion</th>
+                <th>Qté</th>
+                <th>Date de peremption</th>
+                <th>numero lot</th>
+                </tr>
+                </thead>
+                     <tbody>
+                     {% set entete = 0 %}
+            {% set produit = 0 %}
+            {% set quantite = 0 %}
+             {% set num = 1 %}
+            {% for  commande in livraison %}
+                {% set ug = commande.ug %}
                 <tr>
 
-                    <td>{{ commande.lot }}</td>
+                     <td>{{ num }}  {% set num = num + 1 %}</td>
+                    <td>{{ commande.produit.reference }}</td>
+                    <td>{{ commande.produit.desigantion }}</td>
+                    <td> {{ commande.quantitelivrer }}</td>
                     <td>{{ commande.peremption|date('d/m/Y') }}</td>
+                    <td>{{ commande.lot }}</td>
 
-                    <td class="text-center">
-                        {{ commande.quantitelivrer }}
-                        {% set quantite = quantite + commande.quantitelivrer %}
-                    </td>
 
                 </tr>
-                {% if loop.last %}
-
-                    <tr>
-                        <th colspan="2"> {{ "Quantité Totale Livrée"|trans }}</th>
-                        <th> {{ quantite }}</th>
-                    </tr>
-                {% endif %}
-                {% set entete = commande.livrer.id %}
-                {% set produit = commande.produit.id %}
             {% endfor %}
-            </tbody>
+                </tbody>
+              
             </table>
-            {# <div class="col-4 mb-2">
-            {% if liv.signature is not null %}
-             Receptionner par: {{ liv.nom }}<br/>
-                               <img src="{{ asset(liv.signature) }}" alt="">
-                               <img src="https://gnt-pharma.com{{ liv.signature }}" alt="">
-            {% endif %}
-            </div> #}
-        {% else %}
-        {% endfor %}
 
         <div class="col-md-12 mt-5 mb-5 pt-2 pb-2 fond-7">
             <div class="centrer">
-                <a target="__blank" href="{{ path('livraison_historique_show_pdf',{'id': commandereference.id }) }}"
+                <a target="__blank" href="{{ path('livraison_historique_show_pdf',{'id': livrer.id }) }}"
                    class="btn btn-danger me-3">
                     <i class="fa fa-file-pdf"></i>
                     {{ "Vers Pdf"|trans }}
                 </a>
 
-                <a href="{{ path('livraison_historique_show_print',{'id': commandereference.id }) }}"
+                <a href="{{ path('livraison_historique_show_print',{'id': livrer.id }) }}"
                    class="btn btn-success float-end">
                     <i class="fa fa-print"></i> {{ "Imprimer"|trans }}
                 </a>

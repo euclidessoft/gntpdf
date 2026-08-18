@@ -47,101 +47,64 @@
             </div>
         </div>
 
-            {% set entete = 0 %}
+      
+                    <div class="row mt-5">
+                        <div class="col-lg-4">
+                            <table class="table table-success-light table-bordered table-hover table-striped">
+                                <thead>
+                                <tr>
+                                    <th>{{ "N° Bordereau"|trans }}</th>
+                                    <th>{{ "Date d'émission"|trans }}</th>
+                                    <th>{{ "Date de livraison"|trans }}</th>
+
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>{{ livrer.id }}</td>
+                                    <td>{{ livrer.date|date('d/m/Y') }}</td>
+                                    <td>{{ livrer.dateefectlivraison ? livrer.dateefectlivraison|date('d/m/Y H:i:s'): '' }}</td>
+                                </tr>
+                               
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+    <table class="table table-success-light table-bordered table-hover table-striped w-100 text-center">
+                <thead>
+                <tr>
+                <th>N°</th>
+                <th>CIP</th>
+                <th>Desigantion</th>
+                <th>Qté</th>
+                <th>Date de peremption</th>
+                <th>numero lot</th>
+                </tr>
+                </thead>
+                     <tbody>
+                     {% set entete = 0 %}
             {% set produit = 0 %}
             {% set quantite = 0 %}
-            {% for  commande in livrer.livraison %}
-
-
-
-                {% if commande.livrer.id != entete %}
-                <div class="row mt-5">
-                    <div class="col-lg-4">
-                        <table class="table table-success-light table-bordered table-hover table-striped">
-                            <thead>
-                            <tr>
-                                <th>{{'N° Bordereau'|trans}}</th>
-                                <th>{{'Date d\'émission'|trans}}</th>
-                                <th>{{'Date de livraison'|trans}}</th>
-
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <td>{{ commande.livrer.id }}</td>
-                            <td>{{ commande.date|date('d/m/Y') }}</td>
-                            <td>{{ commande.livrer.dateefectlivraison|date('d/m/Y') }}</td>
-
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            <table class="table table-success-light table-bordered table-hover table-striped w-100 text-center">
-
-                {% endif %}
-
-                {% if commande.produit.id != produit %}
-                    {% if not loop.first %}
-
-
-
-                        <tr>
-                            <th colspan="2"> {{ "Quantité Totale Livrée"|trans }}</th>
-                            <th> {{ quantite }}</th>
-                        </tr>
-                        <tr>
-                            <td colspan="3"></td>
-                        </tr>
-                        {% set quantite = 0 %}
-                    {% endif %}
-                    <thead>
-                    <tr>
-                        <th colspan="2">{{ commande.produit.reference }} : {{ commande.produit.desigantion }}</th>
-                        <th>{{ 'Quantité Commande'|trans }}:
-                            {{ commande.quantitecommander }}
-                             {% if commande.ug != 0%}
-                                    <span class="badge bg-danger">
-                                                + {{ commande.ug }} U.G
-                                    </span>
-                                {% endif %}
-                        </th>
-                    </tr>
-
-                    <tr>
-
-                        <th>{{'N° Lot'|trans}}</th>
-                        <th>{{'Péremption'|trans}}</th>
-                        <th>{{'Quantité livrée'|trans}}</th>
-                    </tr>
-                    </thead>
-                {% endif %}
-
-
-                <tbody>
+             {% set num = 1 %}
+            {% for  commande in livraison %}
+                {% set ug = commande.ug %}
                 <tr>
 
-                    <td>{{ commande.lot }}</td>
+                     <td>{{ num }}  {% set num = num + 1 %}</td>
+                    <td>{{ commande.produit.reference }}</td>
+                    <td>{{ commande.produit.desigantion }}</td>
+                    <td> {{ commande.quantitelivrer }}</td>
                     <td>{{ commande.peremption|date('d/m/Y') }}</td>
+                    <td>{{ commande.lot }}</td>
 
-                    <td class="text-center">
-                        {{ commande.quantitelivrer }}
-                        {% set quantite = quantite + commande.quantitelivrer %}
-                    </td>
 
                 </tr>
-                {% if loop.last %}
-
-                    <tr>
-                        <th colspan="2"> {{ "Quantité Totale Livrée"|trans }}</th>
-                        <th> {{ quantite }}</th>
-                    </tr>
-                {% endif %}
-                {% set entete = commande.livrer.id %}
-                {% set produit = commande.produit.id %}
-                {% endfor %}
-
+            {% endfor %}
                 </tbody>
-        </table>
-         {# {% if livrer.signature is not null %}
+              
+            </table>
+                     {# {% if livrer.signature is not null %}
              Receptionner par: {{ livrer.nom }}<br/>
                                <img src="{{ asset(livrer.signature) }}" alt="">
             {% endif %} #}

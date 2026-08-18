@@ -127,7 +127,8 @@ class LivrerController extends AbstractController
             //$panier = $session->get("panier", []);
 
             $response = $this->render('livrer/history.html.twig', [
-                'livrers' => $repository->historique(),
+                // 'livrers' => $repository->historique(),
+                'livrers' => $repository->findAll(),
                 //'panier' => $panier,
             ]);
             $response->setSharedMaxAge(0);
@@ -515,19 +516,22 @@ class LivrerController extends AbstractController
     }
 
     #[Route("/Historique/{id}", name :"historique_show", methods : ["GET"]) ]
-    public function history_show(Commande $commande, LivrerRepository $livrerRepository, LivrerProduitRepository $livrerProduitRepository, ProduitRepository $repository, SessionInterface $session): Response
+    public function history_show(Livrer $livrer, LivrerProduitRepository $livrerProduitRepository, ProduitRepository $repository, SessionInterface $session): Response
+    // public function history_show(Commande $commande, LivrerRepository $livrerRepository, LivrerProduitRepository $livrerProduitRepository, ProduitRepository $repository, SessionInterface $session): Response
     {// traitement livraison
 
         if ($this->security->isGranted('ROLE_STOCK') || $this->security->isGranted('ROLE_FINANCE')) {
 
-            if ($commande->getLivraison()) {
+            if ($livrer->getCommande()->getLivraison()) {
 
-                $livrer = $livrerRepository->findBy(['commande' => $commande]);
+                // $livrer = $livrerRepository->findBy(['commande' => $commande]);
+                $livraison = $livrerProduitRepository->findBy(['livrer' => $livrer]);
 
                 $response = $this->render('livrer/history_show.html.twig', [
 //                'commandes' => $commandeproduits,
-                    'commandereference' => $commande,
+                    'commandereference' => $livrer->getCommande(),
                     'livrer' => $livrer,
+                    'livraison' => $livraison,
                 ]);
                 $response->setSharedMaxAge(0);
                 $response->headers->addCacheControlDirective('no-cache', true);
@@ -545,6 +549,7 @@ class LivrerController extends AbstractController
              $this->getUser()->getTuteur() === null ?
              $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getId()]) :
              $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getTuteur()->getId()]); 
+             $commande = $livrer->getCommande();
              if ($commande->getLivraison()) {
                  if($this->getUser()->getTuteur() === null){
                 if($commande->getUser() != $this->getUser()){
@@ -573,7 +578,8 @@ class LivrerController extends AbstractController
                     return $response;
                 }
              }
-                $livrer = $livrerRepository->findBy(['commande' => $commande]);
+                // $livrer = $livrerRepository->findBy(['commande' => $commande]);
+                $livraison = $livrerProduitRepository->findBy(['livrer' => $livrer]);
 //            $histo = [];
 //            foreach ($livrer as $item) {
 //                $histo[] = $item->getId();
@@ -587,6 +593,7 @@ class LivrerController extends AbstractController
                     'commandereference' => $commande,
                     'livrer' => $livrer,
                     'panier' => $panier,
+                    'livraison' => $livraison,
                 ]);
                 $response->setSharedMaxAge(0);
                 $response->headers->addCacheControlDirective('no-cache', true);
@@ -617,20 +624,25 @@ class LivrerController extends AbstractController
     
 
     #[Route("/Historique_pdf/{id}", name :"historique_show_pdf", methods : ["GET"]) ]
-    public function history_showpdf(Commande $commande, LivrerRepository $livrerRepository, LivrerProduitRepository $livrerProduitRepository, ProduitRepository $repository,  PdfService $pdfService): Response
+    // public function history_showpdf(Commande $commande, LivrerRepository $livrerRepository, LivrerProduitRepository $livrerProduitRepository, ProduitRepository $repository,  PdfService $pdfService): Response
+     public function history_showpdf(Livrer $livrer, LivrerProduitRepository $livrerProduitRepository, ProduitRepository $repository, PdfService $pdfService): Response
+   
     {// traitement livraison
-
+        $commande = $livrer->getCommande();
         if ($this->security->isGranted('ROLE_STOCK') || $this->security->isGranted('ROLE_FINANCE')) {
 
             if ($commande->getLivraison()) {
 
-                $livrer = $livrerRepository->findBy(['commande' => $commande]);
+                // $livrer = $livrerRepository->findBy(['commande' => $commande]);
+                
+                $livraison = $livrerProduitRepository->findBy(['livrer' => $livrer]);
                
                  return $pdfService->streamPdf(
             'livrer/historyshowpdf.html.twig', [
 //                'commandes' => $commandeproduits,
                     'commandereference' => $commande,
                     'livrer' => $livrer,
+                    'livraison' => $livraison,
                 ],
             sprintf('livraison-%s.pdf', 1)
         );
@@ -667,7 +679,9 @@ class LivrerController extends AbstractController
                     return $response;
                 }
              }
-                $livrer = $livrerRepository->findBy(['commande' => $commande]);
+                // $livrer = $livrerRepository->findBy(['commande' => $commande]);
+                
+                $livraison = $livrerProduitRepository->findBy(['livrer' => $livrer]);
                
 
                  return $pdfService->streamPdf(
@@ -675,6 +689,7 @@ class LivrerController extends AbstractController
 //                'commandes' => $commandeproduits,
                     'commandereference' => $commande,
                     'livrer' => $livrer,
+                    'livraison' => $livraison,
                 ],
             sprintf('livraison-%s.pdf', 1)
         );
@@ -696,15 +711,19 @@ class LivrerController extends AbstractController
     }
 
     #[Route("/Livreur_Historique/{id}", name :"livreur_historique_show", methods : ["GET"]) ]
-    public function livreurhistoriqueshow(Livrer $livrer): Response
+    public function livreurhistoriqueshow(Livrer $livrer, LivrerProduitRepository $livrerProduitRepository): Response
     {// traitement livraison
 
         if ($this->security->isGranted('ROLE_LIVREUR') && $livrer->getLivreur() == $this->getUser()) {
 
+
+         $livraison = $livrerProduitRepository->findBy(['livrer' => $livrer]);
+         
             $response = $this->render('livrer/history_show_livreur.html.twig', [
 //                'commandes' => $commandeproduits,
                 'commandereference' => $livrer->getCommande(),
                 'livrer' => $livrer,
+                'livraison' => $livraison,
             ]);
             $response->setSharedMaxAge(0);
             $response->headers->addCacheControlDirective('no-cache', true);
@@ -733,13 +752,16 @@ class LivrerController extends AbstractController
     }
 
     #[Route("/Historique_print/{id}", name :"historique_show_print", methods : ["GET"]) ]
-    public function history_show_print(Commande $commande, LivrerRepository $livrerRepository, LivrerProduitRepository $livrerProduitRepository, ProduitRepository $repository, SessionInterface $session): Response
+    // public function history_show_print(Commande $commande, LivrerRepository $livrerRepository, LivrerProduitRepository $livrerProduitRepository, ProduitRepository $repository, SessionInterface $session): Response
+   public function history_show_print(Livrer $livrer, LivrerProduitRepository $livrerProduitRepository, ProduitRepository $repository, SessionInterface $session): Response
     {// traitement livraison
         if ($this->security->isGranted('ROLE_USER') || $this->security->isGranted('ROLE_BACK')) {
 
 //            $panier = $session->get("livraison", []);
+        $commande= $livrer->getCommande();
             if ($commande->getLivraison()) {
-                $livrer = $livrerRepository->findBy(['commande' => $commande]);
+                // $livrer = $livrerRepository->findBy(['commande' => $commande]);
+                 $livraison = $livrerProduitRepository->findBy(['livrer' => $livrer]);
 //            $histo = [];
 //            foreach ($livrer as $item) {
 //                $histo[] = $item->getId();
@@ -752,6 +774,7 @@ class LivrerController extends AbstractController
 //                'commandes' => $commandeproduits,
                     'commandereference' => $commande,
                     'livrer' => $livrer,
+                    'livraison' => $livraison,
                 ]);
                 $response->setSharedMaxAge(0);
                 $response->headers->addCacheControlDirective('no-cache', true);

@@ -34,7 +34,7 @@
                     <td>{{ livrer.nom }}</td>
                     {# <td>{{ livrer.recepteur ? livrer.recepteur.nom ~ "" ~ livrer.recepteur.prenom : "" }}</td> #}
                     <td>
-                        <a class="btn btn-success" href="{{ path('livraison_historique_show', {'id': livrer.commande.id}) }}">
+                        <a class="btn btn-success" href="{{ path('livraison_historique_show', {'id': livrer.id}) }}">
                             <i class="fa fa-list"></i>
                             {{ 'Afficher'|trans }}
                         </a>
