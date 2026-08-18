@@ -47,7 +47,7 @@ class Approvisionnement
     private ?float $cession = null;
 
     
-    #[ORM\Column(type:"float") ]
+    #[ORM\Column(type:"float", nullable : true) ]
     private $revient;
 
     /**

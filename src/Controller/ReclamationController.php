@@ -7,6 +7,7 @@ use App\Entity\ReclamationProduit;
 use App\Entity\Commande;
 use App\Entity\Pharmacie;
 use App\Entity\Produit;
+use App\Entity\CommandeProduit;
 use App\Entity\Panier;
 use App\Entity\User;
 use App\Form\ReclamationType;
@@ -109,7 +110,7 @@ class ReclamationController extends AbstractController
              $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getTuteur()->getId()]); 
             
            
-             $reclamations = $reclamationRepository->findBy(['pharmacie' => $user->getPharmacie()->getId(), 'status' => true]);
+             $reclamations = $reclamationRepository->findBy(['pharmacie' => $user->getPharmacie()->getId(), 'status' => false]);
 
             $response = $this->render('reclamation/cloturer.html.twig', [
                 'reclamations' => $reclamations,
@@ -334,15 +335,16 @@ class ReclamationController extends AbstractController
             $em = $this->entityManager;
             $commande = $em->getRepository(Commande::class)->find($com);
             $produits = $session->get('reclamation', []);
-            $reclamation =  $em->getRepository(Reclamation::class)->findOneBy(['commande' => $commande->getId()]);
-            if($reclamation === null){
+            // $reclamation =  $em->getRepository(Reclamation::class)->findOneBy(['commande' => $commande->getId()]);
+            // if($reclamation === null){
                 $reclamation = new Reclamation();
                 $reclamation->setCommande($commande);
                 $reclamation->setPharmacie($this->getUser()->getPharmacie());
                 $em->persist($reclamation);
-            }
+            // }
             foreach ($produits as $prod) {
                 $produit = $em->getRepository(Produit::class)->find($prod['id']);
+                $commandeproduit = $em->getRepository(CommandeProduit::class)->findOneBy(['produit' => $produit, 'commande' => $commande ]);
                 $reclamationproduit = new ReclamationProduit();
                 $reclamationproduit->setProduit($produit);
                 // $reclamationproduit->setRetour($retour);
@@ -353,9 +355,9 @@ class ReclamationController extends AbstractController
                 $reclamationproduit->setLot($prod['lot']);
                 $reclamationproduit->setPeremption(new \Datetime($prod['peremption']));
                 $reclamationproduit->setQuantite($prod['quantite']);
-                $reclamationproduit->setPrix($produit->getPrix());
-                $reclamationproduit->setPrixpublic($produit->getPrixpublic());
-                $produit->getTva() == true ? $reclamationproduit->setTva($produit->getPrix() * 0.1925): $reclamationproduit->setTva(0);
+                $reclamationproduit->setPrix($commandeproduit->getSession());//
+                $reclamationproduit->setPrixpublic($commandeproduit->getPublique());
+                $produit->getTva() == true ? $reclamationproduit->setTva($commandeproduit->getSession() * 0.1925): $reclamationproduit->setTva(0);
                 $em->persist($reclamationproduit);
                 $em->flush();
 
@@ -494,12 +496,13 @@ class ReclamationController extends AbstractController
     #[Route("/{id}/", name :"reclamation_show", methods : ["GET"]) ]
     public function show(Reclamation $reclamation, ReclamationProduitRepository $repository, LivrerProduitRepository $livrerProduitRepository, SessionInterface $session): Response
     {
+         $reclamations = $repository->findBy(['reclamation' => $reclamation]);
         if ($this->security->isGranted('ROLE_BACK')) {
 
 
 
             $commandeproduits = $livrerProduitRepository->findBy(['commande' => $reclamation->getCommande()]);
-            $reclamations = $repository->findBy(['commande' => $reclamation->getCommande()]);
+           
             return $this->render('reclamation/admin/show.html.twig', [
                 'reclamation' => $reclamation,
                 'commandes' => $commandeproduits,
@@ -511,7 +514,7 @@ class ReclamationController extends AbstractController
              $panier = $this->entityManager->getRepository(Panier::class)->findBy(['client' => $this->getUser()->getTuteur()->getId()]); 
          
             $commandeproduits = $livrerProduitRepository->findBy(['commande' => $reclamation->getCommande()]);
-            $reclamations = $repository->findBy(['commande' => $reclamation->getCommande()]);
+           
             return $this->render('reclamation/show.html.twig', [
                 'reclamation' => $reclamation,
                 'commandes' => $commandeproduits,

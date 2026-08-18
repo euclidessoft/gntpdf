@@ -291,7 +291,7 @@
             <tr>
                 <th>{{'PRELEVEMENT'|trans}} {{ releve ? (releve.prelevement - releve.prelevementavoir)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}</th>
                 <th>{{'TOTAL T.V.A'|trans}} {{ releve ? (releve.tva - releve.tvaavoir)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}</th>
-                <th>{{ 'TOTAL T.T.C'|trans }} {{releve ? releve.total|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}</th>
+                <th>{{ 'TOTAL T.T.C'|trans }} {{releve ? (releve.total - releve.avoir)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}</th>
                 {# <th>{{ 'TOTAL T.T.C'|trans }} {{releve ? (releve.reste - totalavantage)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}</th> #}
             </tr>
             </thead>
@@ -301,14 +301,14 @@
                 </tr>
                  <tr>
                     <td class="fw-bold" colspan="3"> 
-                    RESTE : {{ releve ? (releve.total - releve.avance - totalavantage)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}
+                    RESTE : {{ releve ? (releve.total - releve.avance - totalavantage - releve.avoir)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}
                     {# RESTE : {{ releve ? (releve.reste - totalavantage)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }} #}
-                   <span id="total" class="text-nowrap" style="display:none;">{{ releve ? (releve.total - releve.avance - totalavantage)|number_format(2, '.' , '') : '' }}</span>
+                   <span id="total" class="text-nowrap" style="display:none;">{{ releve ? (releve.total - releve.avance - totalavantage - releve.avoir)|number_format(2, '.' , '') : '' }}</span>
                    {# <span id="total" class="text-nowrap" style="display:none;">{{ releve ? (releve.reste - totalavantage)|number_format(2, '.' , '') : '' }}</span> #}
                     </td>
                 </tr>
                  <tr>
-                    <td colspan="3">SOIT À VOTRE DEBIT <b>{{ releve ? lettre(releve.total - releve.avance - totalavantage) }}</b> <b>franc CFA TTC</b></td>
+                    <td colspan="3">SOIT À VOTRE DEBIT <b>{{ releve ? lettre(releve.total - releve.avance - totalavantage - releve.avoir) }}</b> <b>franc CFA TTC</b></td>
                 </tr>
             </tbody>
         </table>
