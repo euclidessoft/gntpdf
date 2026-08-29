@@ -56,7 +56,12 @@ class Avoir
 
     #[ORM\OneToOne(targetEntity:Remboursement::class, mappedBy:"avoir", cascade:["persist", "remove"]) ]
     private $remboursement;
+ 
+    #[ORM\Column(type:"boolean") ]
+    private $payer;
 
+    #[ORM\Column(type:"float") ]
+    private $Montanttraiter;
     /**
      * Constructor
      */
@@ -70,6 +75,8 @@ class Avoir
         $this->rebourser = 0;
         $this->prelevement = 0;
         $this->tva = 0;
+        $this->Montanttraiter = 0;
+        $this->payer = false;
     }
 
     public function getId(): ?int
@@ -241,6 +248,31 @@ class Avoir
     public function setTva(float $tva): static
     {
         $this->tva = $tva;
+
+        return $this;
+    }
+
+    public function isPayer(): ?bool
+    {
+        return $this->payer;
+    }
+
+    public function setPayer(bool $payer): static
+    {
+        $this->payer = $payer;
+
+        return $this;
+    }
+
+    public function getMontanttraiter(): ?float
+    {
+        return $this->Montanttraiter;
+    }
+
+    public function setMontanttraiter(float $Montanttraiter): static
+    {
+        
+        $this->Montanttraiter == 0 ? $this->Montanttraiter = $Montanttraiter : $this->Montanttraiter -= $Montanttraiter;
 
         return $this;
     }

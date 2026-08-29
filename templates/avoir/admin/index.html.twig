@@ -41,6 +41,7 @@
                 <th>{{ 'Date'|trans }}</th>
                 <th>{{ 'Client'|trans }}</th>
                 <th>{{ 'Montant'|trans }}</th>
+                <th>{{ 'Remboursement'|trans }}</th>
                 <th>{{ 'Créer par'|trans }}</th>
                 <th>{{ 'Motif'|trans }}</th>
                 <th>{{ 'Actions'|trans }}</th>
@@ -52,6 +53,14 @@
                     <td>{{ avoir.date ? avoir.date|date('d/m/Y') : '' }}</td>
                     <td>{{ avoir.client.nom }}</td>
                     <td>{{ avoir.Montant|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                    <td>
+                    {% if avoir.payer is true %}
+                        {{ "Rembourser"|trans }}
+                    {% else %}
+                        {{ avoir.montanttraiter != 0 ? (avoir.Montant - avoir.montanttraiter)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+                    {% endif %}
+                    
+                    </td>
                     <td>{{ avoir.admin.prenom }} {{ avoir.admin.nom }}</td>
                     <td>
                         {{ avoir.reste?"Reste à livré":'' }}

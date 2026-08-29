@@ -13,6 +13,8 @@ class Paiement
      #[ORM\JoinColumn(nullable:false) ]
     private $commande;
 
+    public $avoir;// tampon choix avoir
+
     #[ORM\Column(type:"date") ]
     private $date;
 

@@ -3,7 +3,9 @@
 namespace App\Form;
 
 use App\Entity\Banque;
+use App\Entity\Avoir;
 use App\Entity\Paiement;
+use App\Repository\AvoirRepository;
 use App\Form\Type\VerserType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -14,6 +16,7 @@ class PaiementFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $id = $options['attr']['id'];
         $builder
             ->add('type', VerserType::class,array('placeholder' => 'Type de Paiement'))
             ->add('banque',EntityType::class,[
@@ -21,6 +24,15 @@ class PaiementFormType extends AbstractType
                 'choice_label'=> 'nom',
                 'placeholder' => 'Sélectionnez une banque',
                 'required' => true,
+            ])
+             ->add('avoir',EntityType::class,[
+                'class' => Avoir::class,
+                'choice_label'=> 'montant',
+                 'multiple' => true,
+                  'query_builder' => function(AvoirRepository $repository) use ($id)  { return $repository->paiement($id); },
+                'placeholder' => 'Sélectionnez une banque',
+                // 'required' => true,
+                
             ])
             ->add('numero')
             ->add('montant')

@@ -183,6 +183,16 @@ class AvoirRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+     public function paiement($id)
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.client = :val')
+            ->setParameter('val', $id)
+            ->andWhere('a.payer = :payer')
+            ->setParameter('payer', false)
+        ;
+    }
     // /**
     //  * @return Avoir[] Returns an array of Avoir objects
     //  */

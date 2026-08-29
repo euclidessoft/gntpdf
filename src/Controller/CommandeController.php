@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Complement\Promotion;
 use App\Entity\Commande;
+use App\Entity\Avoir;
 use App\Entity\Produit;
 use App\Entity\Panier;
 use App\Entity\CommandeProduit;
@@ -2028,13 +2029,60 @@ class CommandeController extends AbstractController
             $paiement = new Paiement();
             $credit = new Credit();
             $ecriture = new Ecriture();
-            $form = $this->createForm(PaiementFormType::class, $paiement);
+            $form = $this->createForm(PaiementFormType::class, $paiement, ['attr' => ['id' => $commande->getUser()->getId()]]);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-
                 $entityManager = $this->entityManager;
-                if (($paiement->getMontant() >= $commande->getMontant()) || $commande->getCredit()) {
+
+            // traitement avoirs
+                $avoirs = $form->get('avoir')->getData() ?? [];
+                    $montantavoir = 0;
+                if(count($avoirs)){
+                    foreach ($avoirs as $avoir) {
+                    
+                         $avoir->getMontanttraiter() != 0 ? $montantavoir += $avoir->getMontanttraiter(): $montantavoir += $avoir->getMontant();
+                    
+                    }
+                    
+                    $i =1;
+                    if($montantavoir <= $commande->getMontant()){
+                        // montant avoir <= montant commande
+                        foreach ($avoirs as $avoir) {
+                            $$i = $entityManager->getRepository(Avoir::class)->find($avoir->getId());
+                            $$i->setPayer(true);
+                            $entityManager->persist($$i);
+                        
+                        }
+                    }else{
+                        // montant avoir > montant commande
+                        $montanttest = 0;
+                        foreach ($avoirs as $avoir) {
+                            $avoir->getMontanttraiter() != 0 ? $montanttest += $avoir->getMontanttraiter() : $montanttest += $avoir->getMontant() ;
+                            if($montanttest <= $commande->getMontant()){
+                            // avoir a la limte du montant de la commande
+                                $$i = $entityManager->getRepository(Avoir::class)->find($avoir->getId());
+                                $$i->setPayer(true);
+                                $entityManager->persist($$i);
+                                
+                            }else{
+                                $reste = $montanttest - $commande->getMontant();
+                                $$i = $entityManager->getRepository(Avoir::class)->find($avoir->getId());
+                                count($avoirs) > 1 ? $$i->setMontanttraiter($reste) : $$i->setMontanttraiter($commande->getMontant());
+                                $entityManager->persist($$i);
+                                break;// arret car s'excecute une seule fois
+
+                            }
+                        
+                        }
+                        $montantavoir = $commande->getMontant();// recalibrage du montant avoir au montant commande
+                    }
+                   
+                }
+            // fin avoirs
+
+                
+                if ($paiement->getMontant() + $montantavoir >= $commande->getMontant()) {
                     $paiement->setUser($this->getUser());
                     $paiement->setCommande($commande);
                     $paiement->setClient($commande->getUser());
@@ -2046,7 +2094,7 @@ class CommandeController extends AbstractController
 
                         $credit->setType('Espece');
                         $credit->setCompte(571);
-
+    
                         $ecriture->setType('Espece');
                         $ecriture->setComptecredit(571);
                         $ecriture->setLibellecomptecredit("Caisse");
@@ -2071,6 +2119,29 @@ class CommandeController extends AbstractController
                     $ecriture->setLibelle('Vente de médicaments');
                     $ecriture->setComptedebit($commande->getUser()->getCompte());
                     $ecriture->setLibellecomptedebit("Compte Client");
+
+                     if($montantavoir != 0){
+                        $ecravoir = new Ecriture();
+                        if($paiement->getType() == 'Espece'){
+
+                            $ecravoir->setType('Espece');
+                            $ecravoir->setComptecredit(571);
+                            $ecravoir->setLibellecomptecredit("Caisse");
+                        }else{
+                        
+                            $ecravoir->setType('Banque');
+                            $ecravoir->setComptecredit($versement->getBanque()->getCompte());
+                            $ecravoir->setLibelleComptecredit($versement->getBanque()->getNom());
+
+
+                        }
+                        $ecravoir->setComptedebit("41982");
+                        $ecravoir->setLibellecomptedebit("Avoir accordé");
+                        $ecravoir->setSolde(0);
+                        $ecravoir->setMontant($montantavoir);
+                        $ecravoir->setLibelle("Avoir accordé");
+                        $entityManager->persist($ecravoir);
+                    }
 
                     $entityManager->persist($commande);
                     $entityManager->persist($paiement);
@@ -2255,21 +2326,68 @@ class CommandeController extends AbstractController
             $versement = new Versement();
             $credit = new Credit();
             $ecriture = new Ecriture();
-            $form = $this->createForm(VersementType::class, $versement);
+            $form = $this->createForm(VersementType::class, $versement, ['attr' => ['id' => $commande->getUser()->getId()]]);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
                 $escompte = 0;
                
-                null !== $request->request->get('escompte') ? $escompte = $request->request->get('escompte') : null;
-                
+                null != $request->request->get('escompte') ? $escompte = $request->request->get('escompte') : null;
+                // dd($escompte);
                 $escompte = round($commande->getMontant() * $escompte / 100, 2);
 
                 $entityManager = $this->entityManager;
-                // dd(($commande->getMontant() - $commande->getVersement()));
-                if ($versement->getMontant() < ($commande->getMontant() - $commande->getVersement())+1) {
-                    $commande->setVersement($commande->getVersement() + $versement->getMontant());// MAJ versement
-                    if ($commande->getVersement() == $commande->getMontant()- $escompte) {
+
+            // traitement avoirs
+                $avoirs = $form->get('avoir')->getData() ?? [];
+                    $montantavoir = 0;
+                if(count($avoirs)){
+                    foreach ($avoirs as $avoir) {
+                    
+                         $avoir->getMontanttraiter() != 0 ? $montantavoir += $avoir->getMontanttraiter(): $montantavoir += $avoir->getMontant();
+                    
+                    }
+                    
+                    $i =1;
+                    $montantexact = $commande->getMontant() - $commande->getVersement();
+                    if($montantavoir <= $montantexact){
+                        // montant avoir <= montant commande
+                        foreach ($avoirs as $avoir) {
+                            $$i = $entityManager->getRepository(Avoir::class)->find($avoir->getId());
+                            $$i->setPayer(true);
+                            $entityManager->persist($$i);
+                        
+                        }
+                    }else{
+                        // montant avoir > montant commande
+                        $montanttest = 0;
+                        foreach ($avoirs as $avoir) {
+                            $avoir->getMontanttraiter() != 0 ? $montanttest += $avoir->getMontanttraiter() : $montanttest += $avoir->getMontant() ;
+                            if($montanttest <= $montantexact){
+                            // avoir a la limte du montant de la commande
+                                $$i = $entityManager->getRepository(Avoir::class)->find($avoir->getId());
+                                $$i->setPayer(true);
+                                $entityManager->persist($$i);
+                                
+                            }else{
+                                $reste = $montanttest - $montantexact ;
+                                $$i = $entityManager->getRepository(Avoir::class)->find($avoir->getId());
+                                count($avoirs) > 1 ? $$i->setMontanttraiter($reste) : $$i->setMontanttraiter($montantexact);
+                                $entityManager->persist($$i);
+                                break;// arret car s'excecute une seule fois
+
+                            }
+                        
+                        }
+                        $montantavoir = $commande->getMontant() - $commande->getVersement();// recalibrage du montant avoir au montant commande
+                    }
+                    $versement->setMontantavoir($montantavoir);
+                }
+            // fin avoirs
+                // dd($montantavoir);
+                if ($versement->getMontant() + $montantavoir < ($commande->getMontant() - $commande->getVersement())+1) {
+                    $commande->setVersement($commande->getVersement() + $versement->getMontant() + $montantavoir);// MAJ versement
+                    if ($commande->getVersement() == $commande->getMontant() - $escompte) {
 
                         $commande->setPayer(true);
                         $commande->setEscompte($request->request->get('escompte'));
@@ -2295,18 +2413,40 @@ class CommandeController extends AbstractController
                         $credit->setType('Espece');
                         $credit->setCompte(571);
 
-                        $ecriture->setType('Espece');
+                        // $ecriture->setType('Espece');
                         $ecriture->setComptecredit(571);
                         $ecriture->setLibellecomptecredit("Caisse");
                     }else{
                         $credit->setType('Banque');
                         $credit->setCompte($versement->getBanque()->getCompte());
 
-                        $ecriture->setType('Banque');
+                        // $ecriture->setType('Banque');
                         $ecriture->setComptecredit($versement->getBanque()->getCompte());
                         $ecriture->setLibelleComptecredit($versement->getBanque()->getNom());
 
 
+                    }
+                    if($montantavoir != 0){
+                        $ecravoir = new Ecriture();
+                        if($versement->getType() == 'Espece'){
+
+                            $ecravoir->setType('Espece');
+                            $ecravoir->setComptecredit(571);
+                            $ecravoir->setLibellecomptecredit("Caisse");
+                        }else{
+                        
+                            $ecravoir->setType('Banque');
+                            $ecravoir->setComptecredit($versement->getBanque()->getCompte());
+                            $ecravoir->setLibelleComptecredit($versement->getBanque()->getNom());
+
+
+                        }
+                        $ecravoir->setComptedebit("41982");
+                        $ecravoir->setLibellecomptedebit("Avoir accordé");
+                        $ecravoir->setSolde(0);
+                        $ecravoir->setMontant($montantavoir);
+                        $ecravoir->setLibelle("Avoir accordé");
+                        $entityManager->persist($ecravoir);
                     }
 //                    $commande->setSuivi(true);
 //                    $commande->setPaiement($versement);

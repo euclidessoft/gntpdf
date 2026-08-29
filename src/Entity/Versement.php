@@ -16,6 +16,8 @@ class Versement
     #[ORM\Column(type:"date") ]
     private $date;
 
+     public $avoir;// tampon choix avoir
+
     #[ORM\ManyToOne(targetEntity:"App\Entity\User") ]
 #[ORM\JoinColumn(nullable:true) ]
     private $user;
@@ -41,6 +43,9 @@ class Versement
 
     #[ORM\ManyToOne(targetEntity:Banque::class, inversedBy:"versements") ]
     private $banque;
+
+     #[ORM\Column(type:"float") ]
+    private $montantavoir;// si utilisation avoir
     
     /**
      * Constructor
@@ -48,6 +53,7 @@ class Versement
     public function __construct()
     {
         $this->date = new \Datetime();
+        $this->montantavoir = 0;
     }
 
     public function getId(): ?int
@@ -147,6 +153,18 @@ class Versement
     public function setClient(?Client $Client): static
     {
         $this->Client = $Client;
+
+        return $this;
+    }
+
+    public function getMontantavoir(): ?float
+    {
+        return $this->montantavoir;
+    }
+
+    public function setMontantavoir(float $montantavoir): static
+    {
+        $this->montantavoir = $montantavoir;
 
         return $this;
     }

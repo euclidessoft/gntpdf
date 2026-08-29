@@ -148,6 +148,18 @@
                           <span id="total" class="text-nowrap" style="display:none;">{{ (total  + tva)|number_format(2, '.' , '') }}</span>
                 </td>
             </tr>
+             <tr class="fw-bold">
+                <td colspan="6" class="text-end">
+                    {{ "Remboursement"|trans }}
+                </td>
+                <td class="montant">
+                    {% if avoir.payer is true %}
+                        {{ "Rembourser"|trans }}
+                    {% else %}
+                        {{ avoir.montanttraiter != 0 ? (avoir.Montant - avoir.montanttraiter)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+                    {% endif %}    
+                </td>
+            </tr>
             </tfoot>
         </table
 
@@ -160,7 +172,7 @@
      <div class="container mt-4 mb-5 p-3 fond-7">
      <input type="hidden" id="numfact" value="{{ commande.id}}-{{ commande.numerofacture }}"/>
         <div class="centrer">
-        <a target="__blank" id="print" onclick="load('print')"
+        <a target="__blank" id="pdf" onclick="load('pdf')"
                href="{{ path('avoir_show_pdf',{'id': avoir.id }) }}"
                class="btn btn-danger me-2">
                 <i class="fa fa-file-pdf"></i>

@@ -248,11 +248,24 @@
 
             <tr class="fw-bold">
                 <td colspan="6" class="text-end">
-                    {{ "Net à payer"|trans }}
+                   <b> {{ "Net à payer"|trans }}</b>
                 </td>
                 <td class="montant">
+                  <b>
                     <span class="text-nowrap">- {{ (total  + tva )|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</span>
-                        
+                  </b>      
+                </td>
+            </tr>
+             <tr class="fw-bold">
+                <td colspan="6" class="text-end">
+                   <b> {{ "Remboursement"|trans }}</b>
+                </td>
+                <td class="montant">
+                   <b> {% if avoir.payer is true %}
+                        {{ "Rembourser"|trans }}
+                    {% else %}
+                        {{ avoir.montanttraiter != 0 ? (avoir.Montant - avoir.montanttraiter)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : ''}}
+                    {% endif %}    </b>
                 </td>
             </tr>
             </tfoot>
