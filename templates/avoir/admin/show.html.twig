@@ -20,7 +20,7 @@
      <div class="container mt-4 fond-7">
         <h3 class="mt-4 mb-5 fw-bold">
             <i class="fa fa-shopping-cart me-2"></i>
-            {{ "Détails commande"|trans }}
+            {{ "Détails Avoir"|trans }}
         </h3>
 
         <a href="#" onclick="history.back()" class="btn btn-success-light mb-3">
@@ -64,6 +64,7 @@
                 </table>
             </div>
         </div>
+        
         {% set total=0 %}
         {% set reduction=0 %}
         {% set tva=0 %}
@@ -169,6 +170,45 @@
         </div>
         {#/***** end*****/#}
     </div>
+    <div class="container mt-4 fond-7">
+        <h3 class="mt-4 mb-5 fw-bold">
+            <i class="fa fa-shopping-cart me-2"></i>
+            {{ "Commandes"|trans }}
+        </h3>
+         <table class="table table-success-light table-bordered table-hover table-striped w-100 my-4">
+         <head>
+            <tr>
+                <td>
+                    Date 
+                </td>
+                <td>
+                    Commande
+                </td>
+                <td>
+                    Montant
+                </td>
+            </tr>
+         </head>
+          <tbody>
+         {% for  commande in avoir.commandeavoirs %}
+        
+          <tr>
+                <td>
+                    {{ commande.date|date('d/m/Y') }}
+                </td>
+                <td>
+                    {{ commande.commande.id }}
+                </td>
+                <td>
+                     {{ commande.montant|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
+                </td>
+            </tr>
+            {% endfor %}
+         </tbody>
+         </table>
+    </div>
+    
+     
      <div class="container mt-4 mb-5 p-3 fond-7">
      <input type="hidden" id="numfact" value="{{ commande.id}}-{{ commande.numerofacture }}"/>
         <div class="centrer">
@@ -188,4 +228,5 @@
              {# <span id="exportexcel" class=""></span> #}
         </div>
     </div>
+    
 {% endblock %}

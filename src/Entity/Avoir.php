@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\AvoirRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -62,6 +64,14 @@ class Avoir
 
     #[ORM\Column(type:"float") ]
     private $Montanttraiter;
+   
+    #[ORM\OneToMany(
+        mappedBy: 'avoir',
+        targetEntity: CommandeAvoir::class,
+        cascade: ['persist', 'remove']
+    )]
+    private Collection $commandeavoirs;
+    
     /**
      * Constructor
      */
@@ -77,6 +87,7 @@ class Avoir
         $this->tva = 0;
         $this->Montanttraiter = 0;
         $this->payer = false;
+        $this->commandeavoirs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -276,4 +287,35 @@ class Avoir
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, CommandeAvoir>
+     */
+    public function getCommandeavoirs(): Collection
+    {
+        return $this->commandeavoirs;
+    }
+
+    public function addCommandeavoir(CommandeAvoir $commandeavoir): static
+    {
+        if (!$this->commandeavoirs->contains($commandeavoir)) {
+            $this->commandeavoirs->add($commandeavoir);
+            $commandeavoir->setAvoir($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommandeavoir(CommandeAvoir $commandeavoir): static
+    {
+        if ($this->commandeavoirs->removeElement($commandeavoir)) {
+            // set the owning side to null (unless already changed)
+            if ($commandeavoir->getAvoir() === $this) {
+                $commandeavoir->setAvoir(null);
+            }
+        }
+
+        return $this;
+    }
+
 }

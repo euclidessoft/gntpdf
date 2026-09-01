@@ -107,6 +107,13 @@ class Commande
     #[ORM\Column(type:"boolean", nullable: true) ]
     private $extranet;
 
+    #[ORM\OneToMany(
+        mappedBy: 'commande',
+        targetEntity: CommandeAvoir::class,
+        cascade: ['persist', 'remove']
+    )]
+    private Collection $commandeavoirs;
+
     /**
      * Constructor
      */
@@ -126,6 +133,7 @@ class Commande
         $this->Numerofacture = false;
         $this->retour = false;
         $this->setEcheance($this->date);
+        $this->commandeavoirs = new ArrayCollection();
         
     }
 
@@ -549,6 +557,36 @@ class Commande
         else{ 
             $date = $quinze->modify('+1 month');
             $this->echeance =  new \Datetime($date->format('Y-m-')."10");;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CommandeAvoir>
+     */
+    public function getCommandeavoirs(): Collection
+    {
+        return $this->commandeavoirs;
+    }
+
+    public function addCommandeavoir(CommandeAvoir $commandeavoir): static
+    {
+        if (!$this->commandeavoirs->contains($commandeavoir)) {
+            $this->commandeavoirs->add($commandeavoir);
+            $commandeavoir->setCommande($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommandeavoir(CommandeAvoir $commandeavoir): static
+    {
+        if ($this->commandeavoirs->removeElement($commandeavoir)) {
+            // set the owning side to null (unless already changed)
+            if ($commandeavoir->getCommande() === $this) {
+                $commandeavoir->setCommande(null);
+            }
         }
 
         return $this;

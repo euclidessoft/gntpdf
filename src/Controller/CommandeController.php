@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Complement\Promotion;
 use App\Entity\Commande;
+use App\Entity\CommandeAvoir;
 use App\Entity\Avoir;
 use App\Entity\Produit;
 use App\Entity\Panier;
@@ -2051,6 +2052,11 @@ class CommandeController extends AbstractController
                         foreach ($avoirs as $avoir) {
                             $$i = $entityManager->getRepository(Avoir::class)->find($avoir->getId());
                             $$i->setPayer(true);
+                             $commandeavoir =  new CommandeAvoir();
+                            $commandeavoir->setAvoir($$i);
+                            $commandeavoir->setCommande($commande);
+                            $avoir->getMontanttraiter() != 0 ? $commandeavoir->setMontant($$i->getMontanttraiter()) : $commandeavoir->setMontant($$i->getMontant());
+                            $$i->addCommandeavoir($commandeavoir);
                             $entityManager->persist($$i);
                         
                         }
@@ -2063,12 +2069,22 @@ class CommandeController extends AbstractController
                             // avoir a la limte du montant de la commande
                                 $$i = $entityManager->getRepository(Avoir::class)->find($avoir->getId());
                                 $$i->setPayer(true);
+                                 $commandeavoir =  new CommandeAvoir();
+                                $commandeavoir->setAvoir($$i);
+                                $commandeavoir->setCommande($commande);
+                                $avoir->getMontanttraiter() != 0 ? $commandeavoir->setMontant($$i->getMontanttraiter()) : $commandeavoir->setMontant($$i->getMontant());
+                                $$i->addCommandeavoir($commandeavoir);
                                 $entityManager->persist($$i);
                                 
                             }else{
                                 $reste = $montanttest - $commande->getMontant();
                                 $$i = $entityManager->getRepository(Avoir::class)->find($avoir->getId());
                                 count($avoirs) > 1 ? $$i->setMontanttraiter($reste) : $$i->setMontanttraiter($commande->getMontant());
+                                $commandeavoir =  new CommandeAvoir();
+                                $commandeavoir->setAvoir($$i);
+                                $commandeavoir->setCommande($commande);
+                                $avoir->getMontanttraiter() != 0 ? $commandeavoir->setMontant($$i->getMontanttraiter() - $reste) : $commandeavoir->setMontant($$i->getMontant() - $reste);
+                                $$i->addCommandeavoir($commandeavoir);
                                 $entityManager->persist($$i);
                                 break;// arret car s'excecute une seule fois
 
@@ -2355,7 +2371,13 @@ class CommandeController extends AbstractController
                         foreach ($avoirs as $avoir) {
                             $$i = $entityManager->getRepository(Avoir::class)->find($avoir->getId());
                             $$i->setPayer(true);
+                            $commandeavoir =  new CommandeAvoir();
+                            $commandeavoir->setAvoir($$i);
+                            $commandeavoir->setCommande($commande);
+                            $avoir->getMontanttraiter() != 0 ? $commandeavoir->setMontant($$i->getMontanttraiter()) : $commandeavoir->setMontant($$i->getMontant());
+                            $$i->addCommandeavoir($commandeavoir);
                             $entityManager->persist($$i);
+
                         
                         }
                     }else{
@@ -2363,16 +2385,27 @@ class CommandeController extends AbstractController
                         $montanttest = 0;
                         foreach ($avoirs as $avoir) {
                             $avoir->getMontanttraiter() != 0 ? $montanttest += $avoir->getMontanttraiter() : $montanttest += $avoir->getMontant() ;
+                             
                             if($montanttest <= $montantexact){
                             // avoir a la limte du montant de la commande
                                 $$i = $entityManager->getRepository(Avoir::class)->find($avoir->getId());
                                 $$i->setPayer(true);
+                                 $commandeavoir =  new CommandeAvoir();
+                                $commandeavoir->setAvoir($$i);
+                                $commandeavoir->setCommande($commande);
+                                $avoir->getMontanttraiter() != 0 ? $commandeavoir->setMontant($$i->getMontanttraiter()) : $commandeavoir->setMontant($$i->getMontant());
+                                $$i->addCommandeavoir($commandeavoir);
                                 $entityManager->persist($$i);
                                 
                             }else{
-                                $reste = $montanttest - $montantexact ;
+                               $reste = $montanttest - $montantexact ;
                                 $$i = $entityManager->getRepository(Avoir::class)->find($avoir->getId());
                                 count($avoirs) > 1 ? $$i->setMontanttraiter($reste) : $$i->setMontanttraiter($montantexact);
+                                $commandeavoir =  new CommandeAvoir();
+                                $commandeavoir->setAvoir($$i);
+                                $commandeavoir->setCommande($commande);
+                                $avoir->getMontanttraiter() != 0 ? $commandeavoir->setMontant($$i->getMontanttraiter() - $reste) : $commandeavoir->setMontant($$i->getMontant() - $reste);
+                                $$i->addCommandeavoir($commandeavoir);
                                 $entityManager->persist($$i);
                                 break;// arret car s'excecute une seule fois
 
