@@ -2140,12 +2140,12 @@ class CommandeController extends AbstractController
                         $ecravoir = new Ecriture();
                         if($paiement->getType() == 'Espece'){
 
-                            $ecravoir->setType('Espece');
+                            // $ecravoir->setType('Espece');
                             $ecravoir->setComptecredit(571);
                             $ecravoir->setLibellecomptecredit("Caisse");
                         }else{
                         
-                            $ecravoir->setType('Banque');
+                            // $ecravoir->setType('Banque');
                             $ecravoir->setComptecredit($versement->getBanque()->getCompte());
                             $ecravoir->setLibelleComptecredit($versement->getBanque()->getNom());
 
