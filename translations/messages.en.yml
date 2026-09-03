@@ -486,6 +486,7 @@ Clôturer le: Close on
 Fermer: Close on
 Selectionnez un motif *: Select a motif
 Type de Paiement: Payment type
+type de paiement *: Payment type *
 action: action
 Profil: Profile
 Administration: Administration
@@ -784,3 +785,4 @@ Aucun message à afficher: No messages to display
 Aucun message: No messages
 Selectionnez Client *: Select customer *
 -et-: -and-
+Utiliser avoirs: Use credit notes
