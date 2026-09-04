@@ -8,9 +8,11 @@
     is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
     is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
     is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
-    'layout.html.twig'
-%}
+    'layout.html.twig' %}
 {% block title %} {{ "Commande"|trans }} - GNT Pharma {% endblock %}
+{% block custom_css %}
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+{% endblock %}
 {% block commande %}active{% endblock %}
 {% block extranet %}active{% endblock %}
 
@@ -20,43 +22,44 @@
             <i class="fa fa-shopping-cart me-2"></i>
             {{ "Commande Extranet"|trans }}
         </h3>
- <!-- Button trigger modal -->
-                                <button type="button" style="display: none;"
-                                        class="btn btn-success"
-                                        data-bs-toggle="modal" data-bs-target="#modalvalider"
-                                        id="btnmodalvalider">
-                                    {{ 'Ajouter'|trans }}
-                                </button>
+        <!-- Button trigger modal -->
+        <button type="button" style="display: none;"
+                class="btn btn-success"
+                data-bs-toggle="modal" data-bs-target="#modalvalider"
+                id="btnmodalvalider">
+            {{ 'Ajouter'|trans }}
+        </button>
 
-                                <!-- Modal -->
-                                <div class="modal fade" id="modalvalider" tabindex="-1" tabindex="-1" aria-labelledby="" aria-hidden="true"
-                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered text-center modal-lg">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title fs-5" id="exampleModalLabel">
-                                                   Validation Commande</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close">
+        <!-- Modal -->
+        <div class="modal fade" id="modalvalider" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered text-center modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title fs-5" id="exampleModalLabel">
+                            Validation Commande</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close">
 
-                                                </button>
-                                            </div>
-                                            <div class="modal-body px-5">
-                                               <button class="btn btn-success" onclick="validerappro()"> tenir compte des promos</button>
-                                               <button class="btn btn-success-light  ms-2"  onclick="validersans()"> ne pas tenir compte des promos</button>
+                        </button>
+                    </div>
+                    <div class="modal-body px-5">
+                        <button class="btn btn-success" onclick="validerappro()"> tenir compte des promos</button>
+                        <button class="btn btn-success-light  ms-2" onclick="validersans()"> ne pas tenir compte des
+                            promos
+                        </button>
 
-                                            </div>
-                                            <div class="modal-footer px-5 py-4">
-                                                
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                    </div>
+                    <div class="modal-footer px-5 py-4">
+
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="row">
             <div class="col-lg-6 fond-7">
                 <h3 class="mt-4 mb-5 fw-bold">
-                    <i class="fa fa-product-hunt me-2"></i>
+                    <i class="fa-brands fa-product-hunt me-2"></i>
                     {{ "Liste de produits"|trans }}
                 </h3>
                 {% for message in app.flashes('notice') %}
@@ -85,7 +88,7 @@
                     </thead>
                     <tbody>
                     {% for prod in produits %}
-                    {% set produit = prod.produit %}
+                        {% set produit = prod.produit %}
 
                         <tr id="listprod{{ produit.id }}">
                             <td data-label="Réference">{{ produit.reference }}</td>
@@ -103,8 +106,7 @@
                                 </button>
 
                                 <!-- Modal -->
-                                <div class="modal fade" id="modal{{ produit.id }}" tabindex="-1" tabindex="-1" aria-labelledby="" aria-hidden="true"
-                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal fade" id="modal{{ produit.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered text-center">
                                         <div class="modal-content">
                                             <div class="modal-header">
@@ -116,8 +118,9 @@
                                                 </button>
                                             </div>
                                             <div class="modal-body px-5">
-                                                {{'Renseignez la quantité'|trans }}<input type="number" class="form-control"
-                                                                               id="quant{{ produit.id }}">
+                                                {{ 'Renseignez la quantité'|trans }}<input type="number"
+                                                                                           class="form-control"
+                                                                                           id="quant{{ produit.id }}">
                                             </div>
                                             <div class="modal-footer px-5 py-4">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
@@ -154,7 +157,6 @@
                         <th>{{ 'Désignation'|trans }}</th>
                         <th>{{ 'Fabriquant'|trans }}</th>
                         <th>{{ 'Quantité'|trans }}</th>
-
                         <th>{{ 'actions'|trans }}</th>
                     </tr>
                     </thead>
@@ -164,30 +166,23 @@
                             <td>{{ produit['produit'].reference }}</td>
                             <td>{{ produit['produit'].desigantion }}</td>
                             <td>{{ produit['produit'].fabriquant }}</td>
-
                             <td class="text-center">
-<span id="changequantite{{ produit.produit.id }}">
-
+                            <span id="changequantite{{ produit.produit.id }}">
                                 {{ produit['produit'].quantite }}
-</span>
-
+                            </span>
                             </td>
-                            <td>
-
-
-
-<span id='btnmodf{{ produit.produit.id }}'>
+                            <td class="centrer gap-2" style="flex-wrap: wrap;">
+                                <span id='btnmodf{{ produit.produit.id }}'>
                                 <button class="btn btn-success"
-                                        title="{{ 'Supprimer cet article'|trans }}"
+                                        title="{{ 'Modifier quantité'|trans }}"
                                         onclick="modif({{ produit.produit.id }},{{ produit['produit'].quantite }})">
                                     <i class="fa fa-edit"></i>
                                 </button>
-</span>
+                                </span>
                                 <button class="btn btn-danger"
                                         title="{{ 'Supprimer cet article'|trans }}" onclick="supprim({{ produit.produit.id }})">
                                     <i class="fa fa-trash"></i>
                                 </button>
-
                             </td>
                         </tr>
 
@@ -209,9 +204,10 @@
             </div>
         </div>
     </div>
-     
+
 {% endblock %}
 {% block scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
     <script>
         function ajouter(produit) {
 
@@ -319,7 +315,7 @@
                     }
                 });
             } else {
-                alert("{{'veillez bien renseigner la quantité'|trans}}");
+                alert("{{ 'veillez bien renseigner la quantité'|trans }}");
             }
 
         }
@@ -346,7 +342,7 @@
             } else alert('{{ 'Veillez sélectionner un client'|trans }}')
         }
 
-         function validersans() {
+        function validersans() {
             if ($('#commande_user option:selected').val() != '') {
                 if (confirm("{{ 'Confirmation validation sans tenir compte des promos?'|trans }}")) {
                     $.ajax({
@@ -368,12 +364,22 @@
             } else alert('{{ 'Veillez sélectionner un client'|trans }}')
         }
 
-         function validercommande() {
+        function validercommande() {
             if ($('#commande_user option:selected').val() != '') {
                 $("#btnmodalvalider").trigger('click');
             } else alert('{{ 'Veillez sélectionner un client'|trans }}')
         }
 
+        new TomSelect('#commande_user', {
+            create: false,
+            allowEmptyOption: true,
+            placeholder: '{{ "Rechercher un client..."|trans }}',
+            render: {
+                no_results: function(data, escape) {
+                    return '<div class="no-results">{{ "Aucun résultat trouvé"|trans }}</div>';
+                }
+            }
+        });
     </script>
 
 

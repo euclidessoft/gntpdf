@@ -4,6 +4,7 @@
 <head>
     <title> {% block title %} GNT Pharma {% endblock %} </title>
     {{ include('includes/head.html.twig') }}
+    {% block custom_css %} {% endblock %}
 </head>
 
 <body {% block corps %} {% endblock %} {% block start %} {% endblock %}>
