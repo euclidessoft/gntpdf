@@ -2501,8 +2501,13 @@ button.bg-default:focus {
     color: rgba(var(--bs-body-color-rgb), 0.8);
 }
 
-#paiement_form_avoir {
+#paiement_form_avoir,
+#versement_avoir {
     min-height: 10rem;
+}
+
+.avoir {
+    margin-top: 8.5rem !important;
 }
 
 .form-check-input:checked {
