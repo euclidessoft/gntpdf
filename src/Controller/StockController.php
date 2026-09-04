@@ -649,9 +649,10 @@ class StockController extends AbstractController
 
             }
             
-            $commande->setMontant($commande->getMontant() - $montant);
+            
+            $commande->setAcompte($commande->getAcompte() - $prelevement);// definition du prelevement sinon defaut sur montantHt
+            $commande->setMontant($commande->getMontant() - ($montant + $prelevement) );
             $commande->setTva($commande->getTva() - $tva);
-            $commande->setAcompte($commande->getAcompte() - $prelevement);
             $commande->setRetour(true);
             $em->persist($commande);
             $em->flush();

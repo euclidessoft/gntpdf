@@ -718,16 +718,34 @@ class AvoirController extends AbstractController
     //     ]);
     // }
 
-    // #[Route("/{id}", name :"avoir_delete", methods : ["POST"]) ]
-    // public function delete(Request $request, Avoir $avoir): Response
-    // {
-    //     if ($this->isCsrfTokenValid('delete' . $avoir->getId(), $request->request->get('_token'))) {
-    //         $entityManager = $this->entityManager;
-    //         $entityManager->remove($avoir);
-    //         $entityManager->flush();
-    //     }
+    #[Route("/{id}", name :"avoir_delete", methods : ["POST"]) ]
+    public function delete(Request $request, Avoir $avoir): Response
+    {
+        if ($this->security->isGranted('ROLE_ADMIN')) {
+            if( count($avoir->getCommandeavoirs()) == 0 && !$avoir->isPayer() && $avoir->getRetour() == null){
+                if ($this->isCsrfTokenValid('delete' . $avoir->getId(), $request->request->get('_token'))) {
+                    $entityManager = $this->entityManager;
+                    $entityManager->remove($avoir);
+                    $entityManager->flush();
+                    $this->addFlash('notice', 'avoir supprimer avec succès');
+                }
+            } else {
+                 $this->addFlash('danger', 'Cet avoir ne peut etre supprimé');
+            }
 
-    //     return $this->redirectToRoute('avoir_index', [], Response::HTTP_SEE_OTHER);
-    // }
+            return $this->redirectToRoute('avoir_index', [], Response::HTTP_SEE_OTHER);
+        } else {
+            $response = $this->redirectToRoute('security_logout');
+            $response->setSharedMaxAge(0);
+            $response->headers->addCacheControlDirective('no-cache', true);
+            $response->headers->addCacheControlDirective('no-store', true);
+            $response->headers->addCacheControlDirective('must-revalidate', true);
+            $response->setCache([
+                'max_age' => 0,
+                'private' => true,
+            ]);
+            return $response;
+        }
+    }
    
 }
