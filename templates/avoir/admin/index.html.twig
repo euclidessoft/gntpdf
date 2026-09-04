@@ -29,6 +29,12 @@
                 {{ message|trans }}
             </div>
         {% endfor %}
+        {% for message in app.flashes('danger') %}
+            <div role="alert" class="alert alert-danger alert-dismissible fade show radius-10 shadow-black">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                {{ message|trans }}
+            </div>
+        {% endfor %}
 
         <a class="btn btn-green mb-5" href="{{ path('avoir_choix') }}">
             <i class="fa-solid fa-sack-dollar"></i><i class="fa fa-plus"></i>
@@ -73,6 +79,9 @@
                             <i class="fa fa-list"></i>
                             {{ 'Afficher'|trans }}
                         </a>
+                        {% if  is_granted('ROLE_ADMIN') %}
+                            {{ include('avoir/admin/_delete_form.html.twig')}}
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}
