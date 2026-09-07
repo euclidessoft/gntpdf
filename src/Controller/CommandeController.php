@@ -2446,14 +2446,14 @@ class CommandeController extends AbstractController
                         $credit->setType('Espece');
                         $credit->setCompte(571);
 
-                        // $ecriture->setType('Espece');
+                        $ecriture->setType('Espece');
                         $ecriture->setComptecredit(571);
                         $ecriture->setLibellecomptecredit("Caisse");
                     }else{
                         $credit->setType('Banque');
                         $credit->setCompte($versement->getBanque()->getCompte());
 
-                        // $ecriture->setType('Banque');
+                        $ecriture->setType('Banque');
                         $ecriture->setComptecredit($versement->getBanque()->getCompte());
                         $ecriture->setLibelleComptecredit($versement->getBanque()->getNom());
 
@@ -2463,12 +2463,12 @@ class CommandeController extends AbstractController
                         $ecravoir = new Ecriture();
                         if($versement->getType() == 'Espece'){
 
-                            $ecravoir->setType('Espece');
+                            // $ecravoir->setType('Espece');
                             $ecravoir->setComptecredit(571);
                             $ecravoir->setLibellecomptecredit("Caisse");
                         }else{
                         
-                            $ecravoir->setType('Banque');
+                            // $ecravoir->setType('Banque');
                             $ecravoir->setComptecredit($versement->getBanque()->getCompte());
                             $ecravoir->setLibelleComptecredit($versement->getBanque()->getNom());
 
