@@ -252,7 +252,7 @@
                 </td>
                 <td class="montant">
                   <b>
-                    <span class="text-nowrap">- {{ (total  + tva )|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</span>
+                    <span class="text-nowrap">- {{ avoir.montant|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</span>
                   </b>      
                 </td>
             </tr>
@@ -272,8 +272,8 @@
         </table>
             {#Conversion prix en lettre #}
          <div class="montant-lettres">
-    {{ 'Arrêtée la présente à la somme de'|trans }}
-    <strong>{{ lettre(total  + tva) }} {{ 'francs CFA TTC'|trans }}</strong>
+    {{ 'Arrêtée la présente à la somme de'|trans }}<b> &nbsp;moins</b>
+    <strong>{{ lettre(avoir.montant) }} {{ 'francs CFA TTC'|trans }}</strong>
 </div>
             
 </body>
