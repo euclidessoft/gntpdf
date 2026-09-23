@@ -48,6 +48,17 @@ class AvantageRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    
+     public function paiement($id)
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.client = :val')
+            ->setParameter('val', $id)
+            ->andWhere('a.payer = :payer')
+            ->setParameter('payer', false)
+        ;
+    }
+
     //    /**
     //     * @return Avantage[] Returns an array of Avantage objects
     //     */

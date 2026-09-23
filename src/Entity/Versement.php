@@ -17,6 +17,7 @@ class Versement
     private $date;
 
      public $avoir;// tampon choix avoir
+     public $avantage;// tampon choix avanatage
 
     #[ORM\ManyToOne(targetEntity:"App\Entity\User") ]
 #[ORM\JoinColumn(nullable:true) ]
@@ -47,6 +48,9 @@ class Versement
      #[ORM\Column(type:"float") ]
     private $montantavoir;// si utilisation avoir
     
+    #[ORM\Column(type:"float") ]
+    private $montantavantage;// si utilisation avantage
+    
     /**
      * Constructor
      */
@@ -54,6 +58,7 @@ class Versement
     {
         $this->date = new \Datetime();
         $this->montantavoir = 0;
+        $this->montantavantage = 0;
     }
 
     public function getId(): ?int
@@ -165,6 +170,18 @@ class Versement
     public function setMontantavoir(float $montantavoir): static
     {
         $this->montantavoir = $montantavoir;
+
+        return $this;
+    }
+
+    public function getMontantavantage(): ?float
+    {
+        return $this->montantavantage;
+    }
+
+    public function setMontantavantage(float $montantavantage): static
+    {
+        $this->montantavantage = $montantavantage;
 
         return $this;
     }

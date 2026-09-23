@@ -5,7 +5,9 @@ namespace App\Controller;
 use App\Complement\Promotion;
 use App\Entity\Commande;
 use App\Entity\CommandeAvoir;
+use App\Entity\CommandeAvantage;
 use App\Entity\Avoir;
+use App\Entity\Avantage;
 use App\Entity\Produit;
 use App\Entity\Panier;
 use App\Entity\CommandeProduit;
@@ -2097,8 +2099,69 @@ class CommandeController extends AbstractController
                 }
             // fin avoirs
 
+             // traitement avantage
+                $avantages = $form->get('avantage')->getData() ?? [];
+                    $montantavantage = 0;
+                if(count($avantages)){
+                    foreach ($avantages as $avantage) {
+                    
+                         $avantage->getMontanttraiter() != 0 ? $montantavantage += $avantage->getMontanttraiter(): $montantavantage += $avantage->getMontant();
+                    
+                    }
+                    
+                    $i =1;
+                    if($montantavantage <= $commande->getMontant()){
+                        // montant avoir <= montant commande
+                        foreach ($avantages as $avantage) {
+                            $$i = $entityManager->getRepository(Avantage::class)->find($avantage->getId());
+                            $$i->setPayer(true);
+                             $commandeavantage =  new CommandeAvantage();
+                            $commandeavantage->setAvantage($$i);
+                            $commandeavantage->setCommandeavant($commande);
+                            $avantage->getMontanttraiter() != 0 ? $commandeavantage->setMontant($$i->getMontanttraiter()) : $commandeavantage->setMontant($$i->getMontant());
+                            $$i->addCommandeavantage($commandeavantage);
+                            $entityManager->persist($$i);
+                        
+                        }
+                    }else{
+                        // montant avoir > montant commande
+                        $montanttest = 0;
+                        foreach ($avantages as $avantage) {
+                            $avantage->getMontanttraiter() != 0 ? $montanttest += $avantage->getMontanttraiter() : $montanttest += $avantage->getMontant() ;
+                            if($montanttest <= $commande->getMontant()){
+                            // avoir a la limte du montant de la commande
+                                $$i = $entityManager->getRepository(Avantage::class)->find($avantage->getId());
+                                $$i->setPayer(true);
+                                 $commandeavantage =  new CommandeAvantage();
+                                $commandeavantage->setAvantage($$i);
+                                $commandeavantage->setCommandeavant($commande);
+                                $avantage->getMontanttraiter() != 0 ? $commandeavantage->setMontant($$i->getMontanttraiter()) : $commandeavantage->setMontant($$i->getMontant());
+                                $$i->addCommandeavantage($commandeavantage);
+                                $entityManager->persist($$i);
+                                
+                            }else{
+                                $reste = $montanttest - $commande->getMontant();
+                                $$i = $entityManager->getRepository(Avantage::class)->find($avantage->getId());
+                                count($avantages) > 1 ? $$i->setMontanttraiter($reste) : $$i->setMontanttraiter($commande->getMontant());
+                                $commandeavantage =  new CommandeAvantage();
+                                $commandeavantage->setAvantage($$i);
+                                $commandeavantage->setCommandeavant($commande);
+                                $avantage->getMontanttraiter() != 0 ? $commandeavantage->setMontant($$i->getMontanttraiter() - $reste) : $commandeavantage->setMontant($$i->getMontant() - $reste);
+                                $$i->addCommandeavantage($commandeavantage);
+                                $entityManager->persist($$i);
+                                break;// arret car s'excecute une seule fois
+
+                            }
+                        
+                        }
+                        $montantavantage = $commande->getMontant();// recalibrage du montant avoir au montant commande
+                    }
+                   
+                }
+            // fin avantage
+
                 
-                if ($paiement->getMontant() + $montantavoir >= $commande->getMontant()) {
+                if ($paiement->getMontant() + $montantavoir + $montantavantage >= $commande->getMontant()) {
                     $paiement->setUser($this->getUser());
                     $paiement->setCommande($commande);
                     $paiement->setClient($commande->getUser());
@@ -2417,9 +2480,73 @@ class CommandeController extends AbstractController
                     $versement->setMontantavoir($montantavoir);
                 }
             // fin avoirs
+
+             // traitement avantage
+                $avantages = $form->get('avantage')->getData() ?? [];
+                    $montantavantage = 0;
+                if(count($avantages)){
+                    foreach ($avantages as $avantage) {
+                    
+                         $avantage->getMontanttraiter() != 0 ? $montantavantage += $avantage->getMontanttraiter(): $montantavantage += $avantage->getMontant();
+                    
+                    }
+                    
+                    $i =1;
+                    $montantexact = $commande->getMontant() - $commande->getVersement();
+                    if($montantavantage <= $montantexact){
+                        // montant avoir <= montant commande
+                        foreach ($avantages as $avantage) {
+                            $$i = $entityManager->getRepository(Avantage::class)->find($avantage->getId());
+                            $$i->setPayer(true);
+                            $commandeavantage =  new CommandeAvantage();
+                            $commandeavantage->setAvantage($$i);
+                            $commandeavantage->setCommandeavant($commande);
+                            $avantage->getMontanttraiter() != 0 ? $commandeavantage->setMontant($$i->getMontanttraiter()) : $commandeavantage->setMontant($$i->getMontant());
+                            $$i->addCommandeavantage($commandeavantage);
+                            $entityManager->persist($$i);
+
+                        
+                        }
+                    }else{
+                        // montant avoir > montant commande
+                        $montanttest = 0;
+                        foreach ($avantages as $avantage) {
+                            $avantage->getMontanttraiter() != 0 ? $montanttest += $avantage->getMontanttraiter() : $montanttest += $avantage->getMontant() ;
+                             
+                            if($montanttest <= $montantexact){
+                            // avoir a la limte du montant de la commande
+                                $$i = $entityManager->getRepository(Avantage::class)->find($avantage->getId());
+                                $$i->setPayer(true);
+                                 $commandeavantage =  new CommandeAvantage();
+                                $commandeavantage->setAvantage($$i);
+                                $commandeavantage->setCommandeavant($commande);
+                                $avantage->getMontanttraiter() != 0 ? $commandeavantage->setMontant($$i->getMontanttraiter()) : $commandeavantage->setMontant($$i->getMontant());
+                                $$i->addCommandeavantage($commandeavantage);
+                                $entityManager->persist($$i);
+                                
+                            }else{
+                               $reste = $montanttest - $montantexact ;
+                                $$i = $entityManager->getRepository(Avantage::class)->find($avantage->getId());
+                                count($avantages) > 1 ? $$i->setMontanttraiter($reste) : $$i->setMontanttraiter($montantexact);
+                                $commandeavantage =  new CommandeAvantage();
+                                $commandeavantage->setAvantage($$i);
+                                $commandeavantage->setCommandeavant($commande);
+                                $avantage->getMontanttraiter() != 0 ? $commandeavantage->setMontant($$i->getMontanttraiter() - $reste) : $commandeavantage->setMontant($$i->getMontant() - $reste);
+                                $$i->addCommandeavantage($commandeavantage);
+                                $entityManager->persist($$i);
+                                break;// arret car s'excecute une seule fois
+
+                            }
+                        
+                        }
+                        $montantavoir = $commande->getMontant() - $commande->getVersement();// recalibrage du montant avoir au montant commande
+                    }
+                    $versement->setMontantavantage($montantavantage);
+                }
+            // fin avantage
                 // dd($montantavoir);
-                if ($versement->getMontant() + $montantavoir < ($commande->getMontant() - $commande->getVersement())+1) {
-                    $commande->setVersement($commande->getVersement() + $versement->getMontant() + $montantavoir);// MAJ versement
+                if ($versement->getMontant() + $montantavoir + $montantavantage < ($commande->getMontant() - $commande->getVersement())+1) {
+                    $commande->setVersement($commande->getVersement() + $versement->getMontant() + $montantavoir + $montantavantage);// MAJ versement
                     if ($commande->getVersement() == $commande->getMontant() - $escompte) {
 
                         $commande->setPayer(true);

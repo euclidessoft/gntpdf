@@ -114,6 +114,13 @@ class Commande
     )]
     private Collection $commandeavoirs;
 
+     #[ORM\OneToMany(
+        mappedBy: 'commandeavant',
+        targetEntity: CommandeAvantage::class,
+        cascade: ['persist', 'remove']
+    )]
+    private Collection $commandeavantages;
+
     /**
      * Constructor
      */
@@ -134,6 +141,7 @@ class Commande
         $this->retour = false;
         $this->setEcheance($this->date);
         $this->commandeavoirs = new ArrayCollection();
+        $this->commandeavantages = new ArrayCollection();
         
     }
 
@@ -586,6 +594,36 @@ class Commande
             // set the owning side to null (unless already changed)
             if ($commandeavoir->getCommande() === $this) {
                 $commandeavoir->setCommande(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CommandeAvantage>
+     */
+    public function getCommandeavantages(): Collection
+    {
+        return $this->commandeavantages;
+    }
+
+    public function addCommandeavantage(CommandeAvantage $commandeavantage): static
+    {
+        if (!$this->commandeavantages->contains($commandeavantage)) {
+            $this->commandeavantages->add($commandeavantage);
+            $commandeavantage->setCommandeavant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommandeavantage(CommandeAvantage $commandeavantage): static
+    {
+        if ($this->commandeavantages->removeElement($commandeavantage)) {
+            // set the owning side to null (unless already changed)
+            if ($commandeavantage->getCommandeavant() === $this) {
+                $commandeavantage->setCommandeavant(null);
             }
         }
 

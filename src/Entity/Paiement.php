@@ -14,6 +14,7 @@ class Paiement
     private $commande;
 
     public $avoir;// tampon choix avoir
+    public $avantage;// tampon choix avoir
 
     #[ORM\Column(type:"date") ]
     private $date;

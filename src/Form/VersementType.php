@@ -5,7 +5,9 @@ namespace App\Form;
 use App\Entity\Banque;
 use App\Entity\Versement;
 use App\Entity\Avoir;
+use App\Entity\Avantage;
 use App\Repository\AvoirRepository;
+use App\Repository\AvantageRepository;
 use App\Form\Type\VerserType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -30,6 +32,15 @@ class VersementType extends AbstractType
                 'choice_label'=> 'montant',
                  'multiple' => true,
                   'query_builder' => function(AvoirRepository $repository) use ($id)  { return $repository->paiement($id); },
+                'placeholder' => 'Sélectionnez une banque',
+                // 'required' => true,
+                
+            ])
+              ->add('avantage',EntityType::class,[
+                'class' => Avantage::class,
+                'choice_label'=> 'montant',
+                 'multiple' => true,
+                  'query_builder' => function(AvantageRepository $repository) use ($id)  { return $repository->paiement($id); },
                 'placeholder' => 'Sélectionnez une banque',
                 // 'required' => true,
                 

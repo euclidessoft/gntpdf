@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\AvantageRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -47,6 +49,18 @@ class Avantage
     #[ORM\JoinColumn(nullable: false)]
     private ?Employe $employe = null;
 
+    #[ORM\Column(type:"float") ]
+    private $Montanttraiter;
+   
+    #[ORM\OneToMany(
+        mappedBy: 'avantage',
+        targetEntity: CommandeAvantage::class,
+        cascade: ['persist', 'remove']
+    )]
+    private Collection $commandeavantages;
+
+    #[ORM\Column(type:"float") ]
+    private $Montant;
 
     /**
      * Constructor
@@ -54,6 +68,7 @@ class Avantage
     public function __construct()
     {
         $this->payer = false;
+        $this->commandeavantages = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -177,6 +192,60 @@ class Avantage
     public function setPayer(bool $payer): static
     {
         $this->payer = $payer;
+
+        return $this;
+    }
+
+    public function getMontanttraiter(): ?float
+    {
+        return $this->Montanttraiter;
+    }
+
+    public function setMontanttraiter(float $Montanttraiter): static
+    {
+        $this->Montanttraiter = $Montanttraiter;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CommandeAvantage>
+     */
+    public function getCommandeavantages(): Collection
+    {
+        return $this->commandeavantages;
+    }
+
+    public function addCommandeavantage(CommandeAvantage $commandeavantage): static
+    {
+        if (!$this->commandeavantages->contains($commandeavantage)) {
+            $this->commandeavantages->add($commandeavantage);
+            $commandeavantage->setAvantage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommandeavantage(CommandeAvantage $commandeavantage): static
+    {
+        if ($this->commandeavantages->removeElement($commandeavantage)) {
+            // set the owning side to null (unless already changed)
+            if ($commandeavantage->getAvantage() === $this) {
+                $commandeavantage->setAvantage(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getMontant(): ?float
+    {
+        return $this->Montant;
+    }
+
+    public function setMontant(float $Montant): static
+    {
+        $this->Montant = $Montant;
 
         return $this;
     }

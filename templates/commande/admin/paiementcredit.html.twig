@@ -445,6 +445,7 @@
                     <td>
                     {{ versement.montant|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
                     {{ versement.montantavoir != 0 ? "+ " ~ versement.montantavoir|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') ~ " Avoir accordé" : " " }}
+                    {{ versement.montantavantage != 0 ? "+ " ~ versement.montantavantage|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') ~ " Avantage accordé" : " " }}
                     </td>
                 </tr>
             {% else %}

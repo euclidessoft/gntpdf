@@ -187,7 +187,7 @@ class FinanceController extends AbstractController
                     $avantage->setCommission($gain->commission($commande['ca'], $request->request->get('com1'),$request->request->get('com2'),$request->request->get('com3'),$request->request->get('com4') ));
                     $avantage->setEscompte($gain->escompte($commande['achat'], $request->request->get('esc1'),$request->request->get('esc2'),$request->request->get('esc3'),$request->request->get('esc4')));
                     $avantage->setRistourne($gain->ristourne($commande['ca'], $request->request->get('rest1'),$request->request->get('rest2'),$request->request->get('rest3')));
-                    
+                    $avantage->setMontant($avantage->getCommission() + $avantage->getRistourne() + $avantage->getEscompte());
                     $this->entityManager->persist($avantage);
                 
                 }
