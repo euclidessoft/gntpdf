@@ -537,7 +537,7 @@ class securityController extends AbstractController
     #[Route("/UserDisable", name :"security_user_disable") ]
     public function UserdisableAction(Request $request)
     {
-        if ($this->security->isGranted('ROLE_ADMIN')) {
+        if ($this->security->isGranted('ROLE_ADMIN') || $this->security->isGranted('ROLE_CLIENT_ADMIN')) {
 //            $em = $this->getDoctrine()->getManager();
             //$users = $em->getrepository(User::class)->findBy(array('agence' => $this->getUser()->getAgence()->getId()));
             $user = $this->entityManager->getrepository(User::class)->find($request->get('usr'));
@@ -559,7 +559,7 @@ class securityController extends AbstractController
     public function UserenableAction(Request $request)
     {
 
-        if ($this->security->isGranted('ROLE_ADMIN')) {
+        if ($this->security->isGranted('ROLE_ADMIN') || $this->security->isGranted('ROLE_CLIENT_ADMIN')) {
 //            $em = $this->getDoctrine()->getManager();
             //$users = $em->getrepository(User::class)->findBy(array('agence' => $this->getUser()->getAgence()->getId()));
             $user = $this->entityManager->getrepository(User::class)->find($request->get('usr'));
