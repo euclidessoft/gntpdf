@@ -1,0 +1,181 @@
+{% extends
+    is_granted('ROLE_ADMIN') ? 'admin.html.twig' :
+    is_granted('ROLE_SUPERVISEUR') ? 'admin.html.twig' :
+    is_granted('ROLE_RH') ? 'rh.html.twig' :
+    is_granted('ROLE_FINANCE') ? 'finance.html.twig' :
+    is_granted('ROLE_CAISSIER') ? 'caisse.html.twig' :
+    is_granted('ROLE_STOCK') ? 'stock.html.twig' :
+    is_granted('ROLE_LIVREUR') ? 'livreur.html.twig' :
+    is_granted('ROLE_EMPLOYER') ? 'employe.html.twig' :
+    is_granted('ROLE_LABORATOIRE') ? 'laboratoire.html.twig' :
+    'layout.html.twig'
+%}
+{% block title %} {{ "Commande"|trans }} - GNT Pharma {% endblock %}
+{% block commande %}active{% endblock %}
+{% block suivi %}active{% endblock %}
+
+{% block body %}
+
+    <div class="container mt-4  mb-5 fond-7">
+    <h3 class="mt-4 mb-5 fw-bold">
+        <i class="fa fa-money-bill me-2"></i>
+        {{ "Modification Reglement"|trans }}
+    </h3>
+    
+    
+    
+    <div class="row">
+            <div class="col-md-12">
+                <table class="table table-success-light table-bordered table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th>{{ 'Date'|trans }}</th>
+                        <th>{{ 'N° Commande'|trans }}</th>
+                         <th>{{ 'Client'|trans }}</th>
+                         <th>{{ 'NIU'|trans }}</th>
+                        {% if commande.credit == 1 and commande.payer == 0 %}
+                        <th>{{ 'date d\'echeance de paiement'|trans }}</th>
+                        {% endif %}
+                        <th>{{ 'Status Commande'|trans }}</th>
+                        {#            <th>Date de Livraison</th>#}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <td>{{ commande.date|date('d/m/Y') }}</td>
+                    <td>{{ commande.id }}</td>
+                     <td>{{ commande.user.nom ~ " " ~ commande.user.prenom }}</td>
+                     <td>{{ commande.user.niu }}</td>
+                         {% if commande.credit == 1 and commande.payer == 0 %}
+                             <td> {{ commande.echeance ? commande.echeance|date('d/m/Y'): ''  }}</td>
+                        {% endif %}
+                    <td class="fw-bold">
+                        {% if commande.payer == 0 %}
+                            <span class="text-danger">Non payée</span>
+                        {% else %}
+                            <span class="text-success">Payée</span>
+                        {% endif %}
+                    </td>
+                    {#        <td> </td>#}
+                    </tbody>
+                </table>
+            </div>
+
+             <div class="col-md-12">
+                <table class="table table-success-light table-bordered table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th>{{ 'Date'|trans }}</th>
+                        <th>{{ 'N° Reglement'|trans }}</th>
+                         <th>{{ 'Montant'|trans }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <td>{{ versement.date|date('d/m/Y') }}</td>
+                    <td>{{ versement.id }}</td>
+                     <td>{{ versement.montant|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}</td>
+                    </tbody>
+                </table>
+            </div>
+
+              {{ form_start(form, {'attr': {'id': 'form'}}) }}
+
+                <div class="col-lg-5 offset-lg-2 mt-4 fond-7 pb-5 pt-3 px-5">
+                    <h4 class="mb-3">
+                        <i class="fa-money-bill"></i>
+                        {{ 'Modification Reglement'|trans }}
+                    </h4>
+
+                    {% for message in app.flashes('notice') %}
+                    <div role="alert" class="alert alert-success alert-dismissible fade show radius-10 shadow-black">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        {{ message|trans }}
+                    </div>
+                    {% endfor %}
+
+                    {% for message in app.flashes('danger') %}
+                        <div role="alert" class="alert alert-danger alert-dismissible fade show radius-10 shadow-black">
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            {{ message|trans }}
+                        </div>
+                    {% endfor %}
+
+                    <div class="row">
+
+                    
+
+                        <div class="col-12 mb-4">
+                            {{ form_row(form.montant, {'attr': {'placeholder': 'Montant *'}, 'label': 'Montant *'}) }}
+                        </div>
+
+                        <div class="col-12 mb-4">
+                        {{ form_row(form.type, {'label':'Type de dépense', 'attr' : {'onchange' : 'typeversement()'}}) }}
+                        </div>
+
+                    </div>
+                    <div id="versement">
+                        <div class="form-group">
+                            {{ form_row(form.banque, {'label':'Banque', 'attr' : {'placeholder':'Banque'}}) }}
+                        </div>
+                        <div class="form-group mt-4">
+                            {{ form_row(form.numero, {'label':'Numéro transaction', 'attr' : {'placeholder':'Numéro'}}) }}
+                        </div>
+                    </div>
+                   
+                    
+                        <div class="centrer">
+                            {#                <div class="row">#}
+                            <button type="button" class="btn btn-shadow btn-green btn-normal mb-3 me-3" id="send"
+                                    onclick="envoie()">
+                                <i class="fa fa-save"></i>
+                                {{ 'Enregistrer'|trans }}
+                            </button>
+
+                            {{ form_rest(form) }}
+                            {#                </div>#}
+                        </div>
+                        {{ form_end(form) }}
+                   
+        </div>
+    
+    </div>
+  
+</div>
+    
+
+{% endblock %}
+{% block scripts %}
+    <script>
+        function number() {
+            var reg = new RegExp("^[0-9]{3,9}$");
+            {# if (reg.test($('#versement_montant').val()) ) { #}
+            if ($('#versement_montant').val() >= 0 ) {
+                if ($('#versement_type option:selected').val() == 'Cheque' || $('#versement_type option:selected').val() == 'Virement') {
+                    if ($('#versement_montant').val() != '' && $('#versement_type').val() != '') {
+                        $('#ajouter').html("<i class='fa-solid fa-spinner fa-spin-pulse fa-lg'></i>");
+                        $('#form').submit();
+                    } else alert('{{ 'Veuillez renseigner tous les champs'|trans }}');
+                } else {
+                    if ($('#versement_montant').val() != '' && $('#versement_type').val() != '') {
+                        $('#ajouter').html("<i class='fa-solid fa-spinner fa-spin-pulse fa-lg'></i>");
+                        $('#form').submit();
+                    } else alert('{{ 'Veuillez renseigner tous les champs'|trans }}');
+                }
+            } else alert("{{ 'montant superieur ou egal a zero'|trans }}");
+
+        }
+        function typeversement() {
+            if ($('#versement_type option:selected').val() == 'Cheque' || $('#versement_type option:selected').val() == 'Virement') {
+                $('#versement').show();
+                $('#versement_numero').val();
+            } else {
+                $('#versement').hide();
+                $('#versement_numero').val();
+            }
+        }
+        function valeur(montant){
+            
+            var val = Number(montant) - Number(montant) * $("#escompte").val() / 100;
+            $("#valeur").html(val.toFixed(2));
+        }
+    </script>
+{% endblock %}

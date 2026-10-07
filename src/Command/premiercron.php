@@ -99,6 +99,7 @@ class premiercron extends Command
             foreach($flat as $commande){
                  if($commande instanceof Commande){
                  $com[] = [
+                    'id' => $commande->getId(),
                     'date' => $commande->getDate()->format('d/m/Y'),
                     'datedue' => "25/".date("m/Y"),
                     // 'traitement' => $commande->getTraitement()->format('d/m/Y'),
@@ -115,6 +116,7 @@ class premiercron extends Command
                 $prelevement += $commande->getAcompte();
                 }else{ 
                     $com[] = [
+                    'id' => " ",
                     'date' => $commande->getDate()->format('d/m/Y'),
                     'datedue' => '',
                     // 'traitement' => $commande->getDate()->format('d/m/Y'),

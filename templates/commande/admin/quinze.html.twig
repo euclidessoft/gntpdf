@@ -210,12 +210,11 @@
     <div class="container mt-4 mb-5 py-3 fond-7">
     <div class="centrer">
                
-{# 
-                 <a id="print" href="{{ path('commande_panier_print_Detail',{'commande': commande.id }) }}"
-                   class="btn btn-success-light me-3">
-                    <i class="fa fa-print"></i>
-                    {{ "Imprimer"|trans }}
-                </a> #}
+
+                  <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal" id="btn">
+                    <i class="fa fa-money-bill"></i>
+                    {{ 'Reglement'|trans }}
+                </button>
 
                  <a id="print" target="_blank" href="{{ path('commande_panier_releve_quinzaine_print', { 'releve': releve.id}) }}"
                    class="btn btn-success-light me-3">
@@ -233,5 +232,70 @@
     
         </div>
         </div>
+        <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered text-center">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title fs-5" id="exampleModalLabel">
+                                <i class="fa fa-money-bill"></i>
+                                    {{ 'Paiement'|trans }}
+                                 </h3>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
+                                </button>
+                            </div>
+                            <div class="modal-body px-5">
+
+                                {# traitement paiement #}
+                                {{ form_start(form, {'attr':{'id': 'form'}}) }}
+                                <div class="form-group mt-4">
+                                    {{ form_errors(form.montant) }}
+                                    <div class="input-group">
+                                        {{ form_widget(form.montant, {'label': 'Montant *', 'attr' : {'id' : 'nombre', 'placeholder':'Montant', 'value': (total + commande.acompte + tva -reduction)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}) }}
+                                        <input type="hidden" id="tamp"/>
+                                        <input type="hidden" id="tamp1"/>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">F CFA </span>
+                                        </div>
+                                    </div>
+                                </div>
+                               
+                                <div class="form-group mt-4">
+                                    {{ form_row(form.type, {'label': 'type de paiement *', 'attr' : {'onchange' : 'typeversement()'}}) }}
+                                </div>
+                                <div id="versement">
+                                    <div class="form-group mt-4">
+                                        {{ form_row(form.banque, {'label': 'Banque ', 'attr' : {'placeholder':'Banque'}}) }}
+                                    </div>
+                                    <div class="form-group mt-4">
+                                        {{ form_row(form.numero, {'label': 'Numero', 'attr' : {'placeholder':'Numéro'}}) }}
+                                    </div>
+                                </div>
+                                 <div class="form-group avoir">
+                                    {{ form_row(form.avoir, {'attr': {'placeholder': 'Utiliser avoirs'}, 'label': 'Utiliser avoirs'}) }}
+                                </div>
+                                 <div class="form-group avoir">
+                                    {{ form_row(form.avantage, {'attr': {'placeholder': 'Utiliser avantages'}, 'label': 'Utiliser avantages'}) }}
+                                </div>
+                                {{ form_rest(form) }}
+
+                                {# fin paiement#}
+                            </div>
+                            <div class="modal-footer px-5 py-4">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                                        id="annuler"><i class="fa fa-undo"></i>
+                                    {{ 'Annuler'|trans }}
+                                </button>
+                                <button type="button" class="btn btn-success ms-3"
+                                        id="ajouter"
+                                        onclick="number()"><i
+                                            class="fa fa-money-bill"></i>
+                                    {{ 'Payer'|trans}}
+                                </button>
+                            </div>
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
 
 {% endblock %}

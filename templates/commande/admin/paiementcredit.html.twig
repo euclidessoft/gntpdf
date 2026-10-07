@@ -446,6 +446,15 @@
                     {{ versement.montant|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') }}
                     {{ versement.montantavoir != 0 ? "+ " ~ versement.montantavoir|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') ~ " Avoir accordé" : " " }}
                     {{ versement.montantavantage != 0 ? "+ " ~ versement.montantavantage|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') ~ " Avantage accordé" : " " }}
+                   {% if is_granted("ROLE_ADMIN")%} 
+
+                   {% set limite = date()|date_modify('-48 hours') %}
+
+                    {% if versement.date > limite %}
+                      
+                       <a class="btn btn-success" id="{{versement.id}}" onclick="load({{versement.id}})" href="{{ path('commande_panier_versement_edit', {'id' : versement.id})}}"><i class="fa fa-edit"></i></a>{% endif %}
+                   
+                    {% endif %}
                     </td>
                 </tr>
             {% else %}
