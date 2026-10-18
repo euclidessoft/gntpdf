@@ -63,6 +63,12 @@
         <h6 class="text-center text-uppercase mb-3  fw-bold">
             {{ 'Numero'|trans }} : {{ releve.numero }}
         </h6>
+         {% for message in app.flashes('notice') %}
+        <div role="alert" class="alert alert-success alert-dismissible fade show radius-10 shadow-black">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            {{ message|trans }}
+        </div>
+    {% endfor %}
           <table class="table table-success-light table-bordered table-hover table-striped w-100 my-4">
             <thead>
             <tr>
@@ -194,6 +200,11 @@
                 </tr>
                  <tr>
                     <td class="fw-bold" colspan="3"> 
+                    {% if releve is not null %}
+                    {% set reste = releve.total - releve.avance - totalavantage - releve.avoir %}
+                    {% else %}
+                     {% set reste = 0 %}
+                    {% endif %}
                     RESTE : {{ releve ? (releve.total - releve.avance - totalavantage - releve.avoir)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }}
                     {# RESTE : {{ releve ? (releve.reste - totalavantage)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',') : '' }} #}
                    <span id="total" class="text-nowrap" style="display:none;">{{ releve ? (releve.total - releve.avance - totalavantage - releve.avoir)|number_format(2, '.' , '') : '' }}</span>
@@ -210,11 +221,12 @@
     <div class="container mt-4 mb-5 py-3 fond-7">
     <div class="centrer">
                
-
-                  <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal" id="btn">
+                {% if reste != 0 and releve.payer != 1 %}
+                  <button type="button" class="btn btn-success me-3" data-bs-toggle="modal" data-bs-target="#modal" id="btn">
                     <i class="fa fa-money-bill"></i>
-                    {{ 'Reglement'|trans }}
+                    {{ 'Regler'|trans }}
                 </button>
+                {% endif %}
 
                  <a id="print" target="_blank" href="{{ path('commande_panier_releve_quinzaine_print', { 'releve': releve.id}) }}"
                    class="btn btn-success-light me-3">
@@ -248,17 +260,7 @@
 
                                 {# traitement paiement #}
                                 {{ form_start(form, {'attr':{'id': 'form'}}) }}
-                                <div class="form-group mt-4">
-                                    {{ form_errors(form.montant) }}
-                                    <div class="input-group">
-                                        {{ form_widget(form.montant, {'label': 'Montant *', 'attr' : {'id' : 'nombre', 'placeholder':'Montant', 'value': (total + commande.acompte + tva -reduction)|number_format(2, app.request.locale == 'fr' ? ',' : '.', app.request.locale == 'fr' ? ' ' : ',')}}) }}
-                                        <input type="hidden" id="tamp"/>
-                                        <input type="hidden" id="tamp1"/>
-                                        <div class="input-group-append">
-                                            <span class="input-group-text">F CFA </span>
-                                        </div>
-                                    </div>
-                                </div>
+                               
                                
                                 <div class="form-group mt-4">
                                     {{ form_row(form.type, {'label': 'type de paiement *', 'attr' : {'onchange' : 'typeversement()'}}) }}
@@ -270,12 +272,6 @@
                                     <div class="form-group mt-4">
                                         {{ form_row(form.numero, {'label': 'Numero', 'attr' : {'placeholder':'Numéro'}}) }}
                                     </div>
-                                </div>
-                                 <div class="form-group avoir">
-                                    {{ form_row(form.avoir, {'attr': {'placeholder': 'Utiliser avoirs'}, 'label': 'Utiliser avoirs'}) }}
-                                </div>
-                                 <div class="form-group avoir">
-                                    {{ form_row(form.avantage, {'attr': {'placeholder': 'Utiliser avantages'}, 'label': 'Utiliser avantages'}) }}
                                 </div>
                                 {{ form_rest(form) }}
 
@@ -290,7 +286,7 @@
                                         id="ajouter"
                                         onclick="number()"><i
                                             class="fa fa-money-bill"></i>
-                                    {{ 'Payer'|trans}}
+                                    {{ 'Confirmer'|trans}}
                                 </button>
                             </div>
                             {{ form_end(form) }}
@@ -299,3 +295,28 @@
                 </div>
 
 {% endblock %}
+{% block scripts %}
+    <script>
+        function number() {
+             if ($('#paiement_form_type option:selected').val() != ""){
+                $('#form').submit();
+                $('#ajouter').html("<i class='fa-solid fa-spinner fa-spin-pulse fa-lg'></i>");
+             }else alert('Selectionnez le type de reglement')
+        }
+        function typeversement() {
+            if ($('#paiement_form_type option:selected').val() == 'Cheque' || $('#paiement_form_type option:selected').val() == 'Virement') {
+                $('#versement').show();
+                $('#versement_numero').val();
+            } else {
+                $('#versement').hide();
+                $('#versement_numero').val();
+            }
+        }
+        function valeur(montant){
+            
+            var val = Number(montant) - Number(montant) * $("#escompte").val() / 100;
+            $("#valeur").html(val.toFixed(2));
+        }
+    </script>
+{% endblock %}
+

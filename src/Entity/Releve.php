@@ -35,6 +35,12 @@ class Releve
     #[ORM\Column]
     private ?float $reste = null;
 
+    
+    #[ORM\Column(type:"boolean") ]
+    private $payer;
+    
+    
+
     #[ORM\Column]
     private ?float $prelevement = null;
 
@@ -64,6 +70,16 @@ class Releve
 
     #[ORM\Column]
     private ?int $numero = null;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+      
+        $this->payer = false;
+        
+    }
 
     public function getId(): ?int
     {
@@ -273,4 +289,17 @@ class Releve
 
         return $this;
     }
+
+    public function isPayer(): ?bool
+    {
+        return $this->payer;
+    }
+
+    public function setPayer(bool $payer): static
+    {
+        $this->payer = $payer;
+
+        return $this;
+    }
+
 }

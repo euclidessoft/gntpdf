@@ -986,7 +986,7 @@ class CommandeController extends AbstractController
 //            $panier = $session->get("panier", []);
 
             $response = $this->render('commande/admin/history.html.twig', [
-                'commandes' => $repository->findBy(['suivi' => true, 'payer' => true]),
+                'commandes' => $repository->findBy([ 'payer' => true]),
 //                'panier' => $panier,
             ]);
             $response->setSharedMaxAge(0);
@@ -3593,7 +3593,7 @@ class CommandeController extends AbstractController
     
     
      #[Route("/Releve_Quinzaine/{releve}", name :"releve_quinzaine") ]
-    public function relevequinzaine(Releve $releve)
+    public function relevequinzaine(Releve $releve, Request $request )
     {
         if ($this->security->isGranted('ROLE_CAISSIER')) {
 
@@ -3602,7 +3602,7 @@ class CommandeController extends AbstractController
         
          if($releve != null){
 
-          $commandes = json_decode($releve->getCommandes(), true) ;
+          $commandes = json_decode($releve->getCommandes(), true);
          $avantage = json_decode($releve->getAvantage(), true);
          }else{
             $commandes = [];
@@ -3612,144 +3612,41 @@ class CommandeController extends AbstractController
           $paiement = new Paiement();
             $credit = new Credit();
             $ecriture = new Ecriture();
-            $form = $this->createForm(PaiementFormType::class, $paiement, ['attr' => ['id' => $commandes->getUser()->getId()]]);
+            $form = $this->createForm(PaiementFormType::class, $paiement, ['attr' => ['id' => 1]]);// tampon paiement pour valider le paiement
+           $form->remove('avoir');
+           $form->remove('montant');
+           $form->remove('avantage');
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
                 $entityManager = $this->entityManager;
+                     $commandes = json_decode($releve->getCommandes(), true);
+                        $avoir= 0;
+                        $reste= 0;
+                        $compte = null;
+                foreach( $commandes as $commande){
 
-                 // traitement avoirs
-                $avoirs = $form->get('avoir')->getData() ?? [];
-                    $montantavoir = 0;
-                if(count($avoirs)){
-                    foreach ($avoirs as $avoir) {
-                    
-                         $avoir->getMontanttraiter() != 0 ? $montantavoir += $avoir->getMontanttraiter(): $montantavoir += $avoir->getMontant();
-                    
+                    if( $commande['datedue'] != ""){
+                        $com = $entityManager->getRepository(Commande::class)->find($commande['id']);
+                        $compte = $com->getuser()->getCompte();
+                        $com->setPayer(true);
+                        $entityManager->persist($com);
+                    }else {
+                        $avoir += $commande['montant'];
                     }
-                    
-                    $i =1;
-                    if($montantavoir <= $commande->getMontant()){
-                        // montant avoir <= montant commande
-                        foreach ($avoirs as $avoir) {
-                            $$i = $entityManager->getRepository(Avoir::class)->find($avoir->getId());
-                            $$i->setPayer(true);
-                             $commandeavoir =  new CommandeAvoir();
-                            $commandeavoir->setAvoir($$i);
-                            $commandeavoir->setCommande($commande);
-                            $avoir->getMontanttraiter() != 0 ? $commandeavoir->setMontant($$i->getMontanttraiter()) : $commandeavoir->setMontant($$i->getMontant());
-                            $$i->addCommandeavoir($commandeavoir);
-                            $entityManager->persist($$i);
-                        
-                        }
-                    }else{
-                        // montant avoir > montant commande
-                        $montanttest = 0;
-                        foreach ($avoirs as $avoir) {
-                            $avoir->getMontanttraiter() != 0 ? $montanttest += $avoir->getMontanttraiter() : $montanttest += $avoir->getMontant() ;
-                            if($montanttest <= $commande->getMontant()){
-                            // avoir a la limte du montant de la commande
-                                $$i = $entityManager->getRepository(Avoir::class)->find($avoir->getId());
-                                $$i->setPayer(true);
-                                 $commandeavoir =  new CommandeAvoir();
-                                $commandeavoir->setAvoir($$i);
-                                $commandeavoir->setCommande($commande);
-                                $avoir->getMontanttraiter() != 0 ? $commandeavoir->setMontant($$i->getMontanttraiter()) : $commandeavoir->setMontant($$i->getMontant());
-                                $$i->addCommandeavoir($commandeavoir);
-                                $entityManager->persist($$i);
-                                
-                            }else{
-                                $reste = $montanttest - $commande->getMontant();
-                                $$i = $entityManager->getRepository(Avoir::class)->find($avoir->getId());
-                                count($avoirs) > 1 ? $$i->setMontanttraiter($reste) : $$i->setMontanttraiter($commande->getMontant());
-                                $commandeavoir =  new CommandeAvoir();
-                                $commandeavoir->setAvoir($$i);
-                                $commandeavoir->setCommande($commande);
-                                $avoir->getMontanttraiter() != 0 ? $commandeavoir->setMontant($$i->getMontanttraiter() - $reste) : $commandeavoir->setMontant($$i->getMontant() - $reste);
-                                $$i->addCommandeavoir($commandeavoir);
-                                $entityManager->persist($$i);
-                                break;// arret car s'excecute une seule fois
-
-                            }
-                        
-                        }
-                        $montantavoir = $commande->getMontant();// recalibrage du montant avoir au montant commande
-                    }
-                   
+                 
                 }
-                // fin avoirs
+                $avantage = json_decode($releve->getAvantage(), true);
+                if(count($avantage) > 0 ){
+                $toatalav = $avantage[0]['escompte'] + $avantage[0]['commission'] + $avantage[0]['ristourne'];
+                $tvacom = $avantage[0]['commission'] * $avantage[0]['tva'] /100;
+                $totalavantage = $toatalav - $tvacom;
 
-                // traitement avantage
-                $avantages = $form->get('avantage')->getData() ?? [];
-                    $montantavantage = 0;
-                if(count($avantages)){
-                    foreach ($avantages as $avantage) {
-                    
-                         $avantage->getMontanttraiter() != 0 ? $montantavantage += $avantage->getMontanttraiter(): $montantavantage += $avantage->getMontant();
-                    
-                    }
-                    
-                    $i =1;
-                    if($montantavantage <= $commande->getMontant()){
-                        // montant avoir <= montant commande
-                        foreach ($avantages as $avantage) {
-                            $$i = $entityManager->getRepository(Avantage::class)->find($avantage->getId());
-                            $$i->setPayer(true);
-                             $commandeavantage =  new CommandeAvantage();
-                            $commandeavantage->setAvantage($$i);
-                            $commandeavantage->setCommandeavant($commande);
-                            $avantage->getMontanttraiter() != 0 ? $commandeavantage->setMontant($$i->getMontanttraiter()) : $commandeavantage->setMontant($$i->getMontant());
-                            $$i->addCommandeavantage($commandeavantage);
-                            $entityManager->persist($$i);
-                        
-                        }
-                    }else{
-                        // montant avoir > montant commande
-                        $montanttest = 0;
-                        foreach ($avantages as $avantage) {
-                            $avantage->getMontanttraiter() != 0 ? $montanttest += $avantage->getMontanttraiter() : $montanttest += $avantage->getMontant() ;
-                            if($montanttest <= $commande->getMontant()){
-                            // avoir a la limte du montant de la commande
-                                $$i = $entityManager->getRepository(Avantage::class)->find($avantage->getId());
-                                $$i->setPayer(true);
-                                 $commandeavantage =  new CommandeAvantage();
-                                $commandeavantage->setAvantage($$i);
-                                $commandeavantage->setCommandeavant($commande);
-                                $avantage->getMontanttraiter() != 0 ? $commandeavantage->setMontant($$i->getMontanttraiter()) : $commandeavantage->setMontant($$i->getMontant());
-                                $$i->addCommandeavantage($commandeavantage);
-                                $entityManager->persist($$i);
-                                
-                            }else{
-                                $reste = $montanttest - $commande->getMontant();
-                                $$i = $entityManager->getRepository(Avantage::class)->find($avantage->getId());
-                                count($avantages) > 1 ? $$i->setMontanttraiter($reste) : $$i->setMontanttraiter($commande->getMontant());
-                                $commandeavantage =  new CommandeAvantage();
-                                $commandeavantage->setAvantage($$i);
-                                $commandeavantage->setCommandeavant($commande);
-                                $avantage->getMontanttraiter() != 0 ? $commandeavantage->setMontant($$i->getMontanttraiter() - $reste) : $commandeavantage->setMontant($$i->getMontant() - $reste);
-                                $$i->addCommandeavantage($commandeavantage);
-                                $entityManager->persist($$i);
-                                break;// arret car s'excecute une seule fois
-
-                            }
-                        
-                        }
-                        $montantavantage = $commande->getMontant();// recalibrage du montant avoir au montant commande
-                    }
-                   
+                $reste = $releve->getTotal() - $releve->getAvance() - $totalavantage - $releve->getavoir();
                 }
-                // fin avantage
 
-                
-                if ($paiement->getMontant() + $montantavoir + $montantavantage >= $commande->getMontant()) {
-                    $paiement->setUser($this->getUser());
-                    $paiement->setCommande($commande);
-                    $paiement->setClient($commande->getUser());
-                    $commande->setSuivi(true);
-                    $commande->setTraitement(new \Datetime());
-                    $commande->setPayer(true);
-                    $commande->setPaiement($paiement);
-                    if($paiement->getType() == 'Espece'){
+                // $credit->setPaiement($paiement);// ecriture comptable
+                 if($paiement->getType() == 'Espece'){
 
                         $credit->setType('Espece');
                         $credit->setCompte(571);
@@ -3767,83 +3664,70 @@ class CommandeController extends AbstractController
 
 
                     }
+                $credit->setMontant($reste);
+
+                $ecriture->setSolde($reste);
+                $ecriture->setCredit($credit);
+                $ecriture->setMontant($reste);
+                $ecriture->setLibelle('Reglement releve');
+                $ecriture->setComptedebit($compte);
+                $ecriture->setLibellecomptedebit("Compte Client");
+
+                if($releve->getAvoir() != 0){
+                    $ecravoir = new Ecriture();
+                    if($paiement->getType() == 'Espece'){
+
+                        // $ecravoir->setType('Espece');
+                        $ecravoir->setComptecredit(571);
+                        $ecravoir->setLibellecomptecredit("Caisse");
+                    }else{
+                    
+                        // $ecravoir->setType('Banque');
+                        $ecravoir->setComptecredit($paiement->getBanque()->getCompte());
+                        $ecravoir->setLibelleComptecredit($paiement->getBanque()->getNom());
 
 
-                    $credit->setPaiement($paiement);// ecriture comptable
-                    $credit->setMontant($paiement->getMontant());
-
-                    $ecriture->setSolde($paiement->getMontant());
-                    $ecriture->setCredit($credit);
-                    $ecriture->setMontant($paiement->getMontant());
-                    $ecriture->setLibelle('Vente de médicaments');
-                    $ecriture->setComptedebit($commande->getUser()->getCompte());
-                    $ecriture->setLibellecomptedebit("Compte Client");
-
-                     if($montantavoir != 0){
-                        $ecravoir = new Ecriture();
-                        if($paiement->getType() == 'Espece'){
-
-                            // $ecravoir->setType('Espece');
-                            $ecravoir->setComptecredit(571);
-                            $ecravoir->setLibellecomptecredit("Caisse");
-                        }else{
-                        
-                            // $ecravoir->setType('Banque');
-                            $ecravoir->setComptecredit($versement->getBanque()->getCompte());
-                            $ecravoir->setLibelleComptecredit($versement->getBanque()->getNom());
-
-
-                        }
-                        $ecravoir->setComptedebit("41982");
-                        $ecravoir->setLibellecomptedebit("Avoir accordé");
-                        $ecravoir->setSolde(0);
-                        $ecravoir->setMontant($montantavoir);
-                        $ecravoir->setLibelle("Avoir accordé");
-                        $entityManager->persist($ecravoir);
                     }
-
-                    $entityManager->persist($commande);
-                    $entityManager->persist($paiement);
-                    $entityManager->persist($credit);
-                    $entityManager->persist($ecriture);
-
-                     if($commande->getTva() != 0){
-                         $tva = new Ecriture();
-                        $tva->setComptecredit("443100");
-                        $tva->setLibellecomptecredit("TVA");
-                        $tva->setComptedebit("447210");
-                        $tva->setLibellecomptedebit('TVA');
-                        $tva->setSolde(0);
-                        $tva->setMontant($commande->getTva());
-                        $tva->setLibelle("TVA sur Vente de médicaments");
-                        $entityManager->persist($tva);
-                    }
-                    $entityManager->flush();
-                    $this->addFlash('notice', 'Paiement effectué avec succés');
-
-                    $response = $this->redirectToRoute('commande_panier_history', [], Response::HTTP_SEE_OTHER);
-                    $response->setSharedMaxAge(0);
-                    $response->headers->addCacheControlDirective('no-cache', true);
-                    $response->headers->addCacheControlDirective('no-store', true);
-                    $response->headers->addCacheControlDirective('must-revalidate', true);
-                    $response->setCache([
-                        'max_age' => 0,
-                        'private' => true,
-                    ]);
-                    return $response;
-                } else {
-                    $this->addFlash('danger', 'Vérifier!!! Montant inferieur a la facture...');
-                    $response = $this->redirectToRoute('commande_panier_paiement', ['commande' => $commande->getId()], Response::HTTP_SEE_OTHER);
-                    $response->setSharedMaxAge(0);
-                    $response->headers->addCacheControlDirective('no-cache', true);
-                    $response->headers->addCacheControlDirective('no-store', true);
-                    $response->headers->addCacheControlDirective('must-revalidate', true);
-                    $response->setCache([
-                        'max_age' => 0,
-                        'private' => true,
-                    ]);
-                    return $response;
+                    $ecravoir->setComptedebit("41982");
+                    $ecravoir->setLibellecomptedebit("Avoir accordé");
+                    $ecravoir->setSolde(0);
+                    $ecravoir->setMontant($releve->getAvoir());
+                    $ecravoir->setLibelle("Avoir accordé");
+                    $entityManager->persist($ecravoir);
                 }
+
+                // $entityManager->persist($commande);
+                // $entityManager->persist($paiement);
+                $releve->setPayer(true);
+                $entityManager->persist($releve);
+                $entityManager->persist($credit);
+                $entityManager->persist($ecriture);
+
+                //  if($commande->getTva() != 0){
+                //      $tva = new Ecriture();
+                //     $tva->setComptecredit("443100");
+                //     $tva->setLibellecomptecredit("TVA");
+                //     $tva->setComptedebit("447210");
+                //     $tva->setLibellecomptedebit('TVA');
+                //     $tva->setSolde(0);
+                //     $tva->setMontant($commande->getTva());
+                //     $tva->setLibelle("TVA sur Vente de médicaments");
+                //     $entityManager->persist($tva);
+                // }
+                $entityManager->flush();
+                $this->addFlash('notice', 'Reglement relevé confirmé');
+
+                $response = $this->redirectToRoute('commande_panier_releve_quinzaine', ['releve' => $releve->getId()], Response::HTTP_SEE_OTHER);
+                $response->setSharedMaxAge(0);
+                $response->headers->addCacheControlDirective('no-cache', true);
+                $response->headers->addCacheControlDirective('no-store', true);
+                $response->headers->addCacheControlDirective('must-revalidate', true);
+                $response->setCache([
+                    'max_age' => 0,
+                    'private' => true,
+                ]);
+                return $response;
+                
 
             }  
            
