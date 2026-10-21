@@ -49,7 +49,7 @@ class Avantage
     #[ORM\JoinColumn(nullable: false)]
     private ?Employe $employe = null;
 
-    #[ORM\Column(type:"float") ]
+    #[ORM\Column(type:"float", nullable: true) ]
     private $Montanttraiter;
    
     #[ORM\OneToMany(
