@@ -158,6 +158,7 @@ class FinanceController extends AbstractController
     public function avantage(Request $request, Gain $gain): Response
     {
         if ($this->security->isGranted('ROLE_FINANCE')) {
+            $exclus = [7,8];
            
             if ($request->isMethod('POST')) {
                 // $date = new \DateTime($request->request->get('date1'));
@@ -171,24 +172,25 @@ class FinanceController extends AbstractController
                $this->entityManager->persist($avecom);
 
                 foreach($commandes as $commande){
-
-                $avoirs = $this->entityManager->getRepository(Avoir::class)->avantage($commande[0]->getUser()->getId(), $request->request->get('date1'), $request->request->get('date2'));
-                $montantavoir = 0;
-                foreach($avoirs as $avoir){
-                    $montantavoir += $avoir->getMontant();
-                }  
-                $avantage = new Avantage();
-                    $avantage->setEmploye($this->getUser());
-                    $avantage->setCLient($commande[0]->getUser());
-                    $avantage->setAveCom($avecom);
-                    $avantage->setCa($commande['ca'] - $montantavoir);
-                    $avantage->setTva($request->request->get('tva'));
-                    $avantage->setAchat($commande['achat']);
-                    $avantage->setCommission($gain->commission($commande['ca'], $request->request->get('com1'),$request->request->get('com2'),$request->request->get('com3'),$request->request->get('com4') ));
-                    $avantage->setEscompte($gain->escompte($commande['achat'], $request->request->get('esc1'),$request->request->get('esc2'),$request->request->get('esc3'),$request->request->get('esc4')));
-                    $avantage->setRistourne($gain->ristourne($commande['ca'], $request->request->get('rest1'),$request->request->get('rest2'),$request->request->get('rest3')));
-                    $avantage->setMontant($avantage->getCommission() + $avantage->getRistourne() + $avantage->getEscompte());
-                    $this->entityManager->persist($avantage);
+                    if(!in_array($commande[0]->getUser()->getId(), $exclus)){
+                        $avoirs = $this->entityManager->getRepository(Avoir::class)->avantage($commande[0]->getUser()->getId(), $request->request->get('date1'), $request->request->get('date2'));
+                        $montantavoir = 0;
+                        foreach($avoirs as $avoir){
+                            $montantavoir += $avoir->getMontant();
+                        }  
+                        $avantage = new Avantage();
+                        $avantage->setEmploye($this->getUser());
+                        $avantage->setCLient($commande[0]->getUser());
+                        $avantage->setAveCom($avecom);
+                        $avantage->setCa($commande['ca'] - $montantavoir);
+                        $avantage->setTva($request->request->get('tva'));
+                        $avantage->setAchat($commande['achat']);
+                        $avantage->setCommission($gain->commission($commande['ca'], $request->request->get('com1'),$request->request->get('com2'),$request->request->get('com3'),$request->request->get('com4') ));
+                        $avantage->setEscompte($gain->escompte($commande['achat'], $request->request->get('esc1'),$request->request->get('esc2'),$request->request->get('esc3'),$request->request->get('esc4')));
+                        $avantage->setRistourne($gain->ristourne($commande['ca'], $request->request->get('rest1'),$request->request->get('rest2'),$request->request->get('rest3')));
+                        $avantage->setMontant($avantage->getCommission() + $avantage->getRistourne() + $avantage->getEscompte());
+                        $this->entityManager->persist($avantage);
+                    }
                 
                 }
                 $this->entityManager->flush();

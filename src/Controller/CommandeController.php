@@ -2166,6 +2166,7 @@ class CommandeController extends AbstractController
                     $paiement->setCommande($commande);
                     $paiement->setClient($commande->getUser());
                     $commande->setSuivi(true);
+                    $commande->setCredit(false);
                     $commande->setTraitement(new \Datetime());
                     $commande->setPayer(true);
                     $commande->setPaiement($paiement);
